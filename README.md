@@ -7,6 +7,17 @@ while the **SDRF specification** stays stable in
 
 **License:** [Apache License 2.0](LICENSE) · **Contributing:** [CONTRIBUTING.md](CONTRIBUTING.md) · **LLM / agent context:** [llms.txt](llms.txt), [AGENTS.md](AGENTS.md)
 
+## SDRF ecosystem (links)
+
+- **This repository (annotated public datasets):** https://github.com/bigbio/sdrf-annotated-datasets
+- **SDRF-Proteomics specification (source, AsciiDoc):** https://github.com/bigbio/proteomics-sample-metadata  
+  - Main specification: https://github.com/bigbio/proteomics-sample-metadata/blob/master/sdrf-proteomics/README.adoc  
+  - Public site (overview, tools, explorer): https://sdrf.quantms.org/
+- **Templates (how to choose layers and columns):** https://github.com/bigbio/proteomics-sample-metadata/blob/master/sdrf-proteomics/TEMPLATES.adoc  
+  - Machine-readable template YAML (**sdrf-templates**): https://github.com/bigbio/sdrf-templates
+- **Validator / CLI (`parse_sdrf`, used in CI and locally):** https://github.com/bigbio/sdrf-pipelines
+- **Agentic annotator toolkit (skills, rules, workflows):** https://github.com/bigbio/sdrf-skills
+
 ## Mission
 
 The aim of this repository is to **advance annotations in a community-driven way**,

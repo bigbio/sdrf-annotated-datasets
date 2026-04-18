@@ -5,14 +5,25 @@
 > format specification and templates live elsewhere; this repo holds curated
 > `.sdrf.tsv` files for community-driven re-annotation and reuse.
 
+## SDRF ecosystem (links)
+
+- **This repository (annotated public datasets):** https://github.com/bigbio/sdrf-annotated-datasets
+- **SDRF-Proteomics specification (source, AsciiDoc):** https://github.com/bigbio/proteomics-sample-metadata  
+  - Main specification: https://github.com/bigbio/proteomics-sample-metadata/blob/master/sdrf-proteomics/README.adoc  
+  - Public site (overview, tools, explorer): https://sdrf.quantms.org/
+- **Templates (how to choose layers and columns):** https://github.com/bigbio/proteomics-sample-metadata/blob/master/sdrf-proteomics/TEMPLATES.adoc  
+  - Machine-readable template YAML (**sdrf-templates**): https://github.com/bigbio/sdrf-templates
+- **Validator / CLI (`parse_sdrf`, used in CI and locally):** https://github.com/bigbio/sdrf-pipelines
+- **Agentic annotator toolkit (skills, rules, workflows):** https://github.com/bigbio/sdrf-skills
+
 ## Purpose
 
 - Advance **community annotations** with participation from annotators, the **SDRF
   core team**, and **ProteomeXchange** stakeholders.
 - Enable **re-annotation** of public proteomics data with consistent,
   machine-validated metadata.
-- Keep high-churn annotation work **separate** from the specification repository:
-  https://github.com/bigbio/proteomics-sample-metadata
+- Keep high-churn annotation work **separate** from the specification repository
+  (see ecosystem links above).
 
 ## Key paths in this repository
 
@@ -21,16 +32,6 @@
 - LICENSE — Apache License 2.0
 - datasets/{ACCESSION}/*.sdrf.tsv — Dataset annotations (one folder per accession)
 - .github/workflows/validate-sdrf.yml — CI: `parse_sdrf validate-sdrf` on changed files
-
-## Authoritative specification and tooling
-
-- SDRF-Proteomics specification (AsciiDoc, templates, guidelines):
-  https://github.com/bigbio/proteomics-sample-metadata
-- **Agentic annotation toolkit (primary):** sdrf-skills — skills, rules, and
-  workflows for SDRF setup, annotation, validation, and fixes:
-  https://github.com/bigbio/sdrf-skills
-- Validator / CLI (`parse_sdrf`), installed from source in CI:
-  https://github.com/bigbio/sdrf-pipelines
 
 ## When proposing edits
 

@@ -46,6 +46,16 @@ Examples:
 Some projects include additional `.sdrf.tsv` files in the same accession folder
 when the public record genuinely requires split designs (see existing folders).
 
+## Sandbox (under preparation)
+
+Work-in-progress or **not-yet-valid** annotations live under **`sandbox/`** (see
+[`sandbox/README.md`](sandbox/README.md)). Typical reasons include empty
+placeholders, drafts, or files that **fail** `parse_sdrf validate-sdrf` until they
+are repaired. **CI only enforces validation on `datasets/`**; `sandbox/` is
+exempt so contributors can iterate without blocking merges on known-broken rows.
+When an accession is ready, **move** its folder from `sandbox/` into `datasets/`
+and open a pull request so checks run on the canonical path.
+
 ## Migration context
 
 - Source repository: `bigbio/proteomics-sample-metadata`
@@ -86,7 +96,9 @@ For concise instructions aimed at coding agents, see [AGENTS.md](AGENTS.md).
 ### Validation (CI)
 
 GitHub Actions runs `parse_sdrf validate-sdrf` on every pull request and push that
-touches `datasets/**`. The workflow installs
+touches `datasets/**` or `sandbox/**`. Only files under **`datasets/`** are
+validated; **`sandbox/` is excluded** so work-in-progress accessions do not fail
+the build (see [Sandbox](#sandbox-under-preparation)). The workflow installs
 [`bigbio/sdrf-pipelines`](https://github.com/bigbio/sdrf-pipelines) **from GitHub
 `main` via pip** (`git+https://…@main`), not from PyPI releases, so each run uses
 the latest validator code on the default branch. You can re-run checks manually

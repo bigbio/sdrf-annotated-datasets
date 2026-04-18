@@ -30,17 +30,19 @@
 - README.md — Mission, layout, validation, agentic best practices
 - CONTRIBUTING.md — PR workflow, local validation, expectations for agent-assisted work
 - LICENSE — Apache License 2.0
-- datasets/{ACCESSION}/*.sdrf.tsv — Dataset annotations (one folder per accession)
-- .github/workflows/validate-sdrf.yml — CI: `parse_sdrf validate-sdrf` on changed files
+- datasets/{ACCESSION}/*.sdrf.tsv — **Canonical** dataset annotations (must pass CI validation)
+- sandbox/{ACCESSION}/*.sdrf.tsv — **Work in progress** or invalid until fixed; not validated in CI (see sandbox/README.md)
+- .github/workflows/validate-sdrf.yml — CI: `parse_sdrf validate-sdrf` on **changed `datasets/`** files only
 
 ## When proposing edits
 
 1. Prefer following **[sdrf-skills](https://github.com/bigbio/sdrf-skills)** for
    agentic annotation and validation workflows before editing this repo.
 2. Read CONTRIBUTING.md and README.md (agentic section).
-3. Only add or change files under `datasets/` unless explicitly asked to update docs or CI.
-4. Validate with `parse_sdrf validate-sdrf --sdrf_file <path> --use_ols_cache_only`.
-5. In pull request descriptions, link to the public dataset record and state whether output was human-reviewed.
+3. Put work-in-progress or failing SDRFs under `sandbox/` (see `sandbox/README.md`); only validated accessions belong in `datasets/`.
+4. Only add or change files under `datasets/` unless explicitly asked to update docs or CI.
+5. Validate with `parse_sdrf validate-sdrf --sdrf_file <path> --use_ols_cache_only`.
+6. In pull request descriptions, link to the public dataset record and state whether output was human-reviewed.
 
 ## Migration note
 

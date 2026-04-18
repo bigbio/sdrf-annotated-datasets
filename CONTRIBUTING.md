@@ -29,6 +29,13 @@ Use the public accession as the folder name (`PXD…`, `MSV…`, `PMID…`, etc.
 project needs more than one SDRF file, keep them under the same accession folder
 and use descriptive suffixes (see existing examples).
 
+## Sandbox (`sandbox/`)
+
+If an accession is **not yet valid** (for example it fails `parse_sdrf
+validate-sdrf`, or the file is an empty placeholder), keep it under **`sandbox/`**
+instead of `datasets/` until it is fixed. See [`sandbox/README.md`](sandbox/README.md).
+CI only blocks merges on validation failures under **`datasets/`**.
+
 ## Pull request workflow
 
 1. **Fork** this repository and create a branch from `dev` (or `main` if that is

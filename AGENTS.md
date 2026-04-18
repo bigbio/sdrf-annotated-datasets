@@ -11,7 +11,11 @@ workflows). Follow its setup docs, then apply changes in this repository under
 
 ## Scope
 
-- **In scope:** `datasets/**/*.sdrf.tsv`, and doc/CI updates **only when asked**.
+- **In scope:** `datasets/**/*.sdrf.tsv`, `sandbox/**/*.sdrf.tsv` (WIP only), and
+  doc/CI updates **only when asked**.
+- **Canonical vs sandbox:** validated accessions belong in `datasets/`. If
+  `parse_sdrf validate-sdrf` fails or the file is incomplete, use `sandbox/` (see
+  `sandbox/README.md`) until it passes locally.
 - **Out of scope:** Changing the SDRF specification or templates here; that belongs
   in [`bigbio/proteomics-sample-metadata`](https://github.com/bigbio/proteomics-sample-metadata).
 

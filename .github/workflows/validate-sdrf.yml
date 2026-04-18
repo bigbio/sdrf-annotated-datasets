@@ -8,11 +8,13 @@ on:
     branches: [main, dev]
     paths:
       - 'datasets/**'
+      - 'sandbox/**'
       - '.github/workflows/validate-sdrf.yml'
   pull_request:
     branches: [main, dev]
     paths:
       - 'datasets/**'
+      - 'sandbox/**'
       - '.github/workflows/validate-sdrf.yml'
   workflow_dispatch:
 
@@ -64,6 +66,12 @@ jobs:
                 ;;
             esac
           }
+
+          mapfile -t sandbox_files < <(list_candidates | grep -E '^sandbox/.+\.sdrf\.tsv$' | sort -u || true)
+          if [ "${#sandbox_files[@]}" -gt 0 ] && [ -n "${sandbox_files[0]:-}" ]; then
+            echo "Note: change set includes sandbox/ paths (not validated in CI):"
+            printf '  %s\n' "${sandbox_files[@]}"
+          fi
 
           mapfile -t files < <(list_candidates | grep -E '^datasets/.+\.sdrf\.tsv$' | sort -u || true)
 

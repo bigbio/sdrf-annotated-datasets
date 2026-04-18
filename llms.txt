@@ -26,15 +26,20 @@
 
 - SDRF-Proteomics specification (AsciiDoc, templates, guidelines):
   https://github.com/bigbio/proteomics-sample-metadata
+- **Agentic annotation toolkit (primary):** sdrf-skills — skills, rules, and
+  workflows for SDRF setup, annotation, validation, and fixes:
+  https://github.com/bigbio/sdrf-skills
 - Validator / CLI (`parse_sdrf`), installed from source in CI:
   https://github.com/bigbio/sdrf-pipelines
 
 ## When proposing edits
 
-1. Read CONTRIBUTING.md and README.md (agentic section).
-2. Only add or change files under `datasets/` unless explicitly asked to update docs or CI.
-3. Validate with `parse_sdrf validate-sdrf --sdrf_file <path> --use_ols_cache_only`.
-4. In pull request descriptions, link to the public dataset record and state whether output was human-reviewed.
+1. Prefer following **[sdrf-skills](https://github.com/bigbio/sdrf-skills)** for
+   agentic annotation and validation workflows before editing this repo.
+2. Read CONTRIBUTING.md and README.md (agentic section).
+3. Only add or change files under `datasets/` unless explicitly asked to update docs or CI.
+4. Validate with `parse_sdrf validate-sdrf --sdrf_file <path> --use_ols_cache_only`.
+5. In pull request descriptions, link to the public dataset record and state whether output was human-reviewed.
 
 ## Migration note
 

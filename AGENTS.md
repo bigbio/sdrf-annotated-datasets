@@ -2,6 +2,13 @@
 
 Use this file together with `llms.txt` and `CONTRIBUTING.md`.
 
+## Primary toolkit (agentic SDRF)
+
+Use **[sdrf-skills](https://github.com/bigbio/sdrf-skills)** as the **default**
+setup for agent-assisted annotation and validation (skills + assistant rules +
+workflows). Follow its setup docs, then apply changes in this repository under
+`datasets/` and confirm with `parse_sdrf validate-sdrf` as below.
+
 ## Scope
 
 - **In scope:** `datasets/**/*.sdrf.tsv`, and doc/CI updates **only when asked**.

@@ -49,6 +49,10 @@ and use descriptive suffixes (see existing examples).
 ## Human and agentic contributions
 
 Manual curation and automated or **agent-assisted** annotation are both welcome.
+For **agentic annotation**, prefer **[sdrf-skills](https://github.com/bigbio/sdrf-skills)**
+as the main environment: it bundles the recommended agent skills, editor/coding
+assistant rules, and repeatable workflows on top of `sdrf-pipelines` validation.
+
 If a contribution was produced or assisted by an LLM or other agent:
 
 - Prefer **small, reviewable** pull requests (one accession or a coherent batch).

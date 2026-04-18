@@ -49,7 +49,13 @@ review etiquette.
 ### Agentic and LLM-assisted annotation — best practices
 
 Automated and **agent-assisted** curation is welcome when the result is **accurate,
-traceable, and reviewable**. In practice:
+traceable, and reviewable**. Use **[sdrf-skills](https://github.com/bigbio/sdrf-skills)**
+as the **primary toolkit** for agentic SDRF work (Cursor rules, skills, and
+workflows for setup, annotation, validation, and fixes). Combine it with
+`parse_sdrf validate-sdrf` so outputs stay aligned with current templates and
+validators.
+
+In practice:
 
 - **Anchor every row in public evidence** (PX landing page, submitted metadata,
   publication supplementary material). Do not invent sample names, factors, or

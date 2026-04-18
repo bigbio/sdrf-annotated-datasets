@@ -77,10 +77,8 @@ jobs:
               echo "Skipping missing or deleted path: $f"
               continue
             fi
-            echo "::group::parse_sdrf validate-sdrf -- $f"
-            parse_sdrf validate-sdrf --sdrf_file "$f" \
-              --skip_factor_validation \
-              --skip_experimental_design_validation \
-              --use_ols_cache_only
+            echo "::group::parse_sdrf validate-sdrf --sdrf_file $f"
+            # Options aligned with current sdrf-pipelines main (see parse_sdrf validate-sdrf -h).
+            parse_sdrf validate-sdrf --sdrf_file "$f" --use_ols_cache_only
             echo "::endgroup::"
           done

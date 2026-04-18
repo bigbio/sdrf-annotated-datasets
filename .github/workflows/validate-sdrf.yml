@@ -1,0 +1,85 @@
+# Validate datasets/**/*.sdrf.tsv with the latest bigbio/sdrf-pipelines on each run.
+
+name: Validate SDRF datasets
+
+on:
+  push:
+    branches: [main, dev]
+    paths:
+      - 'datasets/**'
+      - '.github/workflows/validate-sdrf.yml'
+  pull_request:
+    branches: [main, dev]
+    paths:
+      - 'datasets/**'
+      - '.github/workflows/validate-sdrf.yml'
+  workflow_dispatch:
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install latest sdrf-pipelines
+        run: |
+          set -euo pipefail
+          python -m pip install --upgrade pip wheel setuptools
+          # Install from GitHub default branch so CI always uses the newest validator.
+          python -m pip install --upgrade "git+https://github.com/bigbio/sdrf-pipelines.git"
+          python -m pip show sdrf-pipelines
+
+      - name: Validate changed SDRF files
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          list_candidates() {
+            case "${{ github.event_name }}" in
+              pull_request)
+                git diff --name-only \
+                  "${{ github.event.pull_request.base.sha }}" \
+                  "${{ github.event.pull_request.head.sha }}"
+                ;;
+              workflow_dispatch)
+                git ls-files | grep -E '^datasets/.+\.sdrf\.tsv$'
+                ;;
+              push)
+                if [ "${{ github.event.before }}" = "0000000000000000000000000000000000000000" ]; then
+                  git show --pretty="" --name-only "${{ github.sha }}"
+                else
+                  git diff --name-only "${{ github.event.before }}" "${{ github.event.after }}"
+                fi
+                ;;
+              *)
+                echo "Unsupported event: ${{ github.event_name }}" >&2
+                exit 1
+                ;;
+            esac
+          }
+
+          mapfile -t files < <(list_candidates | grep -E '^datasets/.+\.sdrf\.tsv$' | sort -u || true)
+
+          if [ "${#files[@]}" -eq 0 ] || [ -z "${files[0]:-}" ]; then
+            echo "No datasets/**/*.sdrf.tsv files in this change set; skipping validation."
+            exit 0
+          fi
+
+          for f in "${files[@]}"; do
+            if [ ! -f "$f" ]; then
+              echo "Skipping missing or deleted path: $f"
+              continue
+            fi
+            echo "::group::parse_sdrf validate-sdrf -- $f"
+            parse_sdrf validate-sdrf --sdrf_file "$f" \
+              --skip_factor_validation \
+              --skip_experimental_design_validation \
+              --use_ols_cache_only
+            echo "::endgroup::"
+          done

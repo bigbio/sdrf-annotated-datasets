@@ -25,3 +25,12 @@ Examples:
 ## Contributing
 
 Submit pull requests against this repository to add or improve annotated SDRF files.
+
+### Validation
+
+GitHub Actions runs `parse_sdrf validate-sdrf` on every pull request and push that
+touches `datasets/**`. The workflow installs the latest
+[`bigbio/sdrf-pipelines`](https://github.com/bigbio/sdrf-pipelines) from GitHub on
+each run so validators stay current. You can re-run checks manually from the
+Actions tab (`workflow_dispatch`); that job validates all tracked
+`datasets/**/*.sdrf.tsv` files.

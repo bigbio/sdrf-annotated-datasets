@@ -1,10 +1,25 @@
 # sdrf-annotated-datasets
 
-This repository is the canonical home for ProteomeXchange datasets annotated in SDRF.
+Community **SDRF** annotations for public proteomics datasets (ProteomeXchange and
+related accessions). This repository exists so **annotation work can move quickly**
+while the **SDRF specification** stays stable in
+[`bigbio/proteomics-sample-metadata`](https://github.com/bigbio/proteomics-sample-metadata).
 
-The annotated projects were moved out of the SDRF specification repository to keep
-the specification lifecycle stable while allowing annotated datasets to evolve
-continuously.
+**License:** [Apache License 2.0](LICENSE) · **Contributing:** [CONTRIBUTING.md](CONTRIBUTING.md) · **LLM / agent context:** [llms.txt](llms.txt), [AGENTS.md](AGENTS.md)
+
+## Mission
+
+The aim of this repository is to **advance annotations in a community-driven way**,
+bringing together:
+
+- **Community annotators** (individuals, groups, and computational workflows)
+- The **SDRF core team** and broader **HUPO-PSI** metadata community
+- **ProteomeXchange** members and resource providers invested in **re-annotation**
+  of public proteomics data
+
+Together, these efforts improve **sample-to-data** reporting so deposited experiments
+are easier to interpret, integrate across studies, and reprocess with clear
+experimental design and technology metadata.
 
 ## Dataset layout
 
@@ -17,16 +32,41 @@ Examples:
 - `datasets/PXD000070/PXD000070.sdrf.tsv`
 - `datasets/MSV000078494/MSV000078494.sdrf.tsv`
 
+Some projects include additional `.sdrf.tsv` files in the same accession folder
+when the public record genuinely requires split designs (see existing folders).
+
 ## Migration context
 
 - Source repository: `bigbio/proteomics-sample-metadata`
-- Migration discussion: https://github.com/bigbio/proteomics-sample-metadata/issues/817
+- Discussion: https://github.com/bigbio/proteomics-sample-metadata/issues/817
 
 ## Contributing
 
-Submit pull requests against this repository to add or improve annotated SDRF files.
+Open pull requests against this repository to add or improve annotated SDRF files.
+See [CONTRIBUTING.md](CONTRIBUTING.md) for branch expectations, layout rules, and
+review etiquette.
 
-### Validation
+### Agentic and LLM-assisted annotation — best practices
+
+Automated and **agent-assisted** curation is welcome when the result is **accurate,
+traceable, and reviewable**. In practice:
+
+- **Anchor every row in public evidence** (PX landing page, submitted metadata,
+  publication supplementary material). Do not invent sample names, factors, or
+  raw file names.
+- **Prefer small pull requests** (one accession or a tightly related batch) so
+  reviewers can verify mappings quickly.
+- **Run `parse_sdrf validate-sdrf` locally** before opening a PR; fix structural and
+  template issues early.
+- **Declare assistance** in the PR description (for example, “draft produced with
+  tool X, manually verified against the PX record”) so maintainers can calibrate
+  review depth.
+- **Use ontology terms and templates** consistent with the dataset type; when in
+  doubt, document open questions for humans instead of guessing.
+
+For concise instructions aimed at coding agents, see [AGENTS.md](AGENTS.md).
+
+### Validation (CI)
 
 GitHub Actions runs `parse_sdrf validate-sdrf` on every pull request and push that
 touches `datasets/**`. The workflow installs

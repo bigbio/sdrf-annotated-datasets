@@ -1,0 +1,42 @@
+# sdrf-annotated-datasets (LLM / tool context)
+
+> Canonical repository of SDRF (Sample and Data Relationship Format) annotations
+> for public proteomics datasets (ProteomeXchange and related accessions). The
+> format specification and templates live elsewhere; this repo holds curated
+> `.sdrf.tsv` files for community-driven re-annotation and reuse.
+
+## Purpose
+
+- Advance **community annotations** with participation from annotators, the **SDRF
+  core team**, and **ProteomeXchange** stakeholders.
+- Enable **re-annotation** of public proteomics data with consistent,
+  machine-validated metadata.
+- Keep high-churn annotation work **separate** from the specification repository:
+  https://github.com/bigbio/proteomics-sample-metadata
+
+## Key paths in this repository
+
+- README.md — Mission, layout, validation, agentic best practices
+- CONTRIBUTING.md — PR workflow, local validation, expectations for agent-assisted work
+- LICENSE — Apache License 2.0
+- datasets/{ACCESSION}/*.sdrf.tsv — Dataset annotations (one folder per accession)
+- .github/workflows/validate-sdrf.yml — CI: `parse_sdrf validate-sdrf` on changed files
+
+## Authoritative specification and tooling
+
+- SDRF-Proteomics specification (AsciiDoc, templates, guidelines):
+  https://github.com/bigbio/proteomics-sample-metadata
+- Validator / CLI (`parse_sdrf`), installed from source in CI:
+  https://github.com/bigbio/sdrf-pipelines
+
+## When proposing edits
+
+1. Read CONTRIBUTING.md and README.md (agentic section).
+2. Only add or change files under `datasets/` unless explicitly asked to update docs or CI.
+3. Validate with `parse_sdrf validate-sdrf --sdrf_file <path> --use_ols_cache_only`.
+4. In pull request descriptions, link to the public dataset record and state whether output was human-reviewed.
+
+## Migration note
+
+Discussion that motivated splitting annotated projects from the spec repo:
+https://github.com/bigbio/proteomics-sample-metadata/issues/817

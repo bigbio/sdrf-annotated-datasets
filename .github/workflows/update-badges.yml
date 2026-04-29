@@ -1,0 +1,88 @@
+name: Update README Badge Metrics
+
+on:
+  push:
+    branches: [main]
+    paths-ignore:
+      - ".github/badges/**"
+  schedule:
+    - cron: "20 5 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  refresh-badges:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Recompute badge JSON
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+
+          repo = Path(".")
+          badge_dir = repo / ".github" / "badges"
+          badge_dir.mkdir(parents=True, exist_ok=True)
+
+          def count_annotation_dirs(path: Path) -> int:
+              if not path.exists():
+                  return 0
+              return sum(
+                  1
+                  for child in path.iterdir()
+                  if child.is_dir() and any(child.glob("*.sdrf.tsv"))
+              )
+
+          llms_available = (repo / "llms.txt").is_file()
+          datasets_count = count_annotation_dirs(repo / "datasets")
+          sandbox_count = count_annotation_dirs(repo / "sandbox")
+
+          badges = {
+              "llms-txt.json": {
+                  "schemaVersion": 1,
+                  "label": "llms.txt",
+                  "message": "available" if llms_available else "missing",
+                  "color": "blue" if llms_available else "red",
+              },
+              "datasets.json": {
+                  "schemaVersion": 1,
+                  "label": "datasets",
+                  "message": str(datasets_count),
+                  "color": "1f6feb",
+              },
+              "sandbox.json": {
+                  "schemaVersion": 1,
+                  "label": "sandbox",
+                  "message": str(sandbox_count),
+                  "color": "7a3cff",
+              },
+          }
+
+          for filename, payload in badges.items():
+              (badge_dir / filename).write_text(json.dumps(payload, indent=2) + "\n")
+
+          print("Updated badge metrics:")
+          print(f"  llms.txt: {'available' if llms_available else 'missing'}")
+          print(f"  datasets: {datasets_count}")
+          print(f"  sandbox: {sandbox_count}")
+          PY
+
+      - name: Commit badge updates
+        run: |
+          if git diff --quiet -- .github/badges; then
+            echo "Badge JSON already up to date."
+            exit 0
+          fi
+
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add .github/badges
+          git commit -m "chore: refresh README badge metrics"
+          git push

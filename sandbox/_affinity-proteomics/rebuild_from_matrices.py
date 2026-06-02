@@ -442,20 +442,24 @@ def parse_adat(uri: str) -> tuple[list[dict[str, object]], dict[str, object]]:
 def normalize_sample_type(raw: object) -> str:
     text = normalize_lower(raw)
     if not text:
-        return "experimental sample"
+        return "not applicable"
     if "negative" in text and "control" in text:
-        return "negative control sample"
+        return "negative control"
     if "positive" in text and "control" in text:
-        return "positive control sample"
+        return "positive control"
+    if "plate" in text and "control" in text:
+        return "plate control"
+    if "buffer" in text and "control" in text:
+        return "buffer control"
     if "qc" in text or "quality" in text:
         return "quality control sample"
     if "calibrator" in text or "calibration" in text:
-        return "calibrator sample"
+        return "calibrator"
     if "control" in text:
-        return "control sample"
+        return "quality control sample"
     if text in {"sample", "samp", "s", "sample_control", "sample control", "sample type"}:
-        return "experimental sample"
-    return "experimental sample"
+        return "not applicable"
+    return "not applicable"
 
 
 def normalize_matrix(value: object, fallback: str) -> str:
@@ -600,7 +604,7 @@ def prune_all_unavailable_optional_columns(
             keep_indexes.append(idx)
             continue
         values = [clean(row[idx]).lower() for row in rows]
-        if values and all(value == NA for value in values):
+        if values and all(value in {NA, "not applicable"} for value in values):
             removed.append(column)
         else:
             keep_indexes.append(idx)

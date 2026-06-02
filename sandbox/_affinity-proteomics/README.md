@@ -13,6 +13,7 @@ Summary:
 - Total draft rows: 10,102 sample-level rows.
 - Pruning: removed 159 columns where the field was not required by the active templates and every value was `not available`.
 - Repetitive-column cleanup: removed 110 repeated/overlapping optional columns, including duplicate `comment[sdrf template]`, generic `comment[panel name]` where platform-specific panel/menu fields already exist, and redundant `comment[fraction identifier]`.
+- Sample-type cleanup: ordinary assay samples no longer use `characteristics[sample type]`; when special roles are present, values are restricted to guideline terms such as `negative control`, `plate control`, `quality control sample`, and `calibrator`.
 - Validation: 22 of 22 drafts pass `parse_sdrf validate-sdrf --template affinity-proteomics --skip-ontology` and the human template where applied.
 - Platform-specific checks: the installed `parse_sdrf` registry does not expose `olink` or `somascan` schemas yet, so `comment[olink panel]`, `comment[olink platform]`, `comment[somascan menu]`, and `comment[somascan platform]` were checked against the local template-required columns.
 
@@ -20,4 +21,4 @@ Secondary wide abundance or raw Ct matrices were not used as sample inventories 
 
 These are evidence-backed sandbox scaffolds, not final curator-reviewed submissions. Per-sample demographic values beyond direct matrix identifiers should be refined from deposited metadata spreadsheets or publication supplements before promotion to `datasets/`.
 
-See `manifest.tsv` for PRIDE URLs, Europe PMC hits, platform calls, primary matrix counts, skipped secondary files, sample row counts, and draft paths. See `column-pruning.tsv` for the per-accession fields removed by the all-`not available` cleanup, and `repetitive-column-removal.tsv` for the duplicate/overlapping optional fields removed. See `autoresearch-round1.tsv` for per-accession draft status and validation status. See `validation-round2.tsv` for per-template validation results.
+See `manifest.tsv` for PRIDE URLs, Europe PMC hits, platform calls, primary matrix counts, skipped secondary files, sample row counts, and draft paths. See `column-pruning.tsv` for the per-accession fields removed by the all-`not available` cleanup, `repetitive-column-removal.tsv` for the duplicate/overlapping optional fields removed, and `sample-type-correction.tsv` for the sample-type guideline correction. See `autoresearch-round1.tsv` for per-accession draft status and validation status. See `validation-round2.tsv` for per-template validation results.

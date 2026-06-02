@@ -108,6 +108,10 @@ REQUIRED_COLUMNS = {
     "comment[somascan platform]",
 }
 
+ALWAYS_KEEP_COLUMNS = REQUIRED_COLUMNS | {
+    "characteristics[sample type]",
+}
+
 
 def clean(value: object) -> str:
     if value is None:
@@ -139,6 +143,14 @@ def identifier(value: object) -> str:
     text = re.sub(r"\s*-\s*", "-", text)
     text = re.sub(r"[^A-Za-z0-9._-]+", "_", text).strip("._-")
     return text or NA
+
+
+def source_identifier(accession: str, sample_id: object) -> str:
+    return f"{accession}-{slug(sample_id, 'sample')}"
+
+
+def assay_identifier(accession: str, assay_index: int, sample_id: object) -> str:
+    return f"{accession}-r{assay_index:05d}-{slug(sample_id, 'sample')}"
 
 
 def first_present(row: dict[str, object], names: list[str]) -> str:
@@ -600,7 +612,7 @@ def prune_all_unavailable_optional_columns(
     keep_indexes: list[int] = []
     removed: list[str] = []
     for idx, column in enumerate(header):
-        if column in REQUIRED_COLUMNS:
+        if column in ALWAYS_KEEP_COLUMNS:
             keep_indexes.append(idx)
             continue
         values = [clean(row[idx]).lower() for row in rows]
@@ -621,7 +633,7 @@ def build_common_values(
     accession: str,
     manifest_row: dict[str, str],
     file_row: dict[str, str],
-    file_index: int,
+    assay_index: int,
     sample: dict[str, object],
     biological_replicate: int,
     technical_replicate: int,
@@ -632,10 +644,11 @@ def build_common_values(
     technology_type: str,
 ) -> list[str]:
     sample_id = clean(sample.get("sample_id")) or f"sample-{biological_replicate}"
-    row_id = f"{accession}-f{file_index:02d}-r{biological_replicate:05d}-{slug(sample_id, 'sample')}"
+    source_name = source_identifier(accession, sample_id)
+    assay_name = assay_identifier(accession, assay_index, sample_id)
     individual = identifier(clean(sample.get("subject_id")) or clean(sample.get("cli")))
     return [
-        row_id,
+        source_name,
         "Homo sapiens",
         display_or_na(manifest_row.get("organism_part")),
         display_or_na(manifest_row.get("disease")),
@@ -649,7 +662,7 @@ def build_common_values(
         NA,
         normalize_sample_type(sample.get("sample_type_raw")),
         normalize_matrix(sample.get("sample_matrix"), manifest_row.get("sample_matrix", "")),
-        row_id,
+        assay_name,
         technology_type,
         str(technical_replicate),
         file_row["comment[data file]"],
@@ -688,7 +701,8 @@ def rebuild() -> None:
 
         sdrf_rows: list[list[str]] = []
         all_panels_or_menus: list[str] = []
-        biological_replicate = 0
+        source_replicates: OrderedDict[str, int] = OrderedDict()
+        assay_index = 0
 
         for file_index, file_row in enumerate(primary_file_rows, start=1):
             filename = file_row["comment[data file]"]
@@ -709,8 +723,11 @@ def rebuild() -> None:
                 )
                 tech_reps: Counter[str] = Counter()
                 for sample in samples:
-                    biological_replicate += 1
                     sample_id = clean(sample.get("sample_id"))
+                    source_name = source_identifier(accession, sample_id)
+                    if source_name not in source_replicates:
+                        source_replicates[source_name] = len(source_replicates) + 1
+                    assay_index += 1
                     tech_reps[sample_id] += 1
                     panel_name = normalize_olink_panel(
                         sample.get("panel"),
@@ -722,9 +739,9 @@ def rebuild() -> None:
                         accession,
                         manifest_row,
                         file_row,
-                        file_index,
+                        assay_index,
                         sample,
-                        biological_replicate,
+                        source_replicates[source_name],
                         tech_reps[sample_id],
                         platform,
                         panel_name,
@@ -758,16 +775,19 @@ def rebuild() -> None:
                 all_panels_or_menus.append(menu)
                 tech_reps: Counter[str] = Counter()
                 for sample in samples:
-                    biological_replicate += 1
                     sample_id = clean(sample.get("sample_id"))
+                    source_name = source_identifier(accession, sample_id)
+                    if source_name not in source_replicates:
+                        source_replicates[source_name] = len(source_replicates) + 1
+                    assay_index += 1
                     tech_reps[sample_id] += 1
                     row = build_common_values(
                         accession,
                         manifest_row,
                         file_row,
-                        file_index,
+                        assay_index,
                         sample,
-                        biological_replicate,
+                        source_replicates[source_name],
                         tech_reps[sample_id],
                         platform,
                         menu,

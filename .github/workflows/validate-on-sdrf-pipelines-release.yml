@@ -43,7 +43,9 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          fetch-depth: 0
+          # Only the working tree is read (git ls-files); no history or push needed.
+          fetch-depth: 1
+          persist-credentials: false
 
       - uses: actions/setup-python@v5
         with:
@@ -52,17 +54,26 @@ jobs:
       - name: Resolve target sdrf-pipelines version
         id: ver
         shell: bash
+        env:
+          # Read the dispatch input via env, never interpolate it into the script
+          # body, so a crafted "version" cannot inject shell commands.
+          INPUT_VERSION: ${{ github.event.inputs.version }}
         run: |
           set -euo pipefail
-          input_version="${{ github.event.inputs.version }}"
-          if [ -n "$input_version" ]; then
-            version="$input_version"
+          if [ -n "$INPUT_VERSION" ]; then
+            version="$INPUT_VERSION"
           else
             version="$(curl -sSL --retry 3 https://pypi.org/pypi/sdrf-pipelines/json \
               | python -c 'import sys, json; print(json.load(sys.stdin)["info"]["version"])')"
           fi
           if [ -z "$version" ]; then
             echo "Could not resolve a sdrf-pipelines version." >&2
+            exit 1
+          fi
+          # Only accept PEP 440-style versions before this value flows into
+          # pip install, gh search, and issue text.
+          if [[ ! "$version" =~ ^[0-9]+(\.[0-9]+)*((a|b|rc)[0-9]+)?(\.post[0-9]+)?(\.dev[0-9]+)?$ ]]; then
+            echo "Refusing non-PEP 440 sdrf-pipelines version: '$version'" >&2
             exit 1
           fi
           echo "Target sdrf-pipelines version: $version"
@@ -110,7 +121,9 @@ jobs:
           fail_count=0
           for f in "${files[@]}"; do
             # Same invocation as validate-sdrf.yml / CONTRIBUTING.md, so results match PR CI.
-            out="$(parse_sdrf validate-sdrf --sdrf_file "$f" --use_ols_cache_only 2>&1)"
+            # Cap each file at 300s (matches scripts/validate_all_datasets.py) so one
+            # hanging file can't stall the run; timeout exits 124 -> counted as a failure.
+            out="$(timeout 300 parse_sdrf validate-sdrf --sdrf_file "$f" --use_ols_cache_only 2>&1)"
             rc=$?
             if [ "$rc" -ne 0 ]; then
               fail_count=$((fail_count + 1))

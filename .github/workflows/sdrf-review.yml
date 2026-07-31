@@ -1,0 +1,37 @@
+name: SDRF review gate
+
+on:
+  pull_request:
+    paths:
+      - 'datasets/**/*.sdrf.tsv'
+      - 'datasets/**/*.sdrf'
+
+jobs:
+  review:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install sdrf-pipelines
+        run: pip install sdrf-pipelines
+
+      - name: Collect changed SDRF files
+        id: changed
+        run: |
+          base="${{ github.event.pull_request.base.sha }}"
+          head="${{ github.event.pull_request.head.sha }}"
+          git diff --name-only --diff-filter=AM "$base" "$head" \
+            | grep -E 'datasets/.*\.sdrf(\.tsv)?$' > changed.txt || true
+          echo "count=$(wc -l < changed.txt)" >> "$GITHUB_OUTPUT"
+          echo "Changed SDRF files:"; cat changed.txt
+
+      - name: Run SDRF review gate
+        if: steps.changed.outputs.count != '0'
+        run: |
+          xargs -a changed.txt python3 .github/scripts/sdrf_review.py

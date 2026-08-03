@@ -1,0 +1,29 @@
+id	label	reason	evidence	organism	sample_type	instrument	acquisition	species_common
+PXD022885	include	Primary samples are Desmodus rotundus serum from wild vampire bats	PRIDE organisms/title/protocol; PMID:33840197	Desmodus rotundus	blood serum	Orbitrap Fusion Lumos	DIA	vampire bat
+PXD031075	include	Primary samples are Desmodus rotundus serum; CoV shedding comparison	PRIDE organisms/title/protocol; doi:10.3389/fviro.2022.862961	Desmodus rotundus	blood serum	Orbitrap Fusion Lumos	DIA	vampire bat
+PXD072134	include	Primary samples are Rousettus aegyptiacus serum from healthy captive bats	PRIDE organisms/title; PMID:41942604	Rousettus aegyptiacus	blood serum	Orbitrap Fusion Lumos	DIA	Egyptian fruit bat
+PXD058003	include	Includes Rousettus aegyptiacus serum (plus mouse serum controls)	PRIDE organisms/files; bat serum RAW/d files present	Rousettus aegyptiacus; Mus musculus	blood serum	timsTOF Pro 2	DIA	Egyptian fruit bat
+PXD053906	include	Pteropus alecto PaKi fibroblast cells; dsRNA IP proteomics	PRIDE organisms/sampleAttributes	Pteropus alecto	fibroblast cell culture	Q Exactive HF	DDA	black flying fox
+PXD046952	include	Pteropus alecto MHC-I peptide ligand (RPLD-MS)	PRIDE organisms/title	Pteropus alecto	immunopeptidomics (MHC)	LTQ	DDA	black flying fox
+PXD017495	include	Pteropus alecto lung tissue (plus ferret) after Hendra virus infection	PRIDE organisms; PMID:32226041	Pteropus alecto; Mustela putorius furo	lung	Q Exactive	DDA	black flying fox
+PXD001165	include	Pteropus alecto kidney cells (PaKiT03) plus human 293 cells; Hendra SILAC	PRIDE organisms/title	Pteropus alecto; Homo sapiens	kidney epithelial cell culture	LTQ Orbitrap Velos	DDA	black flying fox
+PXD065873	include	Rhinolophus ferrumequinum (RFe) bat cells plus human HEK293T AP-MS	PRIDE title/protocol; bat cell transduction described	Rhinolophus ferrumequinum; Homo sapiens	cell culture AP-MS	Q Exactive Plus; Orbitrap Exploris 480	DDA	greater horseshoe bat
+PXD005158	include	Rhinolophus ferrumequinum brain proteome (torpid vs active); PRIDE organisms list is search DB noise	PRIDE title/protocol; PMID:28473298	Rhinolophus ferrumequinum	brain	LTQ Orbitrap	DDA (gel-based)	greater horseshoe bat
+PXD047017	include	Myotis lucifugus MHC-I peptide ligand (RPLD-MS)	PRIDE organisms/title	Myotis lucifugus	immunopeptidomics (MHC)	LTQ	DDA	little brown bat
+PXD018142	include	Myotis lucifugus plasma; white-nose syndrome comparison	PRIDE organisms; PMID:32279365	Myotis lucifugus	blood plasma	LTQ Orbitrap	DDA (2D-DIGE)	little brown bat
+PXD016109	include	Myotis ricketti liver (torpid vs active hibernation)	PRIDE organisms; PMID:33177645	Myotis ricketti	liver	LTQ Orbitrap	DDA	Rickett's big-footed bat
+PXD058807	include	Eptesicus fuscus Efk3B cells plus human Calu-3; SARS-CoV-2	PRIDE organisms/files	Eptesicus fuscus; Homo sapiens	epithelial cell culture	maXis	DDA	big brown bat
+PXD036016	include	Artibeus jamaicensis intestinal organoids; SARS-CoV-2 DIA	PRIDE organisms; PMID:37898615	Artibeus jamaicensis	gastrointestinal organoid	Orbitrap Exploris 480	DIA	Jamaican fruit bat
+PXD074776	include	Carollia perspicillata embryonic forelimb RIME (MEIS2)	PRIDE organisms/protocol	Carollia perspicillata; Mus musculus	embryonic forelimb	timsTOF Ultra 2	DDA	Seba's short-tailed bat
+PXD051845	include	Hipposideros armiger heart cTnI isoforms (plus shrew)	PRIDE organisms/files (Bat-*.raw)	Hipposideros armiger; Suncus murinus	heart	Q Exactive	DDA	great roundleaf bat
+PXD000170	exclude	Multi-species tick blood-meal spectral library; bats are reference bloods among many zoo species, not a bat proteome study	PRIDE title/organisms	many vertebrates incl. Rousettus/Pteropus	blood meal references	LCQ Classic	DDA	n/a
+PXD048600	exclude	Shrew/mole cardiac troponin study; no bat samples	PRIDE organisms	Galemys pyrenaicus; Blarina brevicauda	heart	unclear	unclear	n/a
+PXD044234	exclude	Ocean metaproteomics intercomparison; keyword false positive for bats	PRIDE title/organisms	Bacteria	ocean metaproteomics	unclear	unclear	n/a
+PXD043218	exclude	Ocean metaproteomics intercomparison; keyword false positive	PRIDE title/organisms	Environmental samples	ocean metaproteomics	unclear	unclear	n/a
+PXD027162	exclude	Dictyostelium protein interactions; keyword false positive	PRIDE title/organisms	Dictyostelium discoideum	unclear	unclear	unclear	n/a
+PXD022107	exclude	Human hepatovirus study; keyword false positive	PRIDE organisms	Homo sapiens	unclear	unclear	unclear	n/a
+PXD021785	exclude	Human chondrogenic progenitor cells; keyword false positive	PRIDE organisms	Homo sapiens	unclear	unclear	unclear	n/a
+PXD018067	exclude	Ocean robotic profiling; keyword false positive	PRIDE organisms	Environmental samples	ocean	unclear	unclear	n/a
+PXD014084	exclude	Mouse XAB2 RNA processing; keyword false positive	PRIDE organisms	Mus musculus	unclear	unclear	unclear	n/a
+PXD003346	exclude	Human TMT ratio accuracy; keyword false positive	PRIDE organisms	Homo sapiens	unclear	unclear	unclear	n/a
+PXD000180	exclude	Bartonella henselae; keyword false positive	PRIDE organisms	Bartonella henselae	unclear	unclear	unclear	n/a

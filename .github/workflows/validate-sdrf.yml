@@ -87,6 +87,6 @@ jobs:
             fi
             echo "::group::parse_sdrf validate-sdrf --sdrf_file $f"
             # Options aligned with current sdrf-pipelines main (see parse_sdrf validate-sdrf -h).
-            parse_sdrf validate-sdrf --sdrf_file "$f" --use_ols_cache_only
+            python3 .github/scripts/validate_changed_sdrf.py "$f" --use_ols_cache_only
             echo "::endgroup::"
           done

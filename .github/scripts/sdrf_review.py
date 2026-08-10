@@ -6,8 +6,14 @@ plus parse_sdrf validation itself, over the SDRF files given as arguments.
 Canonical logic lives in the sdrf-harness package (validator.py); this is a
 vendored, dependency-light copy so CI needs only sdrf-pipelines.
 
-Usage: python sdrf_review.py <file.sdrf.tsv> [more...]
+Usage: python sdrf_review.py [--baseline <dir>] <file.sdrf.tsv> [more...]
 Exit 0 if all clean (warnings allowed), 1 if any defect.
+
+With --baseline <dir>, structural defects (coordinate collisions, ragged rows) are
+reported only when the file INTRODUCES them: a file that already had N collisions on
+the base branch (a copy of which lives at <dir>/<path>) and still has <= N is not
+flagged, so a change that never touches the coordinate columns is not blocked by a
+pre-existing defect. parse_sdrf validity is always checked in full.
 """
 import subprocess
 import sys
@@ -45,6 +51,11 @@ def parse_sdrf_ok(path):
 
 
 def main(argv):
+    baseline = None
+    if "--baseline" in argv:
+        i = argv.index("--baseline")
+        baseline = argv[i + 1]
+        argv = argv[:i] + argv[i + 2:]
     files = [a for a in argv if a.endswith((".sdrf.tsv", ".sdrf"))]
     if not files:
         print("no SDRF files to review")
@@ -52,16 +63,29 @@ def main(argv):
     failures = []
     for f in files:
         ragged, collisions = structural_check(f)
+        # Baseline: subtract defects that already existed on the base branch so a change
+        # that does not touch the coordinate columns is not blocked by a pre-existing defect.
+        base_ragged = base_collisions = 0
+        if baseline:
+            bpath = Path(baseline) / f
+            if bpath.exists() and bpath.stat().st_size > 0:
+                base_ragged, base_collisions = structural_check(bpath)
+        new_collisions = max(0, collisions - base_collisions)
+        new_ragged = max(0, ragged - base_ragged)
         ok, last = parse_sdrf_ok(f)
         problems = []
-        if collisions:
-            problems.append(f"{collisions} coordinate collisions")
-        if ragged:
-            problems.append(f"{ragged} ragged rows")
+        if new_collisions:
+            pre = f" (base had {base_collisions})" if base_collisions else ""
+            problems.append(f"{new_collisions} new coordinate collisions{pre}")
+        if new_ragged:
+            problems.append(f"{new_ragged} new ragged rows")
         if not ok:
             problems.append(f"parse_sdrf: {last}")
         status = "OK" if not problems else "FAIL"
-        print(f"[{status}] {f}" + (" — " + "; ".join(problems) if problems else ""))
+        note = ""
+        if not problems and (collisions or ragged):
+            note = f" — pre-existing {collisions} collisions/{ragged} ragged (not introduced here)"
+        print(f"[{status}] {f}" + (" — " + "; ".join(problems) if problems else note))
         if problems:
             failures.append(f)
     print(f"\n{len(files) - len(failures)}/{len(files)} clean, {len(failures)} with defects")

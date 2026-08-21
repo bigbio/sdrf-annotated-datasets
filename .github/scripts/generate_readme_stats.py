@@ -319,75 +319,114 @@ def top_with_other(
     return head
 
 
-def style_axes(ax, title: str, ylabel: str) -> None:
-    ax.set_title(title, fontsize=12, pad=10)
-    ax.set_ylabel(ylabel, fontsize=10)
-    ax.spines["top"].set_visible(False)
-    ax.spines["right"].set_visible(False)
-    ax.tick_params(axis="x", labelrotation=35, labelsize=9)
-    for label in ax.get_xticklabels():
-        label.set_ha("right")
-    ax.grid(axis="y", linestyle=":", alpha=0.4)
+def _shorten_label(text: str, max_len: int = 36) -> str:
+    text = text.strip()
+    if len(text) <= max_len:
+        return text
+    return text[: max_len - 1].rstrip() + "…"
 
 
-def bar_plot(
-    path: Path, title: str, items: list[tuple[str, int]], color: str
-) -> None:
-    path.parent.mkdir(parents=True, exist_ok=True)
-    if not items:
-        fig, ax = plt.subplots(figsize=(8, 4.5))
-        ax.text(0.5, 0.5, "No data", ha="center", va="center")
-        ax.set_axis_off()
-        fig.tight_layout()
-        fig.savefig(path, dpi=140, bbox_inches="tight")
-        plt.close(fig)
-        return
-
-    labels = [k for k, _ in items]
-    values = [v for _, v in items]
-    fig, ax = plt.subplots(figsize=(9, 4.8))
-    bars = ax.bar(labels, values, color=color, edgecolor="none")
-    style_axes(ax, title, "Count")
-    ymax = max(values) if values else 1
-    for bar, value in zip(bars, values, strict=True):
-        ax.text(
-            bar.get_x() + bar.get_width() / 2,
-            bar.get_height() + ymax * 0.01,
-            f"{value:,}",
-            ha="center",
-            va="bottom",
-            fontsize=8,
-        )
+def _empty_plot(path: Path, title: str) -> None:
+    fig, ax = plt.subplots(figsize=(8, 3.5))
+    ax.text(0.5, 0.5, "No data", ha="center", va="center", fontsize=12)
+    ax.set_title(title, fontsize=13, pad=10, fontweight="bold")
+    ax.set_axis_off()
     fig.tight_layout()
-    fig.savefig(path, dpi=140, bbox_inches="tight")
+    fig.savefig(path, dpi=160, bbox_inches="tight", facecolor="white")
     plt.close(fig)
 
 
-def pie_plot(
+def _order_hbar_items(
+    items: list[tuple[str, int]],
+) -> list[tuple[str, int]]:
+    named = [(k, v) for k, v in items if k != "Other"]
+    other = [(k, v) for k, v in items if k == "Other"]
+    return sorted(named, key=lambda kv: kv[1], reverse=True) + other
+
+
+def _annotate_hbar_values(
+    ax,
+    bars,
+    values: list[int],
+    *,
+    total: int,
+    xmax: float,
+    show_percent: bool,
+) -> None:
+    for bar, value in zip(bars, values, strict=True):
+        pct = 100.0 * value / total
+        label = f"{value:,} ({pct:.1f}%)" if show_percent else f"{value:,}"
+        ax.text(
+            bar.get_width() + xmax * 0.02,
+            bar.get_y() + bar.get_height() / 2,
+            label,
+            va="center",
+            ha="left",
+            fontsize=9,
+            color="#24292f",
+        )
+
+
+def hbar_plot(
     path: Path,
     title: str,
     items: list[tuple[str, int]],
-    colors: list[str],
+    color: str,
+    *,
+    show_percent: bool = False,
+    colors: list[str] | None = None,
 ) -> None:
+    """Horizontal bars — readable long labels, no pie-slice collisions."""
     path.parent.mkdir(parents=True, exist_ok=True)
-    fig, ax = plt.subplots(figsize=(6.5, 5.2))
     if not items:
-        ax.text(0.5, 0.5, "No data", ha="center", va="center")
-        ax.set_axis_off()
-    else:
-        labels = [f"{k} ({v:,})" for k, v in items]
-        values = [v for _, v in items]
-        ax.pie(
-            values,
-            labels=labels,
-            colors=colors[: len(values)],
-            startangle=90,
-            wedgeprops={"linewidth": 1, "edgecolor": "white"},
-            textprops={"fontsize": 9},
-        )
-        ax.set_title(title, fontsize=12, pad=12)
+        _empty_plot(path, title)
+        return
+
+    ordered = _order_hbar_items(items)
+    labels = [_shorten_label(k) for k, _ in ordered]
+    values = [v for _, v in ordered]
+    total = sum(values) or 1
+    n = len(values)
+
+    height = max(3.8, 0.48 * n + 1.6)
+    fig, ax = plt.subplots(figsize=(10.0, height))
+    y = list(range(n))
+    bar_colors = (
+        [colors[i % len(colors)] for i in range(n)]
+        if colors
+        else [color] * n
+    )
+    bars = ax.barh(
+        y,
+        values,
+        color=bar_colors,
+        edgecolor="white",
+        linewidth=0.6,
+        height=0.72,
+    )
+    ax.set_yticks(y)
+    ax.set_yticklabels(labels, fontsize=10)
+    ax.invert_yaxis()
+    ax.set_xlabel("Count", fontsize=10)
+    ax.set_title(title, fontsize=13, pad=12, fontweight="bold")
+    ax.spines["top"].set_visible(False)
+    ax.spines["right"].set_visible(False)
+    ax.grid(axis="x", linestyle=":", alpha=0.45)
+    ax.set_axisbelow(True)
+
+    xmax = max(values)
+    ax.set_xlim(0, xmax * 1.28)
+    _annotate_hbar_values(
+        ax,
+        bars,
+        values,
+        total=total,
+        xmax=xmax,
+        show_percent=show_percent,
+    )
+
     fig.tight_layout()
-    fig.savefig(path, dpi=140, bbox_inches="tight")
+    fig.savefig(path, dpi=160, bbox_inches="tight", facecolor="white")
     plt.close(fig)
 
 
@@ -401,35 +440,39 @@ def render_plots(stats: dict) -> dict[str, str]:
         "acquisition": "plots/acquisition.png",
     }
 
-    bar_plot(
+    hbar_plot(
         STATS_DIR / paths["organisms"],
         "Organisms by accession count",
         top_with_other(stats["organisms"], 10),
         "#1f6feb",
     )
-    bar_plot(
+    hbar_plot(
         STATS_DIR / paths["samples_by_organism"],
         "Samples by organism",
         top_with_other(stats["samples_by_organism"], 10),
         "#098658",
     )
-    bar_plot(
+    hbar_plot(
         STATS_DIR / paths["diseases"],
         "Top annotated diseases (healthy/normal excluded)",
         top_with_other(stats["diseases"], 10),
         "#bf3989",
     )
-    pie_plot(
+    hbar_plot(
         STATS_DIR / paths["quant_methods"],
         "Assay rows by quantification label",
         stats["labels"],
-        ["#1f6feb", "#f78166", "#bf8700", "#8250df", "#6e7781"],
+        "#1f6feb",
+        show_percent=True,
+        colors=["#1f6feb", "#f78166", "#bf8700", "#8250df", "#6e7781"],
     )
-    pie_plot(
+    hbar_plot(
         STATS_DIR / paths["acquisition"],
         "Assay rows by acquisition method",
         stats["acquisitions"],
-        ["#0969da", "#1a7f37", "#9a6700", "#6e7781"],
+        "#0969da",
+        show_percent=True,
+        colors=["#0969da", "#1a7f37", "#9a6700", "#6e7781"],
     )
     return paths
 

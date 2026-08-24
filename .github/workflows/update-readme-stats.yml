@@ -1,0 +1,60 @@
+name: Update README resource stats
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "datasets/**"
+      - ".github/scripts/generate_readme_stats.py"
+      - ".github/workflows/update-readme-stats.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  refresh-stats:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install plotting dependency
+        run: pip install --upgrade matplotlib
+
+      - name: Generate README stats and plots
+        env:
+          MPLCONFIGDIR: /tmp/matplotlib
+        run: python .github/scripts/generate_readme_stats.py
+
+      - name: Open or update stats PR
+        uses: peter-evans/create-pull-request@22a9089034f40e5a961c8808d113e2c98fb63676 # v7.0.11
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          commit-message: "chore: refresh README resource stats"
+          branch: chore/readme-resource-stats
+          delete-branch: true
+          title: "chore: refresh README resource stats"
+          body: |
+            ## Summary
+            Auto-generated resource snapshot from curated `datasets/**/*.sdrf.tsv`.
+
+            Updates only:
+            - `README.md` (Resource at a glance section)
+            - `docs/stats/**` (summary JSON + PNG plots)
+
+            Sandbox annotations are excluded.
+          add-paths: |
+            README.md
+            docs/stats/**
+          labels: |
+            automated
+            documentation

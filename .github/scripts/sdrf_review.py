@@ -43,10 +43,30 @@ def structural_check(path):
     collisions = 0
     if None not in (bi, ti, fr):
         need = max(x for x in (bi, ti, fr, lb) if x is not None)
-        key = Counter(
-            (r[0], r[bi], r[ti], r[fr]) + ((r[lb],) if lb is not None else ())
-            for r in rows if len(r) > need)
-        collisions = sum(1 for v in key.values() if v > 1)
+        groups = {}
+        for r in rows:
+            if len(r) <= need:
+                continue
+            k = (r[0], r[bi], r[ti], r[fr]) + ((r[lb],) if lb is not None else ())
+            groups.setdefault(k, []).append(r)
+        dup = [v for v in groups.values() if len(v) > 1]
+        # A collision is only a defect if the file does not record the distinction
+        # anywhere. Multi-dimensional designs (a second fractionation scheme, an
+        # enrichment arm, a preparation batch) repeat the coordinate legitimately and
+        # carry the distinguishing value in another column, so a group that some
+        # descriptive column separates completely is annotated, not colliding.
+        # Identity columns are excluded: comment[data file] differing IS the collision,
+        # and assay name/source name are derived run labels, not sample description.
+        if dup:
+            ignore = {"source name", "assay name", "comment[data file]", "comment[file uri]"}
+            explainers = [i for i, name in enumerate(h)
+                          if name.strip().lower() not in ignore
+                          and (name.strip().lower().startswith(("characteristics[", "comment["))
+                               or name.strip().lower().startswith("factor value["))]
+            explained = any(
+                all(len({r[i] if i < len(r) else "" for r in v}) == len(v) for v in dup)
+                for i in explainers)
+            collisions = 0 if explained else len(dup)
     return ragged, collisions
 
 

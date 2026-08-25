@@ -36,9 +36,16 @@ def structural_check(path):
     bi, ti, fr = (col("characteristics[biological replicate]"),
                   col("comment[technical replicate]"),
                   col("comment[fraction identifier]"))
+    # comment[label] is part of the identity: in multiplexed data (TMT/SILAC) the same
+    # sample+replicate+fraction legitimately repeats once per label channel of one raw
+    # file. Excluding the label flags every correct SILAC/TMT annotation as a collision.
+    lb = col("comment[label]")
     collisions = 0
     if None not in (bi, ti, fr):
-        key = Counter((r[0], r[bi], r[ti], r[fr]) for r in rows if len(r) > max(bi, ti, fr))
+        need = max(x for x in (bi, ti, fr, lb) if x is not None)
+        key = Counter(
+            (r[0], r[bi], r[ti], r[fr]) + ((r[lb],) if lb is not None else ())
+            for r in rows if len(r) > need)
         collisions = sum(1 for v in key.values() if v > 1)
     return ragged, collisions
 

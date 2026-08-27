@@ -70,6 +70,13 @@ def structural_check(path):
     return ragged, collisions
 
 
+# Advisory findings: reported so they are visible, but they do not fail the gate.
+# - peak lists are sometimes all a public deposit contains, so the annotation is
+#   faithful to the data that exists and there is no vendor RAW to point at
+# - a factor value is recommended, not required: a single-condition descriptive
+#   study has no contrast to encode and a placeholder would be worse than none
+ADVISORY = {"peak_list_data_file", "no_factor_value"}
+
 SENTINELS = {"not available", "not applicable"}
 RESERVED = SENTINELS | {"pooled", "normal"}
 PEAK_LIST = (".mgf", ".mzml", ".mzxml")
@@ -189,15 +196,21 @@ def main(argv):
             problems.append(f"{new_collisions} new coordinate collisions{pre}")
         if new_ragged:
             problems.append(f"{new_ragged} new ragged rows")
+        advisories = []
         for k, v in sorted(new_cont.items()):
-            problems.append(f"{v} {k}")
+            (advisories if k in ADVISORY else problems).append(f"{v} {k}")
         if not ok:
             problems.append(f"parse_sdrf: {last}")
         status = "OK" if not problems else "FAIL"
         note = ""
-        if not problems and (collisions or ragged):
+        if advisories:
+            note = " — advisory: " + "; ".join(advisories)
+        elif not problems and (collisions or ragged):
             note = f" — pre-existing {collisions} collisions/{ragged} ragged (not introduced here)"
-        print(f"[{status}] {f}" + (" — " + "; ".join(problems) if problems else note))
+        detail = "; ".join(problems)
+        if problems and advisories:
+            detail += " (advisory: " + "; ".join(advisories) + ")"
+        print(f"[{status}] {f}" + (" — " + detail if problems else note))
         if problems:
             failures.append(f)
     print(f"\n{len(files) - len(failures)}/{len(files)} clean, {len(failures)} with defects")

@@ -149,14 +149,62 @@ def content_check(path):
     return {k: v for k, v in d.items() if v}
 
 
+def declared_templates(path):
+    """Template names the file declares in comment[sdrf template].
+
+    Accepts both spellings the spec allows, `NT=<name>;VV=<version>` and `<name> v<version>`.
+    Returns [] when the file declares none.
+    """
+    lines = Path(path).read_text(encoding="utf-8", errors="ignore").splitlines()
+    if not lines:
+        return []
+    header = [c.strip().lower() for c in lines[0].split("\t")]
+    idx = [i for i, c in enumerate(header) if c == "comment[sdrf template]"]
+    if not idx:
+        return []
+    names = []
+    for line in lines[1:]:
+        if not line.strip():
+            continue
+        cells = line.split("\t")
+        for i in idx:
+            if i >= len(cells):
+                continue
+            v = cells[i].strip()
+            if not v or v.lower() in SENTINELS:
+                continue
+            if "NT=" in v.upper():
+                for part in v.split(";"):
+                    if part.strip().upper().startswith("NT="):
+                        v = part.split("=", 1)[1].strip()
+                        break
+            else:
+                v = v.split(" v")[0].strip()
+            if v and v not in names:
+                names.append(v)
+    return names
+
+
 def parse_sdrf_ok(path):
-    cmd = ["parse_sdrf", "validate-sdrf", "--sdrf_file", str(path),
-           "-t", "ms-proteomics", "--use_ols_cache_only"]
-    out = subprocess.run(cmd, capture_output=True, text=True)
-    tail = (out.stdout + out.stderr).strip().splitlines()
-    last = tail[-1] if tail else ""
-    ok = ("Well done" in last) or ("only warnings" in last)
-    return ok, last[:200]
+    """Validate against the templates the file declares, not an assumed one.
+
+    Hard-coding ms-proteomics fails any non-MS dataset for columns its template never
+    defines: an affinity-proteomics file has no comment[instrument] or
+    comment[cleavage agent details], and was reported as missing required columns.
+    `--template` takes a single value, so each declared template is checked in its own
+    run and all must pass. Files that declare nothing keep the previous behaviour.
+    """
+    templates = declared_templates(path) or ["ms-proteomics"]
+    last = ""
+    for tmpl in templates:
+        cmd = ["parse_sdrf", "validate-sdrf", "--sdrf_file", str(path),
+               "-t", tmpl, "--use_ols_cache_only"]
+        out = subprocess.run(cmd, capture_output=True, text=True)
+        tail = (out.stdout + out.stderr).strip().splitlines()
+        last = tail[-1] if tail else ""
+        if not (("Well done" in last) or ("only warnings" in last)):
+            return False, f"[{tmpl}] {last[:180]}"
+    return True, last[:200]
 
 
 def main(argv):

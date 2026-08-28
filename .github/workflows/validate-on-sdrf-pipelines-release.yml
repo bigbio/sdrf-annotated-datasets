@@ -1,0 +1,207 @@
+# Re-validate the whole corpus whenever a NEW sdrf-pipelines release is published
+# on PyPI, and open a tracking issue if any datasets/**/*.sdrf.tsv file that used
+# to pass now fails.
+#
+# GitHub cannot natively subscribe to another project's PyPI/GitHub releases, so
+# this polls PyPI on a daily schedule and only does work when the latest released
+# version differs from the last one it checked (tracked via actions/cache).
+#
+# Complements validate-sdrf.yml, which validates only *changed* files on push/PR
+# against sdrf-pipelines installed from the GitHub `main` branch. This workflow
+# instead validates *every* non-sandbox file against a *pinned PyPI release*, so a
+# release that tightens validation surfaces as a regression issue rather than
+# silently breaking the next contributor's PR.
+
+name: Validate on sdrf-pipelines release
+
+on:
+  schedule:
+    # Daily at 06:30 UTC; polls PyPI for a newer sdrf-pipelines release.
+    - cron: "30 6 * * *"
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "sdrf-pipelines version to validate against (blank = latest on PyPI)."
+        required: false
+        default: ""
+      force:
+        description: "Re-run even if this version was already checked."
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+  issues: write
+
+concurrency:
+  group: sdrf-pipelines-release-validation
+  cancel-in-progress: false
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          # Only the working tree is read (git ls-files); no history or push needed.
+          fetch-depth: 1
+          persist-credentials: false
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Resolve target sdrf-pipelines version
+        id: ver
+        shell: bash
+        env:
+          # Read the dispatch input via env, never interpolate it into the script
+          # body, so a crafted "version" cannot inject shell commands.
+          INPUT_VERSION: ${{ github.event.inputs.version }}
+        run: |
+          set -euo pipefail
+          if [ -n "$INPUT_VERSION" ]; then
+            version="$INPUT_VERSION"
+          else
+            version="$(curl -sSL --retry 3 https://pypi.org/pypi/sdrf-pipelines/json \
+              | python -c 'import sys, json; print(json.load(sys.stdin)["info"]["version"])')"
+          fi
+          if [ -z "$version" ]; then
+            echo "Could not resolve a sdrf-pipelines version." >&2
+            exit 1
+          fi
+          # Only accept PEP 440-style versions before this value flows into
+          # pip install, gh search, and issue text.
+          if [[ ! "$version" =~ ^[0-9]+(\.[0-9]+)*((a|b|rc)[0-9]+)?(\.post[0-9]+)?(\.dev[0-9]+)?$ ]]; then
+            echo "Refusing non-PEP 440 sdrf-pipelines version: '$version'" >&2
+            exit 1
+          fi
+          echo "Target sdrf-pipelines version: $version"
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+
+      - name: Restore "already checked" marker for this version
+        id: cache
+        uses: actions/cache@v4
+        with:
+          path: .ci-cache/sdrf-pipelines-version
+          key: sdrf-pipelines-checked-${{ steps.ver.outputs.version }}
+
+      - name: Decide whether to run
+        id: gate
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [ "${{ steps.cache.outputs.cache-hit }}" = "true" ] && [ "${{ github.event.inputs.force }}" != "true" ]; then
+            echo "sdrf-pipelines ${{ steps.ver.outputs.version }} was already checked; nothing to do."
+            echo "run=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "run=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Install sdrf-pipelines (pinned release from PyPI)
+        if: steps.gate.outputs.run == 'true'
+        run: |
+          set -euo pipefail
+          python -m pip install --upgrade pip
+          python -m pip install "sdrf-pipelines==${{ steps.ver.outputs.version }}"
+          python -m pip show sdrf-pipelines | grep -E '^(Name|Version):'
+
+      - name: Validate every non-sandbox SDRF file
+        if: steps.gate.outputs.run == 'true'
+        id: validate
+        shell: bash
+        run: |
+          # Do NOT `set -e`: we must keep going past a failing file to collect all of them.
+          set -uo pipefail
+          mapfile -t files < <(git ls-files | grep -E '^datasets/.+\.sdrf\.tsv$' | sort -u)
+          total="${#files[@]}"
+          echo "Validating ${total} datasets/**/*.sdrf.tsv against sdrf-pipelines ${{ steps.ver.outputs.version }}"
+          mkdir -p .ci-artifacts
+          : > .ci-artifacts/failures.md
+          fail_count=0
+          for f in "${files[@]}"; do
+            # Same invocation as validate-sdrf.yml / CONTRIBUTING.md, so results match PR CI.
+            # Cap each file at 300s (matches scripts/validate_all_datasets.py) so one
+            # hanging file can't stall the run; timeout exits 124 -> counted as a failure.
+            out="$(timeout 300 parse_sdrf validate-sdrf --sdrf_file "$f" --use_ols_cache_only 2>&1)"
+            rc=$?
+            if [ "$rc" -ne 0 ]; then
+              fail_count=$((fail_count + 1))
+              echo "FAIL (exit $rc): $f"
+              # Prefer the explicit ERROR/traceback lines; fall back to the tail of the output.
+              errs="$(printf '%s\n' "$out" | grep -E '^ERROR|Traceback|Error|does not match' | head -25 || true)"
+              if [ -z "$errs" ]; then
+                errs="$(printf '%s\n' "$out" | tail -25)"
+              fi
+              {
+                echo "### \`$f\`"
+                echo ""
+                echo '```'
+                printf '%s\n' "$errs"
+                echo '```'
+                echo ""
+              } >> .ci-artifacts/failures.md
+            fi
+          done
+          echo "Failing files: ${fail_count} / ${total}"
+          {
+            echo "fail_count=${fail_count}"
+            echo "total=${total}"
+          } >> "$GITHUB_OUTPUT"
+
+      - name: Record checked version (persisted via cache)
+        if: steps.gate.outputs.run == 'true'
+        run: |
+          mkdir -p .ci-cache
+          echo "${{ steps.ver.outputs.version }}" > .ci-cache/sdrf-pipelines-version
+
+      - name: Report result
+        if: steps.gate.outputs.run == 'true' && steps.validate.outputs.fail_count == '0'
+        run: echo "✅ All ${{ steps.validate.outputs.total }} non-sandbox files validate cleanly against sdrf-pipelines ${{ steps.ver.outputs.version }}."
+
+      - name: Open regression issue
+        if: steps.gate.outputs.run == 'true' && steps.validate.outputs.fail_count != '0'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          version="${{ steps.ver.outputs.version }}"
+          fail_count="${{ steps.validate.outputs.fail_count }}"
+          total="${{ steps.validate.outputs.total }}"
+          title="sdrf-pipelines ${version}: ${fail_count} dataset file(s) now fail validation"
+
+          # Idempotent: don't file a duplicate if an issue for this version already exists.
+          existing="$(gh issue list --repo "${{ github.repository }}" --state all \
+            --search "in:title sdrf-pipelines ${version}" --json number --jq 'length')"
+          if [ "$existing" != "0" ]; then
+            echo "An issue mentioning sdrf-pipelines ${version} already exists; skipping."
+            exit 0
+          fi
+
+          # Best-effort dedicated label (ignore if it already exists / can't be created).
+          gh label create sdrf-validation --repo "${{ github.repository }}" \
+            --color "d73a4a" --description "SDRF validation regressions" 2>/dev/null || true
+
+          {
+            echo "A new release of [\`sdrf-pipelines\`](https://pypi.org/project/sdrf-pipelines/${version}/) (**v${version}**) was published, and **${fail_count} of ${total}** \`datasets/**/*.sdrf.tsv\` file(s) now fail validation."
+            echo ""
+            echo "These files passed under the previously released version, so v${version} likely tightened a rule. Please update the affected files (or open an upstream issue if the new check is wrong)."
+            echo ""
+            echo "**Validation command** (per file, same as \`validate-sdrf.yml\` / \`CONTRIBUTING.md\`):"
+            echo ""
+            echo '```'
+            echo "parse_sdrf validate-sdrf --sdrf_file <file> --use_ols_cache_only"
+            echo '```'
+            echo ""
+            echo "## Failing files"
+            echo ""
+            cat .ci-artifacts/failures.md
+            echo "_Filed automatically by \`.github/workflows/validate-on-sdrf-pipelines-release.yml\` "
+            echo "([workflow run](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}))._"
+          } > .ci-artifacts/issue-body.md
+
+          gh issue create --repo "${{ github.repository }}" \
+            --title "$title" \
+            --label "sdrf-validation" \
+            --body-file .ci-artifacts/issue-body.md

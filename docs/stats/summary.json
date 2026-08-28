@@ -1,0 +1,8320 @@
+{
+  "generated_at": "2026-08-28T07:16:10Z",
+  "totals": {
+    "accessions": 6168,
+    "sdrf_files": 6311,
+    "samples": 149206,
+    "runs": 202276,
+    "assay_rows": 264948
+  },
+  "organisms": [
+    {
+      "name": "Homo sapiens",
+      "count": 2784
+    },
+    {
+      "name": "Mus musculus",
+      "count": 818
+    },
+    {
+      "name": "Escherichia coli",
+      "count": 538
+    },
+    {
+      "name": "Saccharomyces cerevisiae",
+      "count": 341
+    },
+    {
+      "name": "Arabidopsis thaliana",
+      "count": 248
+    },
+    {
+      "name": "Rattus norvegicus",
+      "count": 87
+    },
+    {
+      "name": "Staphylococcus aureus",
+      "count": 74
+    },
+    {
+      "name": "Human gut metagenome",
+      "count": 68
+    },
+    {
+      "name": "Drosophila melanogaster",
+      "count": 44
+    },
+    {
+      "name": "Trypanosoma brucei",
+      "count": 36
+    },
+    {
+      "name": "Bos taurus",
+      "count": 36
+    },
+    {
+      "name": "Severe acute respiratory syndrome coronavirus 2",
+      "count": 28
+    },
+    {
+      "name": "Sus scrofa domesticus",
+      "count": 27
+    },
+    {
+      "name": "Plasmodium falciparum",
+      "count": 25
+    },
+    {
+      "name": "Oryza sativa",
+      "count": 25
+    },
+    {
+      "name": "Caenorhabditis elegans",
+      "count": 24
+    },
+    {
+      "name": "Danio rerio",
+      "count": 18
+    },
+    {
+      "name": "Pseudomonas aeruginosa pao1",
+      "count": 17
+    },
+    {
+      "name": "Gallus gallus",
+      "count": 16
+    },
+    {
+      "name": "Bacteria",
+      "count": 14
+    },
+    {
+      "name": "Zea mays",
+      "count": 13
+    },
+    {
+      "name": "Chlamydomonas reinhardtii",
+      "count": 13
+    },
+    {
+      "name": "Xenopus laevis",
+      "count": 12
+    },
+    {
+      "name": "Candida albicans",
+      "count": 12
+    },
+    {
+      "name": "Nicotiana benthamiana",
+      "count": 12
+    },
+    {
+      "name": "Canis lupus familiaris",
+      "count": 12
+    },
+    {
+      "name": "Mycobacterium tuberculosis",
+      "count": 11
+    },
+    {
+      "name": "Toxoplasma gondii rh",
+      "count": 11
+    },
+    {
+      "name": "Salmonella enterica",
+      "count": 11
+    },
+    {
+      "name": "Haloferax volcanii ds2",
+      "count": 11
+    },
+    {
+      "name": "Oryctolagus cuniculus",
+      "count": 11
+    },
+    {
+      "name": "Equus caballus",
+      "count": 10
+    },
+    {
+      "name": "Triticum aestivum",
+      "count": 10
+    },
+    {
+      "name": "Sus scrofa",
+      "count": 10
+    },
+    {
+      "name": "Pseudomonas putida kt2440",
+      "count": 10
+    },
+    {
+      "name": "Klebsiella pneumoniae",
+      "count": 9
+    },
+    {
+      "name": "Bacillus subtilis",
+      "count": 9
+    },
+    {
+      "name": "Glycine max",
+      "count": 9
+    },
+    {
+      "name": "Solanum lycopersicum",
+      "count": 9
+    },
+    {
+      "name": "Pseudomonas aeruginosa",
+      "count": 9
+    },
+    {
+      "name": "Macaca mulatta",
+      "count": 8
+    },
+    {
+      "name": "Cricetulus griseus",
+      "count": 8
+    },
+    {
+      "name": "Gut metagenome",
+      "count": 8
+    },
+    {
+      "name": "Mycobacterium tuberculosis h37rv",
+      "count": 7
+    },
+    {
+      "name": "Marine metagenome",
+      "count": 7
+    },
+    {
+      "name": "Apis mellifera",
+      "count": 7
+    },
+    {
+      "name": "Nicotiana tabacum",
+      "count": 7
+    },
+    {
+      "name": "Campylobacter jejuni",
+      "count": 7
+    },
+    {
+      "name": "Ovis aries",
+      "count": 7
+    },
+    {
+      "name": "Toxoplasma gondii",
+      "count": 7
+    },
+    {
+      "name": "Pyrus x bretschneideri",
+      "count": 6
+    },
+    {
+      "name": "Francisella tularensis",
+      "count": 6
+    },
+    {
+      "name": "Pteropus alecto",
+      "count": 6
+    },
+    {
+      "name": "Acinetobacter baumannii",
+      "count": 6
+    },
+    {
+      "name": "Capra hircus",
+      "count": 6
+    },
+    {
+      "name": "Soil metagenome",
+      "count": 5
+    },
+    {
+      "name": "Bacteroides thetaiotaomicron",
+      "count": 5
+    },
+    {
+      "name": "Toxoplasma gondii gt1",
+      "count": 5
+    },
+    {
+      "name": "Toxoplasma gondii me49",
+      "count": 5
+    },
+    {
+      "name": "Diplonema papillatum",
+      "count": 5
+    },
+    {
+      "name": "Legionella pneumophila",
+      "count": 4
+    },
+    {
+      "name": "Bordetella pertussis",
+      "count": 4
+    },
+    {
+      "name": "Trypanosoma cruzi",
+      "count": 4
+    },
+    {
+      "name": "Synechocystis sp. pcc 6803",
+      "count": 4
+    },
+    {
+      "name": "Oncorhynchus mykiss",
+      "count": 4
+    },
+    {
+      "name": "Vitis vinifera",
+      "count": 4
+    },
+    {
+      "name": "Chlorocebus sabaeus",
+      "count": 4
+    },
+    {
+      "name": "Plasmodium berghei anka",
+      "count": 4
+    },
+    {
+      "name": "metagenome",
+      "count": 4
+    },
+    {
+      "name": "Enterococcus faecalis",
+      "count": 4
+    },
+    {
+      "name": "Mesocricetus auratus",
+      "count": 4
+    },
+    {
+      "name": "Unidentified",
+      "count": 3
+    },
+    {
+      "name": "Schizosaccharomyces pombe",
+      "count": 3
+    },
+    {
+      "name": "Pseudomonas fluorescens",
+      "count": 3
+    },
+    {
+      "name": "Oryzias latipes",
+      "count": 3
+    },
+    {
+      "name": "Salmo salar",
+      "count": 3
+    },
+    {
+      "name": "Anser cygnoides",
+      "count": 3
+    },
+    {
+      "name": "Aspergillus fumigatus af293",
+      "count": 3
+    },
+    {
+      "name": "Dictyostelium discoideum",
+      "count": 3
+    },
+    {
+      "name": "Felis catus",
+      "count": 3
+    },
+    {
+      "name": "Helicoverpa armigera",
+      "count": 3
+    },
+    {
+      "name": "Anas platyrhynchos",
+      "count": 3
+    },
+    {
+      "name": "Nematostella vectensis",
+      "count": 3
+    },
+    {
+      "name": "Deinococcus radiodurans",
+      "count": 3
+    },
+    {
+      "name": "Xenopus tropicalis",
+      "count": 3
+    },
+    {
+      "name": "Giardia lamblia atcc 50803",
+      "count": 3
+    },
+    {
+      "name": "Sulfolobus acidocaldarius",
+      "count": 3
+    },
+    {
+      "name": "Neurospora crassa",
+      "count": 3
+    },
+    {
+      "name": "Akkermansia muciniphila",
+      "count": 3
+    },
+    {
+      "name": "Fusarium oxysporum",
+      "count": 3
+    },
+    {
+      "name": "Enterococcus faecium",
+      "count": 3
+    },
+    {
+      "name": "Staphylococcus epidermidis",
+      "count": 3
+    },
+    {
+      "name": "Picea abies",
+      "count": 3
+    },
+    {
+      "name": "Labeo rohita",
+      "count": 3
+    },
+    {
+      "name": "Trichomonas vaginalis",
+      "count": 3
+    },
+    {
+      "name": "Marchantia polymorpha",
+      "count": 3
+    },
+    {
+      "name": "Synechocystis",
+      "count": 3
+    },
+    {
+      "name": "Streptococcus pneumoniae",
+      "count": 2
+    },
+    {
+      "name": "Boehmeria nivea",
+      "count": 2
+    },
+    {
+      "name": "Ixodes scapularis",
+      "count": 2
+    },
+    {
+      "name": "Brassica napus",
+      "count": 2
+    },
+    {
+      "name": "Camellia sinensis",
+      "count": 2
+    },
+    {
+      "name": "Rhinolophus ferrumequinum",
+      "count": 2
+    },
+    {
+      "name": "Scophthalmus maximus",
+      "count": 2
+    },
+    {
+      "name": "Tursiops truncatus",
+      "count": 2
+    },
+    {
+      "name": "Staphylococcus carnosus",
+      "count": 2
+    },
+    {
+      "name": "Porphyromonas gingivalis atcc 33277",
+      "count": 2
+    },
+    {
+      "name": "Xanthomonas campestris",
+      "count": 2
+    },
+    {
+      "name": "Gossypium hirsutum",
+      "count": 2
+    },
+    {
+      "name": "Cicer arietinum",
+      "count": 2
+    },
+    {
+      "name": "Bubalus bubalis",
+      "count": 2
+    },
+    {
+      "name": "Protopterus dolloi",
+      "count": 2
+    },
+    {
+      "name": "Mycolicibacterium smegmatis",
+      "count": 2
+    },
+    {
+      "name": "Staphylococcus haemolyticus",
+      "count": 2
+    },
+    {
+      "name": "Emiliania huxleyi",
+      "count": 2
+    },
+    {
+      "name": "Shigella flexneri",
+      "count": 2
+    },
+    {
+      "name": "Galleria mellonella",
+      "count": 2
+    },
+    {
+      "name": "Schizosaccharomyces pombe 927",
+      "count": 2
+    },
+    {
+      "name": "Phocaeicola vulgatus",
+      "count": 2
+    },
+    {
+      "name": "Phaeodactylum tricornutum",
+      "count": 2
+    },
+    {
+      "name": "Methanothermobacter thermautotrophicus",
+      "count": 2
+    },
+    {
+      "name": "Saccharolobus solfataricus",
+      "count": 2
+    },
+    {
+      "name": "Pyrococcus furiosus",
+      "count": 2
+    },
+    {
+      "name": "Spodoptera frugiperda",
+      "count": 2
+    },
+    {
+      "name": "Naja ashei",
+      "count": 2
+    },
+    {
+      "name": "Leishmania tarentolae",
+      "count": 2
+    },
+    {
+      "name": "Acyrthosiphon pisum",
+      "count": 2
+    },
+    {
+      "name": "Anaerostipes caccae",
+      "count": 2
+    },
+    {
+      "name": "Bifidobacterium longum",
+      "count": 2
+    },
+    {
+      "name": "Lactococcus lactis",
+      "count": 2
+    },
+    {
+      "name": "Human feces metagenome",
+      "count": 2
+    },
+    {
+      "name": "Myotis lucifugus",
+      "count": 2
+    },
+    {
+      "name": "Paracoccidioides brasiliensis",
+      "count": 2
+    },
+    {
+      "name": "Staphylococcus epidermidis rp62a",
+      "count": 2
+    },
+    {
+      "name": "Citrus sinensis",
+      "count": 2
+    },
+    {
+      "name": "Brucella abortus",
+      "count": 2
+    },
+    {
+      "name": "Rattus rattus",
+      "count": 2
+    },
+    {
+      "name": "Haloferax volcanii",
+      "count": 2
+    },
+    {
+      "name": "Bacillus thuringiensis",
+      "count": 2
+    },
+    {
+      "name": "Klebsiella pneumoniae subsp. pneumoniae",
+      "count": 2
+    },
+    {
+      "name": "Fasciola hepatica",
+      "count": 2
+    },
+    {
+      "name": "Desmodus rotundus",
+      "count": 2
+    },
+    {
+      "name": "Marine plankton environmental sample",
+      "count": 2
+    },
+    {
+      "name": "Escherichia coli bl21(de3)",
+      "count": 2
+    },
+    {
+      "name": "Helicobacter pylori j99",
+      "count": 2
+    },
+    {
+      "name": "Aedes aegypti",
+      "count": 2
+    },
+    {
+      "name": "Bacillus subtilis subsp. subtilis str. 168",
+      "count": 2
+    },
+    {
+      "name": "Cyprinodon variegatus",
+      "count": 2
+    },
+    {
+      "name": "Pseudomonas aeruginosa pa14",
+      "count": 2
+    },
+    {
+      "name": "Tribolium castaneum",
+      "count": 2
+    },
+    {
+      "name": "Eubacterium maltosivorans",
+      "count": 2
+    },
+    {
+      "name": "Nostoc flagelliforme",
+      "count": 2
+    },
+    {
+      "name": "Eulimnogammarus verrucosus",
+      "count": 2
+    },
+    {
+      "name": "Acanthamoeba castellanii",
+      "count": 2
+    },
+    {
+      "name": "Abortiporus biennis",
+      "count": 2
+    },
+    {
+      "name": "Tenebrio molitor",
+      "count": 2
+    },
+    {
+      "name": "Porphyromonas gingivalis",
+      "count": 2
+    },
+    {
+      "name": "Escherichia phage t4",
+      "count": 2
+    },
+    {
+      "name": "Sparus aurata",
+      "count": 2
+    },
+    {
+      "name": "Halobacterium salinarum",
+      "count": 2
+    },
+    {
+      "name": "Portulaca oleracea",
+      "count": 2
+    },
+    {
+      "name": "Wastewater metagenome",
+      "count": 2
+    },
+    {
+      "name": "Fungi",
+      "count": 2
+    },
+    {
+      "name": "Ganoderma lucidum",
+      "count": 2
+    },
+    {
+      "name": "Proteus mirabilis",
+      "count": 2
+    },
+    {
+      "name": "Enterobacter cloacae",
+      "count": 2
+    },
+    {
+      "name": "Komagataella phaffii",
+      "count": 2
+    },
+    {
+      "name": "Riemerella anatipestifer ra-ch-1",
+      "count": 2
+    },
+    {
+      "name": "Klebsiella oxytoca",
+      "count": 2
+    },
+    {
+      "name": "Rousettus aegyptiacus",
+      "count": 2
+    },
+    {
+      "name": "Alteromonas macleodii atcc 27126",
+      "count": 2
+    },
+    {
+      "name": "Phytophthora sojae",
+      "count": 2
+    },
+    {
+      "name": "Felis chaus",
+      "count": 2
+    },
+    {
+      "name": "Mouse gut metagenome",
+      "count": 1
+    },
+    {
+      "name": "Feces metagenome",
+      "count": 1
+    },
+    {
+      "name": "Escherichia coli o157:nm",
+      "count": 1
+    },
+    {
+      "name": "Bartonella henselae",
+      "count": 1
+    },
+    {
+      "name": "Escherichia coli nissle 1917",
+      "count": 1
+    },
+    {
+      "name": "Citrus maxima",
+      "count": 1
+    },
+    {
+      "name": "Podospora anserina",
+      "count": 1
+    },
+    {
+      "name": "Groundwater metagenome",
+      "count": 1
+    },
+    {
+      "name": "Aspergillus fumigatus cea10",
+      "count": 1
+    },
+    {
+      "name": "Burkholderia pseudomallei",
+      "count": 1
+    },
+    {
+      "name": "Dugesia japonica",
+      "count": 1
+    },
+    {
+      "name": "Mollivirus sibericum",
+      "count": 1
+    },
+    {
+      "name": "Alternaria tomato",
+      "count": 1
+    },
+    {
+      "name": "Solanum tuberosum",
+      "count": 1
+    },
+    {
+      "name": "Unclassified marseilleviridae",
+      "count": 1
+    },
+    {
+      "name": "Mycolicibacterium smegmatis mc2 155",
+      "count": 1
+    },
+    {
+      "name": "Paulownia",
+      "count": 1
+    },
+    {
+      "name": "Uncultured soil microorganism",
+      "count": 1
+    },
+    {
+      "name": "Bombyx mori",
+      "count": 1
+    },
+    {
+      "name": "Glossina morsitans",
+      "count": 1
+    },
+    {
+      "name": "Ruegeria pomeroyi",
+      "count": 1
+    },
+    {
+      "name": "Panopea generosa",
+      "count": 1
+    },
+    {
+      "name": "Tropilaelaps mercedesae",
+      "count": 1
+    },
+    {
+      "name": "Hadrurus spadix",
+      "count": 1
+    },
+    {
+      "name": "Varanus komodoensis",
+      "count": 1
+    },
+    {
+      "name": "Plasmodium yoelii",
+      "count": 1
+    },
+    {
+      "name": "Microcebus murinus",
+      "count": 1
+    },
+    {
+      "name": "Malus baccata",
+      "count": 1
+    },
+    {
+      "name": "Radix auricularia",
+      "count": 1
+    },
+    {
+      "name": "Erysipelothrix rhusiopathiae",
+      "count": 1
+    },
+    {
+      "name": "Loxosceles intermedia",
+      "count": 1
+    },
+    {
+      "name": "Streptococcus suis",
+      "count": 1
+    },
+    {
+      "name": "Cuminum cyminum",
+      "count": 1
+    },
+    {
+      "name": "Leishmania <subgenus>",
+      "count": 1
+    },
+    {
+      "name": "Myodes glareolus",
+      "count": 1
+    },
+    {
+      "name": "Methanobacterium",
+      "count": 1
+    },
+    {
+      "name": "Chara australis",
+      "count": 1
+    },
+    {
+      "name": "Sarcophilus harrisii",
+      "count": 1
+    },
+    {
+      "name": "Taiwanofungus camphoratus",
+      "count": 1
+    },
+    {
+      "name": "Centruroides hentzi",
+      "count": 1
+    },
+    {
+      "name": "Stenocereus stellatus",
+      "count": 1
+    },
+    {
+      "name": "Trichoderma cf. viride dis 217i",
+      "count": 1
+    },
+    {
+      "name": "Pandoravirus dulcis",
+      "count": 1
+    },
+    {
+      "name": "Anopheles albimanus",
+      "count": 1
+    },
+    {
+      "name": "Fusobacterium nucleatum",
+      "count": 1
+    },
+    {
+      "name": "Saccharomycopsis schoenii",
+      "count": 1
+    },
+    {
+      "name": "Rhizobium leguminosarum bv. viciae vc2",
+      "count": 1
+    },
+    {
+      "name": "Mycobacterium tuberculosis k",
+      "count": 1
+    },
+    {
+      "name": "Spinacia oleracea",
+      "count": 1
+    },
+    {
+      "name": "Zalophus californianus",
+      "count": 1
+    },
+    {
+      "name": "Vibrio vulnificus cmcp6",
+      "count": 1
+    },
+    {
+      "name": "Pyropia yezoensis",
+      "count": 1
+    },
+    {
+      "name": "Crotalus viridis",
+      "count": 1
+    },
+    {
+      "name": "Carausius morosus",
+      "count": 1
+    },
+    {
+      "name": "Scolopendra viridis",
+      "count": 1
+    },
+    {
+      "name": "Leishmania donovani",
+      "count": 1
+    },
+    {
+      "name": "Ficus carica",
+      "count": 1
+    },
+    {
+      "name": "Phytophthora infestans t30-4",
+      "count": 1
+    },
+    {
+      "name": "Aspergillus fumigatus var. fumigatus",
+      "count": 1
+    },
+    {
+      "name": "Diuraphis noxia",
+      "count": 1
+    },
+    {
+      "name": "Laurasiatheria",
+      "count": 1
+    },
+    {
+      "name": "Takifugu fasciatus",
+      "count": 1
+    },
+    {
+      "name": "Microbiota",
+      "count": 1
+    },
+    {
+      "name": "Burkholderia thailandensis",
+      "count": 1
+    },
+    {
+      "name": "Thalassiosira pseudonana ccmp1335",
+      "count": 1
+    },
+    {
+      "name": "Bacillus cereus atcc 10987",
+      "count": 1
+    },
+    {
+      "name": "Jatropha curcas",
+      "count": 1
+    },
+    {
+      "name": "Zymomonas mobilis",
+      "count": 1
+    },
+    {
+      "name": "Hemiscolopendra marginata",
+      "count": 1
+    },
+    {
+      "name": "Mycolicibacterium smegmatis mkd8",
+      "count": 1
+    },
+    {
+      "name": "Sulfobacillus thermosulfidooxidans",
+      "count": 1
+    },
+    {
+      "name": "Ctenopharyngodon idella",
+      "count": 1
+    },
+    {
+      "name": "Ensifer adhaerens",
+      "count": 1
+    },
+    {
+      "name": "Globicatella sanguinis",
+      "count": 1
+    },
+    {
+      "name": "Aerococcus urinae",
+      "count": 1
+    },
+    {
+      "name": "Olea europaea",
+      "count": 1
+    },
+    {
+      "name": "Sediment metagenome",
+      "count": 1
+    },
+    {
+      "name": "Cocos nucifera",
+      "count": 1
+    },
+    {
+      "name": "Olindias sambaquiensis",
+      "count": 1
+    },
+    {
+      "name": "Cucumis sativus",
+      "count": 1
+    },
+    {
+      "name": "Granulicatella adiacens atcc 49175",
+      "count": 1
+    },
+    {
+      "name": "Vairimorpha necatrix",
+      "count": 1
+    },
+    {
+      "name": "Rhizobium favelukesii",
+      "count": 1
+    },
+    {
+      "name": "Azospirillum brasilense fp2",
+      "count": 1
+    },
+    {
+      "name": "Vibrio alginolyticus",
+      "count": 1
+    },
+    {
+      "name": "Rhizosphere metagenome",
+      "count": 1
+    },
+    {
+      "name": "Palaemonetes sp. common grass shrimp associated circular virus",
+      "count": 1
+    },
+    {
+      "name": "Pseudomonas aeruginosa sjtd-1",
+      "count": 1
+    },
+    {
+      "name": "Diaphorina citri",
+      "count": 1
+    },
+    {
+      "name": "Stentor coeruleus",
+      "count": 1
+    },
+    {
+      "name": "Symbiodinium microadriaticum",
+      "count": 1
+    },
+    {
+      "name": "Bacteroides uniformis",
+      "count": 1
+    },
+    {
+      "name": "Porphyra umbilicalis",
+      "count": 1
+    },
+    {
+      "name": "Persephonella marina",
+      "count": 1
+    },
+    {
+      "name": "Ferroglobus placidus",
+      "count": 1
+    },
+    {
+      "name": "Archaeoglobus fulgidus",
+      "count": 1
+    },
+    {
+      "name": "Synechocystis nigrescens",
+      "count": 1
+    },
+    {
+      "name": "Lacticaseibacillus paracasei",
+      "count": 1
+    },
+    {
+      "name": "Aminomonas paucivorans",
+      "count": 1
+    },
+    {
+      "name": "Escherichia coli ed1a",
+      "count": 1
+    },
+    {
+      "name": "Collinsella aerofaciens",
+      "count": 1
+    },
+    {
+      "name": "Archaeoglobus profundus",
+      "count": 1
+    },
+    {
+      "name": "Methanothermobacter marburgensis",
+      "count": 1
+    },
+    {
+      "name": "Thermodesulfatator indicus",
+      "count": 1
+    },
+    {
+      "name": "Petrotoga halophila",
+      "count": 1
+    },
+    {
+      "name": "Caldithrix abyssi",
+      "count": 1
+    },
+    {
+      "name": "Thalassiosira pseudonana",
+      "count": 1
+    },
+    {
+      "name": "Thermoproteus tenax",
+      "count": 1
+    },
+    {
+      "name": "Mediterraneibacter gnavus",
+      "count": 1
+    },
+    {
+      "name": "Fusobacterium nucleatum subsp. nucleatum",
+      "count": 1
+    },
+    {
+      "name": "Bifidobacterium adolescentis",
+      "count": 1
+    },
+    {
+      "name": "Picrophilus oshimae",
+      "count": 1
+    },
+    {
+      "name": "Halobacterium",
+      "count": 1
+    },
+    {
+      "name": "Tardigrada",
+      "count": 1
+    },
+    {
+      "name": "Caldisericum exile",
+      "count": 1
+    },
+    {
+      "name": "Enterocloster bolteae",
+      "count": 1
+    },
+    {
+      "name": "[Ruminococcus] torques",
+      "count": 1
+    },
+    {
+      "name": "Denitrovibrio acetiphilus",
+      "count": 1
+    },
+    {
+      "name": "Methanocaldococcus jannaschii",
+      "count": 1
+    },
+    {
+      "name": "Streptococcus parasanguinis",
+      "count": 1
+    },
+    {
+      "name": "Parabacteroides distasonis",
+      "count": 1
+    },
+    {
+      "name": "Thermodesulfobacterium commune",
+      "count": 1
+    },
+    {
+      "name": "Thermoplasma volcanium",
+      "count": 1
+    },
+    {
+      "name": "Bifidobacterium longum subsp. longum",
+      "count": 1
+    },
+    {
+      "name": "Dethiosulfovibrio peptidovorans",
+      "count": 1
+    },
+    {
+      "name": "Odoribacter splanchnicus",
+      "count": 1
+    },
+    {
+      "name": "Segatella copri",
+      "count": 1
+    },
+    {
+      "name": "Treponema denticola",
+      "count": 1
+    },
+    {
+      "name": "Thermoplasma acidophilum",
+      "count": 1
+    },
+    {
+      "name": "Methanosarcina barkeri",
+      "count": 1
+    },
+    {
+      "name": "Ruminococcus bromii",
+      "count": 1
+    },
+    {
+      "name": "Haloferax mediterranei",
+      "count": 1
+    },
+    {
+      "name": "Chromera velia",
+      "count": 1
+    },
+    {
+      "name": "Veillonella parvula",
+      "count": 1
+    },
+    {
+      "name": "Haloarcula marismortui",
+      "count": 1
+    },
+    {
+      "name": "Blautia obeum",
+      "count": 1
+    },
+    {
+      "name": "Coprococcus comes",
+      "count": 1
+    },
+    {
+      "name": "Dorea formicigenerans",
+      "count": 1
+    },
+    {
+      "name": "Bacteroides fragilis",
+      "count": 1
+    },
+    {
+      "name": "Thermococcus litoralis",
+      "count": 1
+    },
+    {
+      "name": "Agathobacter rectalis",
+      "count": 1
+    },
+    {
+      "name": "[Clostridium] saccharolyticum WM1",
+      "count": 1
+    },
+    {
+      "name": "Dictyoglomus thermophilum",
+      "count": 1
+    },
+    {
+      "name": "Winmispira thermophila",
+      "count": 1
+    },
+    {
+      "name": "Granulicella tundricola",
+      "count": 1
+    },
+    {
+      "name": "Mycoplasma",
+      "count": 1
+    },
+    {
+      "name": "Thermotoga maritima",
+      "count": 1
+    },
+    {
+      "name": "Clostridium perfringens",
+      "count": 1
+    },
+    {
+      "name": "Didelphis virginiana",
+      "count": 1
+    },
+    {
+      "name": "Guillardia theta",
+      "count": 1
+    },
+    {
+      "name": "Roseburia intestinalis",
+      "count": 1
+    },
+    {
+      "name": "Parabacteroides merdae",
+      "count": 1
+    },
+    {
+      "name": "Methanopyrus kandleri",
+      "count": 1
+    },
+    {
+      "name": "Eggerthella lenta",
+      "count": 1
+    },
+    {
+      "name": "Pseudothermotoga hypogea",
+      "count": 1
+    },
+    {
+      "name": "Methylocystis sp. sc2",
+      "count": 1
+    },
+    {
+      "name": "Plasmodium knowlesi",
+      "count": 1
+    },
+    {
+      "name": "Rhodobacter capsulatus",
+      "count": 1
+    },
+    {
+      "name": "Myotis pilosus",
+      "count": 1
+    },
+    {
+      "name": "Leptospira interrogans",
+      "count": 1
+    },
+    {
+      "name": "Aspergillus niger atcc 13496",
+      "count": 1
+    },
+    {
+      "name": "Populus cathayana",
+      "count": 1
+    },
+    {
+      "name": "Willaertia magna",
+      "count": 1
+    },
+    {
+      "name": "Fragaria x ananassa",
+      "count": 1
+    },
+    {
+      "name": "Riftia pachyptila",
+      "count": 1
+    },
+    {
+      "name": "clostridium",
+      "count": 1
+    },
+    {
+      "name": "lactobacillus",
+      "count": 1
+    },
+    {
+      "name": "Clostridium butyricum",
+      "count": 1
+    },
+    {
+      "name": "Blautia producta",
+      "count": 1
+    },
+    {
+      "name": "Escherichia coli k-12",
+      "count": 1
+    },
+    {
+      "name": "Alligator sinensis",
+      "count": 1
+    },
+    {
+      "name": "Chlamydia trachomatis e/c599",
+      "count": 1
+    },
+    {
+      "name": "Medicago sativa",
+      "count": 1
+    },
+    {
+      "name": "Uncultivated soil bacterium",
+      "count": 1
+    },
+    {
+      "name": "Gasterosteus aculeatus",
+      "count": 1
+    },
+    {
+      "name": "Mustela putorius furo",
+      "count": 1
+    },
+    {
+      "name": "Cajanus cajan",
+      "count": 1
+    },
+    {
+      "name": "Escherichia coli bl21",
+      "count": 1
+    },
+    {
+      "name": "Staphylococcus sp. kdm4",
+      "count": 1
+    },
+    {
+      "name": "Brassica carinata",
+      "count": 1
+    },
+    {
+      "name": "Chroococcidiopsis thermalis pcc 7203",
+      "count": 1
+    },
+    {
+      "name": "Cercopithecus",
+      "count": 1
+    },
+    {
+      "name": "Chlorocebus aethiops",
+      "count": 1
+    },
+    {
+      "name": "Coronavirus predict cov-19",
+      "count": 1
+    },
+    {
+      "name": "Vibrio fluvialis",
+      "count": 1
+    },
+    {
+      "name": "Vesicular stomatitis virus",
+      "count": 1
+    },
+    {
+      "name": "Zika virus",
+      "count": 1
+    },
+    {
+      "name": "La crosse virus",
+      "count": 1
+    },
+    {
+      "name": "Influenza a virus",
+      "count": 1
+    },
+    {
+      "name": "Murine hepatitis virus",
+      "count": 1
+    },
+    {
+      "name": "Thogotovirus",
+      "count": 1
+    },
+    {
+      "name": "Semliki forest virus",
+      "count": 1
+    },
+    {
+      "name": "Encephalomyocarditis virus",
+      "count": 1
+    },
+    {
+      "name": "Rift valley fever virus",
+      "count": 1
+    },
+    {
+      "name": "Orthopoxvirus vaccinia",
+      "count": 1
+    },
+    {
+      "name": "Human alphaherpesvirus 1",
+      "count": 1
+    },
+    {
+      "name": "Human coronavirus 229e",
+      "count": 1
+    },
+    {
+      "name": "Eggerthella phage p3",
+      "count": 1
+    },
+    {
+      "name": "Betacoronavirus sp.",
+      "count": 1
+    },
+    {
+      "name": "Sars bat coronavirus",
+      "count": 1
+    },
+    {
+      "name": "Polynucleobacter asymbioticus",
+      "count": 1
+    },
+    {
+      "name": "Vibrio vulnificus vv",
+      "count": 1
+    },
+    {
+      "name": "Acinetobacter baumannii ab_tg2631",
+      "count": 1
+    },
+    {
+      "name": "Mycobacterium tuberculosis cdc1551",
+      "count": 1
+    },
+    {
+      "name": "Streptococcus pyogenes",
+      "count": 1
+    },
+    {
+      "name": "Pseudomonas aeruginosa pao1h2o",
+      "count": 1
+    },
+    {
+      "name": "Saccharomyces cf. cerevisiae",
+      "count": 1
+    },
+    {
+      "name": "Wenzhouxiangellaceae bacterium",
+      "count": 1
+    },
+    {
+      "name": "Ralstonia solanacearum",
+      "count": 1
+    },
+    {
+      "name": "Aliivibrio salmonicida lfi1238",
+      "count": 1
+    },
+    {
+      "name": "Neisseria meningitidis",
+      "count": 1
+    },
+    {
+      "name": "Acanthamoeba castellanii mimivirus",
+      "count": 1
+    },
+    {
+      "name": "Eucalyptus grandis",
+      "count": 1
+    },
+    {
+      "name": "Paramoeba perurans",
+      "count": 1
+    },
+    {
+      "name": "Salmonella enterica subsp. enterica serovar typhimurium",
+      "count": 1
+    },
+    {
+      "name": "Salmonella enterica subsp. enterica serovar infantis",
+      "count": 1
+    },
+    {
+      "name": "Citrobacter freundii",
+      "count": 1
+    },
+    {
+      "name": "Chenopodium quinoa",
+      "count": 1
+    },
+    {
+      "name": "Aspergillus niger",
+      "count": 1
+    },
+    {
+      "name": "Ricinus communis",
+      "count": 1
+    },
+    {
+      "name": "Gigantopelta aegis",
+      "count": 1
+    },
+    {
+      "name": "Human herpesvirus 4 strain b95-8",
+      "count": 1
+    },
+    {
+      "name": "Sars coronavirus sin3765v",
+      "count": 1
+    },
+    {
+      "name": "Schizosaccharomyces pombe 972h-",
+      "count": 1
+    },
+    {
+      "name": "Staphylococcus pasteuri",
+      "count": 1
+    },
+    {
+      "name": "Bacillus subtilis subsp. subtilis",
+      "count": 1
+    },
+    {
+      "name": "Cryptosporidium parvum iowa ii",
+      "count": 1
+    },
+    {
+      "name": "Pseudomonas lundensis",
+      "count": 1
+    },
+    {
+      "name": "Pseudomonas syringae",
+      "count": 1
+    },
+    {
+      "name": "Toxoplasma gondii ctco5",
+      "count": 1
+    },
+    {
+      "name": "Bacillus subtilis subsp. subtilis 6051-hgw",
+      "count": 1
+    },
+    {
+      "name": "Mycobacterium tuberculosis h37rv_2009",
+      "count": 1
+    },
+    {
+      "name": "Corynebacterium diphtheriae",
+      "count": 1
+    },
+    {
+      "name": "Enchytraeus crypticus",
+      "count": 1
+    },
+    {
+      "name": "Cupriavidus necator",
+      "count": 1
+    },
+    {
+      "name": "Callithrix jacchus",
+      "count": 1
+    },
+    {
+      "name": "Oxalobacter formigenes",
+      "count": 1
+    },
+    {
+      "name": "Dactylorhiza",
+      "count": 1
+    },
+    {
+      "name": "Daphnia magna",
+      "count": 1
+    },
+    {
+      "name": "Microcystis aeruginosa",
+      "count": 1
+    },
+    {
+      "name": "Peniophora incarnata",
+      "count": 1
+    },
+    {
+      "name": "Acinetobacter sp. pm-14",
+      "count": 1
+    },
+    {
+      "name": "Klebsiella pneumoniae jh1",
+      "count": 1
+    },
+    {
+      "name": "Klebsiella variicola at-22",
+      "count": 1
+    },
+    {
+      "name": "Serendipita indica",
+      "count": 1
+    },
+    {
+      "name": "Pseudomonas",
+      "count": 1
+    },
+    {
+      "name": "Desulfovibrio ferrophilus",
+      "count": 1
+    },
+    {
+      "name": "Dehalococcoides mccartyi",
+      "count": 1
+    },
+    {
+      "name": "Schaalia odontolytica",
+      "count": 1
+    },
+    {
+      "name": "Streptococcus pyogenes abc020006030",
+      "count": 1
+    },
+    {
+      "name": "Human immunodeficiency virus 1",
+      "count": 1
+    },
+    {
+      "name": "Cricetulus barabensis",
+      "count": 1
+    },
+    {
+      "name": "Steinernema carpocapsae",
+      "count": 1
+    },
+    {
+      "name": "Giardia duodenalis",
+      "count": 1
+    },
+    {
+      "name": "Fungal yeast sp. s26-10",
+      "count": 1
+    },
+    {
+      "name": "Cassiopea andromeda",
+      "count": 1
+    },
+    {
+      "name": "Helicobacter pylori g27",
+      "count": 1
+    },
+    {
+      "name": "Pyropia haitanensis",
+      "count": 1
+    },
+    {
+      "name": "Klebsiella pneumoniae atcc baa-2146",
+      "count": 1
+    },
+    {
+      "name": "Mahonia",
+      "count": 1
+    },
+    {
+      "name": "Monodelphis domestica",
+      "count": 1
+    },
+    {
+      "name": "Takydromus septentrionalis",
+      "count": 1
+    },
+    {
+      "name": "Clarias gariepinus",
+      "count": 1
+    },
+    {
+      "name": "Lactobacillus sp. y10",
+      "count": 1
+    },
+    {
+      "name": "Uncultured desulfatiglans sp.",
+      "count": 1
+    },
+    {
+      "name": "Plasmodium vivax",
+      "count": 1
+    },
+    {
+      "name": "Toxoplasma gondii pru",
+      "count": 1
+    },
+    {
+      "name": "Streptomyces sp. mbt42",
+      "count": 1
+    },
+    {
+      "name": "Thermus thermophilus",
+      "count": 1
+    },
+    {
+      "name": "Escherichia coli str. k-12 substr. mg1655",
+      "count": 1
+    },
+    {
+      "name": "Methanoculleus marisnigri jr1",
+      "count": 1
+    },
+    {
+      "name": "Ursus arctos horribilis",
+      "count": 1
+    },
+    {
+      "name": "Moraxella bovis",
+      "count": 1
+    },
+    {
+      "name": "Xanthomonas retroflexus",
+      "count": 1
+    },
+    {
+      "name": "Leishmania braziliensis",
+      "count": 1
+    },
+    {
+      "name": "Schistosoma mansoni",
+      "count": 1
+    },
+    {
+      "name": "Pseudoalteromonas prydzensis acam 620",
+      "count": 1
+    },
+    {
+      "name": "Polyporus umbellatus gsx09",
+      "count": 1
+    },
+    {
+      "name": "Capsicum annuum",
+      "count": 1
+    },
+    {
+      "name": "Medicago truncatula var. truncatula",
+      "count": 1
+    },
+    {
+      "name": "Human metagenome",
+      "count": 1
+    },
+    {
+      "name": "Achromobacter xylosoxidans a8",
+      "count": 1
+    },
+    {
+      "name": "Streptococcus thermophilus",
+      "count": 1
+    },
+    {
+      "name": "Antipathes griggi",
+      "count": 1
+    },
+    {
+      "name": "Anopheles gambiae",
+      "count": 1
+    },
+    {
+      "name": "Zophobas atratus",
+      "count": 1
+    },
+    {
+      "name": "Streptomyces iranensis",
+      "count": 1
+    },
+    {
+      "name": "Coilia nasus",
+      "count": 1
+    },
+    {
+      "name": "Human oral bacteria ensemble",
+      "count": 1
+    },
+    {
+      "name": "Prorocentrum donghaiense",
+      "count": 1
+    },
+    {
+      "name": "Mycobacterium tuberculosis sumu001",
+      "count": 1
+    },
+    {
+      "name": "Plasmodium berghei",
+      "count": 1
+    },
+    {
+      "name": "Phytophthora cactorum",
+      "count": 1
+    },
+    {
+      "name": "Oculina patagonica",
+      "count": 1
+    },
+    {
+      "name": "Bombus terrestris",
+      "count": 1
+    },
+    {
+      "name": "Candida albicans sc5314",
+      "count": 1
+    },
+    {
+      "name": "Pyrococcus furiosus dsm 3638",
+      "count": 1
+    },
+    {
+      "name": "Stenotrophomonas maltophilia",
+      "count": 1
+    },
+    {
+      "name": "Cyperus rotundus",
+      "count": 1
+    },
+    {
+      "name": "Sclerotinia sclerotiorum",
+      "count": 1
+    },
+    {
+      "name": "Artibeus jamaicensis",
+      "count": 1
+    },
+    {
+      "name": "Lacticaseibacillus casei bl23",
+      "count": 1
+    },
+    {
+      "name": "Nothobranchius furzeri",
+      "count": 1
+    },
+    {
+      "name": "Burkholderia thailandensis e264",
+      "count": 1
+    },
+    {
+      "name": "Streptococcus pyogenes serotype m1",
+      "count": 1
+    },
+    {
+      "name": "Deinagkistrodon acutus",
+      "count": 1
+    },
+    {
+      "name": "Theileria sp. ex hiroshima sika deer",
+      "count": 1
+    },
+    {
+      "name": "Komagataeibacter",
+      "count": 1
+    },
+    {
+      "name": "Mesotaenium sp. jh0031",
+      "count": 1
+    },
+    {
+      "name": "Bacteroides uniformis atcc 8492",
+      "count": 1
+    },
+    {
+      "name": "Bacteroides ovatus atcc 8483",
+      "count": 1
+    },
+    {
+      "name": "Phocaeicola vulgatus atcc 8482",
+      "count": 1
+    },
+    {
+      "name": "Blautia hydrogenotrophica dsm 10507",
+      "count": 1
+    },
+    {
+      "name": "Saccharum spontaneum",
+      "count": 1
+    },
+    {
+      "name": "Pseudomonas aeruginosa pao1lm10",
+      "count": 1
+    },
+    {
+      "name": "Archaea",
+      "count": 1
+    },
+    {
+      "name": "Aspergillus fumigatus",
+      "count": 1
+    },
+    {
+      "name": "X triticosecale",
+      "count": 1
+    },
+    {
+      "name": "Brugia malayi",
+      "count": 1
+    },
+    {
+      "name": "Streptococcus salivarius k12",
+      "count": 1
+    },
+    {
+      "name": "Rhodotorula toruloides np11",
+      "count": 1
+    },
+    {
+      "name": "Proteus penneri",
+      "count": 1
+    },
+    {
+      "name": "Leptospira interrogans serovar manilae",
+      "count": 1
+    },
+    {
+      "name": "Bdellovibrio bacteriovorus",
+      "count": 1
+    },
+    {
+      "name": "Oryctolagus sp. 'rabbit_od'",
+      "count": 1
+    },
+    {
+      "name": "Pinus nigra",
+      "count": 1
+    },
+    {
+      "name": "Aquifex aeolicus",
+      "count": 1
+    },
+    {
+      "name": "Recombinant sars coronavirus",
+      "count": 1
+    },
+    {
+      "name": "Juglans regia",
+      "count": 1
+    },
+    {
+      "name": "Yersinia enterocolitica",
+      "count": 1
+    },
+    {
+      "name": "Spirometra",
+      "count": 1
+    },
+    {
+      "name": "Anncaliia algerae",
+      "count": 1
+    },
+    {
+      "name": "Burkholderia thailandensis e555",
+      "count": 1
+    },
+    {
+      "name": "Proteus mirabilis hi4320",
+      "count": 1
+    },
+    {
+      "name": "Solanum melongena",
+      "count": 1
+    },
+    {
+      "name": "Vicia faba var. minor",
+      "count": 1
+    },
+    {
+      "name": "Enterobacter sp. 198",
+      "count": 1
+    },
+    {
+      "name": "Klebsiella sp. rcj4",
+      "count": 1
+    },
+    {
+      "name": "Procapra picticaudata",
+      "count": 1
+    },
+    {
+      "name": "Maruca vitrata",
+      "count": 1
+    },
+    {
+      "name": "Bacillus licheniformis",
+      "count": 1
+    },
+    {
+      "name": "Opecarcinus crescentus",
+      "count": 1
+    },
+    {
+      "name": "Elysia crispata",
+      "count": 1
+    },
+    {
+      "name": "Brucella canis atcc 23365",
+      "count": 1
+    },
+    {
+      "name": "Corynebacterium glutamicum",
+      "count": 1
+    },
+    {
+      "name": "Trichoplax sp. h2",
+      "count": 1
+    },
+    {
+      "name": "Sphingobacterium sp. w2",
+      "count": 1
+    },
+    {
+      "name": "Aspergillus oryzae",
+      "count": 1
+    },
+    {
+      "name": "Synechococcus sp. wh 8012",
+      "count": 1
+    },
+    {
+      "name": "Tetrahymena thermophila cu428",
+      "count": 1
+    },
+    {
+      "name": "Dipodascus albidus",
+      "count": 1
+    },
+    {
+      "name": "Sporisorium scitamineum",
+      "count": 1
+    },
+    {
+      "name": "Arthrobacter sp. s2",
+      "count": 1
+    },
+    {
+      "name": "Sipunculus nudus",
+      "count": 1
+    },
+    {
+      "name": "Actinosynnema pretiosum",
+      "count": 1
+    },
+    {
+      "name": "Hypsibius exemplaris",
+      "count": 1
+    },
+    {
+      "name": "Proteus mirabilis bb2000",
+      "count": 1
+    },
+    {
+      "name": "Spongilla lacustris",
+      "count": 1
+    },
+    {
+      "name": "Clostridium botulinum",
+      "count": 1
+    },
+    {
+      "name": "Hydrogenophaga pseudoflava",
+      "count": 1
+    },
+    {
+      "name": "Lathyrus oleraceus",
+      "count": 1
+    },
+    {
+      "name": "Penaeus vannamei",
+      "count": 1
+    },
+    {
+      "name": "Weeksella virosa",
+      "count": 1
+    },
+    {
+      "name": "Rhodomicrobium vannielii atcc 17100",
+      "count": 1
+    },
+    {
+      "name": "Cryptococcus neoformans",
+      "count": 1
+    },
+    {
+      "name": "Chryseobacterium sp. p567",
+      "count": 1
+    },
+    {
+      "name": "Theobroma cacao",
+      "count": 1
+    },
+    {
+      "name": "Kocuria rhizophila",
+      "count": 1
+    },
+    {
+      "name": "Anaeramoeba flamelloides",
+      "count": 1
+    },
+    {
+      "name": "Manihot esculenta",
+      "count": 1
+    },
+    {
+      "name": "Numida meleagris",
+      "count": 1
+    },
+    {
+      "name": "Bartonella grahamii",
+      "count": 1
+    },
+    {
+      "name": "Pseudomonas brenneri",
+      "count": 1
+    },
+    {
+      "name": "Xiphophorus malinche x xiphophorus birchmanni",
+      "count": 1
+    },
+    {
+      "name": "Pycnoporus <basidiomycete fungi>",
+      "count": 1
+    },
+    {
+      "name": "Borreliella burgdorferi",
+      "count": 1
+    },
+    {
+      "name": "Shigella flexneri 5a",
+      "count": 1
+    },
+    {
+      "name": "Dhillonvirus",
+      "count": 1
+    },
+    {
+      "name": "Thauera aromatica k172",
+      "count": 1
+    },
+    {
+      "name": "Shigella flexneri 5b",
+      "count": 1
+    },
+    {
+      "name": "Lyssavirus rabies",
+      "count": 1
+    },
+    {
+      "name": "Helicobacter pylori p12",
+      "count": 1
+    },
+    {
+      "name": "Streptomyces sp. PU10",
+      "count": 1
+    },
+    {
+      "name": "Thermothielavioides terrestris",
+      "count": 1
+    },
+    {
+      "name": "Cynoglossus semilaevis",
+      "count": 1
+    },
+    {
+      "name": "Ancylostoma ceylanicum",
+      "count": 1
+    },
+    {
+      "name": "Panax notoginseng",
+      "count": 1
+    },
+    {
+      "name": "Montipora capitata",
+      "count": 1
+    },
+    {
+      "name": "Chrysemys picta",
+      "count": 1
+    },
+    {
+      "name": "Enterocloster bolteae atcc baa-613",
+      "count": 1
+    },
+    {
+      "name": "Chelydra serpentina",
+      "count": 1
+    },
+    {
+      "name": "Paenibacillus polymyxa",
+      "count": 1
+    },
+    {
+      "name": "Yarrowia lipolytica",
+      "count": 1
+    },
+    {
+      "name": "Dineutus hornii",
+      "count": 1
+    },
+    {
+      "name": "Trichoplusia ni",
+      "count": 1
+    },
+    {
+      "name": "Populus trichocarpa",
+      "count": 1
+    },
+    {
+      "name": "Rhodospirillum rubrum",
+      "count": 1
+    },
+    {
+      "name": "Biofilm metagenome",
+      "count": 1
+    },
+    {
+      "name": "Hansenula polymorpha vector pam619",
+      "count": 1
+    },
+    {
+      "name": "Measles morbillivirus",
+      "count": 1
+    },
+    {
+      "name": "Janthinobacterium lividum",
+      "count": 1
+    },
+    {
+      "name": "Colwellia psychrerythraea 34h",
+      "count": 1
+    },
+    {
+      "name": "Bdellovibrio bacteriovorus hd100",
+      "count": 1
+    },
+    {
+      "name": "Spirodela polyrhiza",
+      "count": 1
+    },
+    {
+      "name": "Echinococcus granulosus",
+      "count": 1
+    },
+    {
+      "name": "Nostoc sp.",
+      "count": 1
+    },
+    {
+      "name": "Rhodococcus erythropolis",
+      "count": 1
+    },
+    {
+      "name": "Lepeophtheirus salmonis",
+      "count": 1
+    },
+    {
+      "name": "Gordonia polyisoprenivorans",
+      "count": 1
+    },
+    {
+      "name": "Promethearchaeum syntrophicum",
+      "count": 1
+    },
+    {
+      "name": "Pyrodictium abyssi",
+      "count": 1
+    },
+    {
+      "name": "Salicornia bigelovii",
+      "count": 1
+    },
+    {
+      "name": "Ruminococcus",
+      "count": 1
+    },
+    {
+      "name": "Eubalaena glacialis",
+      "count": 1
+    },
+    {
+      "name": "Prunus avium subsp. avium",
+      "count": 1
+    },
+    {
+      "name": "Methylohalobius crimeensis 10ki",
+      "count": 1
+    },
+    {
+      "name": "Propionibacterium freudenreichii",
+      "count": 1
+    },
+    {
+      "name": "Plasmodium falciparum mlw.2749",
+      "count": 1
+    },
+    {
+      "name": "Suncus murinus",
+      "count": 1
+    },
+    {
+      "name": "Hipposideros armiger",
+      "count": 1
+    },
+    {
+      "name": "Acinetobacter baylyi",
+      "count": 1
+    },
+    {
+      "name": "Leishmania infantum",
+      "count": 1
+    },
+    {
+      "name": "Yersinia enterocolitica lc20",
+      "count": 1
+    },
+    {
+      "name": "Pseudomonas aeruginosa bwhpsa046",
+      "count": 1
+    },
+    {
+      "name": "Halimeda",
+      "count": 1
+    },
+    {
+      "name": "Pseudomonas aeruginosa ucsf15-17",
+      "count": 1
+    },
+    {
+      "name": "Leishmania donovani bpk282a1",
+      "count": 1
+    },
+    {
+      "name": "Anthoceros agrestis",
+      "count": 1
+    },
+    {
+      "name": "Xanthium strumarium",
+      "count": 1
+    },
+    {
+      "name": "Nitrosophilus labii",
+      "count": 1
+    },
+    {
+      "name": "Tupaia chinensis",
+      "count": 1
+    },
+    {
+      "name": "Streptomyces sp. acm38",
+      "count": 1
+    },
+    {
+      "name": "Haemaphysalis flava",
+      "count": 1
+    },
+    {
+      "name": "Anolis carolinensis",
+      "count": 1
+    },
+    {
+      "name": "Rhipicephalus microplus",
+      "count": 1
+    },
+    {
+      "name": "Python bivittatus",
+      "count": 1
+    },
+    {
+      "name": "Parabacteroides johnsonii cl02t12c29",
+      "count": 1
+    },
+    {
+      "name": "Homininae",
+      "count": 1
+    },
+    {
+      "name": "Salmonella phage sfp10",
+      "count": 1
+    },
+    {
+      "name": "Modified vaccinia ankara virus",
+      "count": 1
+    },
+    {
+      "name": "Haematococcus lacustris",
+      "count": 1
+    },
+    {
+      "name": "Azospirillum sp. sp 7",
+      "count": 1
+    },
+    {
+      "name": "Morganella morganii subsp. morganii",
+      "count": 1
+    },
+    {
+      "name": "Klebsiella quasipneumoniae",
+      "count": 1
+    },
+    {
+      "name": "Enterococcus faecium com15",
+      "count": 1
+    },
+    {
+      "name": "Klebsiella grimontii",
+      "count": 1
+    },
+    {
+      "name": "Citrobacter freundii complex",
+      "count": 1
+    },
+    {
+      "name": "Shigella sonnei",
+      "count": 1
+    },
+    {
+      "name": "Pseudomonas aeruginosa pa103",
+      "count": 1
+    },
+    {
+      "name": "Erysipelotrichaceae bacterium",
+      "count": 1
+    },
+    {
+      "name": "Escherichia coli o107",
+      "count": 1
+    },
+    {
+      "name": "Candida albicans 23r",
+      "count": 1
+    },
+    {
+      "name": "Clostridium pasteurianum",
+      "count": 1
+    },
+    {
+      "name": "Candidatus kuenenia",
+      "count": 1
+    },
+    {
+      "name": "Hevea brasiliensis",
+      "count": 1
+    },
+    {
+      "name": "Micrococcus luteus",
+      "count": 1
+    },
+    {
+      "name": "Synechococcus sp. pcc 7002 x microcystis aeruginosa taihu98 coculture",
+      "count": 1
+    },
+    {
+      "name": "Cavia porcellus",
+      "count": 1
+    },
+    {
+      "name": "Euglena gracilis",
+      "count": 1
+    },
+    {
+      "name": "Vickermania",
+      "count": 1
+    },
+    {
+      "name": "Aspergillus parasiticus",
+      "count": 1
+    },
+    {
+      "name": "Orthobunyavirus",
+      "count": 1
+    },
+    {
+      "name": "Klebsiella variicola",
+      "count": 1
+    },
+    {
+      "name": "Rhizobium leguminosarum bv. viciae",
+      "count": 1
+    },
+    {
+      "name": "Vibrio phage icp1_2006_e",
+      "count": 1
+    },
+    {
+      "name": "Eptesicus fuscus",
+      "count": 1
+    },
+    {
+      "name": "Dehalococcoides sp.",
+      "count": 1
+    },
+    {
+      "name": "Granulicatella elegans",
+      "count": 1
+    },
+    {
+      "name": "Escherichia phage ms2",
+      "count": 1
+    },
+    {
+      "name": "Escherichia phage phix174",
+      "count": 1
+    },
+    {
+      "name": "Blank sample",
+      "count": 1
+    },
+    {
+      "name": "Coffea arabica",
+      "count": 1
+    },
+    {
+      "name": "Cryptococcus neoformans bt1",
+      "count": 1
+    },
+    {
+      "name": "Oreochromis niloticus",
+      "count": 1
+    },
+    {
+      "name": "Zobellia galactanivorans",
+      "count": 1
+    },
+    {
+      "name": "Phragmites australis",
+      "count": 1
+    },
+    {
+      "name": "Fagus sylvatica",
+      "count": 1
+    },
+    {
+      "name": "Anopheles gambiae str. pest",
+      "count": 1
+    },
+    {
+      "name": "Pongo pygmaeus morio",
+      "count": 1
+    },
+    {
+      "name": "Prymnesium kappa virus",
+      "count": 1
+    },
+    {
+      "name": "Escherichia coli bw25113",
+      "count": 1
+    },
+    {
+      "name": "Bacteriophage sp.",
+      "count": 1
+    },
+    {
+      "name": "Pandalus borealis",
+      "count": 1
+    },
+    {
+      "name": "Pseudomonas aeruginosa pao579",
+      "count": 1
+    },
+    {
+      "name": "Nepenthes alata",
+      "count": 1
+    },
+    {
+      "name": "Cereibacter sphaeroides",
+      "count": 1
+    },
+    {
+      "name": "Trionyx triunguis",
+      "count": 1
+    },
+    {
+      "name": "Lupinus mutabilis",
+      "count": 1
+    },
+    {
+      "name": "Vaccinia virus wr",
+      "count": 1
+    },
+    {
+      "name": "Bacillus phage spo1",
+      "count": 1
+    },
+    {
+      "name": "Porphyromonas gingivalis w50",
+      "count": 1
+    },
+    {
+      "name": "Neisseria gonorrhoeae",
+      "count": 1
+    },
+    {
+      "name": "Blumea",
+      "count": 1
+    },
+    {
+      "name": "Phytophthora cinnamomi",
+      "count": 1
+    },
+    {
+      "name": "Brucella melitensis",
+      "count": 1
+    },
+    {
+      "name": "Setaria italica",
+      "count": 1
+    },
+    {
+      "name": "Dysosmobacter welbionis",
+      "count": 1
+    },
+    {
+      "name": "Lepyronia quadrangularis",
+      "count": 1
+    },
+    {
+      "name": "Mannheimia haemolytica m42548",
+      "count": 1
+    },
+    {
+      "name": "Methanosarcina mazei",
+      "count": 1
+    },
+    {
+      "name": "Haloferax volcanii sb1",
+      "count": 1
+    },
+    {
+      "name": "Pleurotus pulmonarius",
+      "count": 1
+    },
+    {
+      "name": "Procambarus virginalis",
+      "count": 1
+    },
+    {
+      "name": "Phaffia rhodozyma",
+      "count": 1
+    },
+    {
+      "name": "Anisakis simplex",
+      "count": 1
+    },
+    {
+      "name": "Drosophila mojavensis",
+      "count": 1
+    },
+    {
+      "name": "Panthera spelaea",
+      "count": 1
+    },
+    {
+      "name": "Panthera leo",
+      "count": 1
+    },
+    {
+      "name": "Panthera tigris",
+      "count": 1
+    },
+    {
+      "name": "Glaesserella parasuis sh0165",
+      "count": 1
+    },
+    {
+      "name": "Diaporthe sp. t1",
+      "count": 1
+    },
+    {
+      "name": "Undaria pinnatifida",
+      "count": 1
+    },
+    {
+      "name": "Bacillus cereus ah187",
+      "count": 1
+    },
+    {
+      "name": "Saccharomyces pastorianus",
+      "count": 1
+    },
+    {
+      "name": "Aspergillus uvarum",
+      "count": 1
+    },
+    {
+      "name": "Enterocloster citroniae",
+      "count": 1
+    },
+    {
+      "name": "Neisseria meningitidis serogroup b",
+      "count": 1
+    },
+    {
+      "name": "Haemonchus contortus",
+      "count": 1
+    },
+    {
+      "name": "Pochonia chlamydosporia",
+      "count": 1
+    },
+    {
+      "name": "Streptomyces sp. sirexaa-e",
+      "count": 1
+    },
+    {
+      "name": "Salmonella enterica subsp. enterica serovar typhimurium str. stm1",
+      "count": 1
+    },
+    {
+      "name": "Levilactobacillus brevis atcc 367",
+      "count": 1
+    },
+    {
+      "name": "Staphylococcus saprophyticus",
+      "count": 1
+    },
+    {
+      "name": "Rhyparobia maderae",
+      "count": 1
+    },
+    {
+      "name": "Bacillus phage phi3t-spbeta hybrid",
+      "count": 1
+    },
+    {
+      "name": "Cedratvirus ce2-1",
+      "count": 1
+    },
+    {
+      "name": "Anabaena sp. bta17",
+      "count": 1
+    },
+    {
+      "name": "Mammalian orthoreovirus 3 dearing",
+      "count": 1
+    },
+    {
+      "name": "Tragelaphus oryx",
+      "count": 1
+    },
+    {
+      "name": "Lacticaseibacillus casei",
+      "count": 1
+    },
+    {
+      "name": "Methanobrevibacter olleyae",
+      "count": 1
+    },
+    {
+      "name": "Chrysoperla carnea",
+      "count": 1
+    },
+    {
+      "name": "Theileria parva",
+      "count": 1
+    },
+    {
+      "name": "Carassius",
+      "count": 1
+    },
+    {
+      "name": "Silene conica",
+      "count": 1
+    },
+    {
+      "name": "Culter alburnus",
+      "count": 1
+    },
+    {
+      "name": "Hermetia illucens",
+      "count": 1
+    },
+    {
+      "name": "Chromobacterium violaceum",
+      "count": 1
+    },
+    {
+      "name": "Trypanosoma cruzi dm28c",
+      "count": 1
+    },
+    {
+      "name": "Fusarium oxysporum f. sp. lycopersici 4286",
+      "count": 1
+    },
+    {
+      "name": "Pinctada fucata",
+      "count": 1
+    },
+    {
+      "name": "Lucilia cuprina",
+      "count": 1
+    },
+    {
+      "name": "Larimichthys crocea",
+      "count": 1
+    },
+    {
+      "name": "Vicia costata",
+      "count": 1
+    },
+    {
+      "name": "Ophiophagus hannah",
+      "count": 1
+    },
+    {
+      "name": "Naja fuxi",
+      "count": 1
+    },
+    {
+      "name": "Naja kaouthia",
+      "count": 1
+    },
+    {
+      "name": "Trimeresurus albolabris",
+      "count": 1
+    },
+    {
+      "name": "Naja siamensis",
+      "count": 1
+    },
+    {
+      "name": "Candida maltosa xu316",
+      "count": 1
+    },
+    {
+      "name": "Methanococcus maripaludis",
+      "count": 1
+    },
+    {
+      "name": "Murine norovirus 1",
+      "count": 1
+    },
+    {
+      "name": "Synechococcus elongatus",
+      "count": 1
+    },
+    {
+      "name": "Dendrobium huoshanense",
+      "count": 1
+    },
+    {
+      "name": "Bacillus sp. b-23280",
+      "count": 1
+    },
+    {
+      "name": "Candidozyma aff. auris",
+      "count": 1
+    },
+    {
+      "name": "Obama nungara",
+      "count": 1
+    },
+    {
+      "name": "Carollia perspicillata",
+      "count": 1
+    },
+    {
+      "name": "Enterococcus faecium erv165",
+      "count": 1
+    },
+    {
+      "name": "Histoplasma ohiense",
+      "count": 1
+    },
+    {
+      "name": "Pantoea agglomerans pv. betae",
+      "count": 1
+    },
+    {
+      "name": "Klebsiella sp. 'medkleb'",
+      "count": 1
+    },
+    {
+      "name": "Prion",
+      "count": 1
+    },
+    {
+      "name": "Streptomyces albidoflavus",
+      "count": 1
+    },
+    {
+      "name": "Campylobacter jejuni subsp. jejuni atcc 33560",
+      "count": 1
+    },
+    {
+      "name": "Campylobacter coli rm2228",
+      "count": 1
+    },
+    {
+      "name": "Citrobacter rodentium icc168",
+      "count": 1
+    },
+    {
+      "name": "Dactylopius opuntiae",
+      "count": 1
+    }
+  ],
+  "samples_by_organism": [
+    {
+      "name": "Homo sapiens",
+      "count": 86030
+    },
+    {
+      "name": "Mus musculus",
+      "count": 20056
+    },
+    {
+      "name": "Escherichia coli",
+      "count": 8682
+    },
+    {
+      "name": "Human gut metagenome",
+      "count": 4504
+    },
+    {
+      "name": "Saccharomyces cerevisiae",
+      "count": 4014
+    },
+    {
+      "name": "Arabidopsis thaliana",
+      "count": 2799
+    },
+    {
+      "name": "Rattus norvegicus",
+      "count": 1177
+    },
+    {
+      "name": "Plasmodium falciparum",
+      "count": 819
+    },
+    {
+      "name": "Staphylococcus aureus",
+      "count": 758
+    },
+    {
+      "name": "Pseudomonas putida kt2440",
+      "count": 725
+    },
+    {
+      "name": "Drosophila melanogaster",
+      "count": 717
+    },
+    {
+      "name": "Bos taurus",
+      "count": 615
+    },
+    {
+      "name": "Macaca mulatta",
+      "count": 580
+    },
+    {
+      "name": "Gallus gallus",
+      "count": 445
+    },
+    {
+      "name": "Sus scrofa domesticus",
+      "count": 441
+    },
+    {
+      "name": "Trypanosoma brucei",
+      "count": 360
+    },
+    {
+      "name": "Riftia pachyptila",
+      "count": 349
+    },
+    {
+      "name": "Caenorhabditis elegans",
+      "count": 342
+    },
+    {
+      "name": "Soil metagenome",
+      "count": 331
+    },
+    {
+      "name": "Solanum tuberosum",
+      "count": 297
+    },
+    {
+      "name": "Oryza sativa",
+      "count": 263
+    },
+    {
+      "name": "Pseudomonas aeruginosa pao1",
+      "count": 250
+    },
+    {
+      "name": "Gut metagenome",
+      "count": 250
+    },
+    {
+      "name": "Severe acute respiratory syndrome coronavirus 2",
+      "count": 241
+    },
+    {
+      "name": "Danio rerio",
+      "count": 235
+    },
+    {
+      "name": "Solanum lycopersicum",
+      "count": 230
+    },
+    {
+      "name": "Zea mays",
+      "count": 226
+    },
+    {
+      "name": "Rhinolophus ferrumequinum",
+      "count": 212
+    },
+    {
+      "name": "Ovis aries",
+      "count": 211
+    },
+    {
+      "name": "Synechocystis sp. pcc 6803",
+      "count": 189
+    },
+    {
+      "name": "Mycobacterium tuberculosis",
+      "count": 167
+    },
+    {
+      "name": "Bacteria",
+      "count": 165
+    },
+    {
+      "name": "Pseudomonas aeruginosa",
+      "count": 160
+    },
+    {
+      "name": "Cricetulus griseus",
+      "count": 155
+    },
+    {
+      "name": "Candida albicans",
+      "count": 153
+    },
+    {
+      "name": "Equus caballus",
+      "count": 149
+    },
+    {
+      "name": "Xenopus laevis",
+      "count": 148
+    },
+    {
+      "name": "Chlamydomonas reinhardtii",
+      "count": 142
+    },
+    {
+      "name": "Nicotiana benthamiana",
+      "count": 138
+    },
+    {
+      "name": "Apis mellifera",
+      "count": 136
+    },
+    {
+      "name": "Acanthamoeba castellanii",
+      "count": 136
+    },
+    {
+      "name": "Mycobacterium tuberculosis h37rv",
+      "count": 130
+    },
+    {
+      "name": "Marine metagenome",
+      "count": 129
+    },
+    {
+      "name": "Canis lupus familiaris",
+      "count": 129
+    },
+    {
+      "name": "metagenome",
+      "count": 126
+    },
+    {
+      "name": "Toxoplasma gondii rh",
+      "count": 117
+    },
+    {
+      "name": "Campylobacter jejuni",
+      "count": 115
+    },
+    {
+      "name": "Chlorocebus sabaeus",
+      "count": 105
+    },
+    {
+      "name": "Sus scrofa",
+      "count": 101
+    },
+    {
+      "name": "Human metagenome",
+      "count": 100
+    },
+    {
+      "name": "Klebsiella pneumoniae",
+      "count": 98
+    },
+    {
+      "name": "Porphyromonas gingivalis",
+      "count": 98
+    },
+    {
+      "name": "Pyrococcus furiosus",
+      "count": 97
+    },
+    {
+      "name": "Brassica carinata",
+      "count": 95
+    },
+    {
+      "name": "X triticosecale",
+      "count": 95
+    },
+    {
+      "name": "Ursus arctos horribilis",
+      "count": 94
+    },
+    {
+      "name": "Salmonella enterica",
+      "count": 93
+    },
+    {
+      "name": "Mycolicibacterium smegmatis",
+      "count": 90
+    },
+    {
+      "name": "Triticum aestivum",
+      "count": 89
+    },
+    {
+      "name": "Loxosceles intermedia",
+      "count": 88
+    },
+    {
+      "name": "Anaerostipes caccae",
+      "count": 86
+    },
+    {
+      "name": "Oryctolagus cuniculus",
+      "count": 84
+    },
+    {
+      "name": "Capra hircus",
+      "count": 73
+    },
+    {
+      "name": "Glycine max",
+      "count": 71
+    },
+    {
+      "name": "Sparus aurata",
+      "count": 71
+    },
+    {
+      "name": "Diplonema papillatum",
+      "count": 70
+    },
+    {
+      "name": "Bacillus subtilis",
+      "count": 66
+    },
+    {
+      "name": "Toxoplasma gondii",
+      "count": 66
+    },
+    {
+      "name": "Manihot esculenta",
+      "count": 65
+    },
+    {
+      "name": "Oncorhynchus mykiss",
+      "count": 60
+    },
+    {
+      "name": "Francisella tularensis",
+      "count": 58
+    },
+    {
+      "name": "Rhodobacter capsulatus",
+      "count": 58
+    },
+    {
+      "name": "Bacteroides thetaiotaomicron",
+      "count": 57
+    },
+    {
+      "name": "Brucella abortus",
+      "count": 57
+    },
+    {
+      "name": "Haloferax volcanii ds2",
+      "count": 56
+    },
+    {
+      "name": "Toxoplasma gondii gt1",
+      "count": 56
+    },
+    {
+      "name": "Streptomyces albidoflavus",
+      "count": 55
+    },
+    {
+      "name": "Cereibacter sphaeroides",
+      "count": 54
+    },
+    {
+      "name": "Vitis vinifera",
+      "count": 53
+    },
+    {
+      "name": "Bacillus subtilis subsp. subtilis str. 168",
+      "count": 51
+    },
+    {
+      "name": "Trypanosoma cruzi",
+      "count": 50
+    },
+    {
+      "name": "Nicotiana tabacum",
+      "count": 50
+    },
+    {
+      "name": "Bacillus subtilis subsp. subtilis",
+      "count": 50
+    },
+    {
+      "name": "Homininae",
+      "count": 50
+    },
+    {
+      "name": "Synechocystis",
+      "count": 50
+    },
+    {
+      "name": "Bifidobacterium longum",
+      "count": 49
+    },
+    {
+      "name": "Eggerthella phage p3",
+      "count": 49
+    },
+    {
+      "name": "Dineutus hornii",
+      "count": 45
+    },
+    {
+      "name": "Colwellia psychrerythraea 34h",
+      "count": 45
+    },
+    {
+      "name": "Escherichia coli nissle 1917",
+      "count": 44
+    },
+    {
+      "name": "Desmodus rotundus",
+      "count": 44
+    },
+    {
+      "name": "Ixodes scapularis",
+      "count": 43
+    },
+    {
+      "name": "Corynebacterium glutamicum",
+      "count": 43
+    },
+    {
+      "name": "Salmo salar",
+      "count": 40
+    },
+    {
+      "name": "Haloferax volcanii",
+      "count": 40
+    },
+    {
+      "name": "Mesocricetus auratus",
+      "count": 40
+    },
+    {
+      "name": "Bacillus cereus atcc 10987",
+      "count": 39
+    },
+    {
+      "name": "Medicago truncatula var. truncatula",
+      "count": 39
+    },
+    {
+      "name": "Legionella pneumophila",
+      "count": 38
+    },
+    {
+      "name": "Brassica napus",
+      "count": 38
+    },
+    {
+      "name": "Aspergillus fumigatus af293",
+      "count": 38
+    },
+    {
+      "name": "Xenopus tropicalis",
+      "count": 38
+    },
+    {
+      "name": "Pseudomonas lundensis",
+      "count": 36
+    },
+    {
+      "name": "Marchantia polymorpha",
+      "count": 36
+    },
+    {
+      "name": "Hydrogenophaga pseudoflava",
+      "count": 36
+    },
+    {
+      "name": "Salicornia bigelovii",
+      "count": 36
+    },
+    {
+      "name": "Cavia porcellus",
+      "count": 36
+    },
+    {
+      "name": "Pseudomonas brenneri",
+      "count": 35
+    },
+    {
+      "name": "Bordetella pertussis",
+      "count": 34
+    },
+    {
+      "name": "Acinetobacter baumannii",
+      "count": 33
+    },
+    {
+      "name": "Porphyromonas gingivalis atcc 33277",
+      "count": 33
+    },
+    {
+      "name": "Giardia lamblia atcc 50803",
+      "count": 32
+    },
+    {
+      "name": "Blautia producta",
+      "count": 32
+    },
+    {
+      "name": "Clostridium butyricum",
+      "count": 32
+    },
+    {
+      "name": "clostridium",
+      "count": 32
+    },
+    {
+      "name": "Escherichia coli k-12",
+      "count": 32
+    },
+    {
+      "name": "lactobacillus",
+      "count": 32
+    },
+    {
+      "name": "Cupriavidus necator",
+      "count": 32
+    },
+    {
+      "name": "Phragmites australis",
+      "count": 32
+    },
+    {
+      "name": "Lepyronia quadrangularis",
+      "count": 32
+    },
+    {
+      "name": "Haemonchus contortus",
+      "count": 32
+    },
+    {
+      "name": "Lactococcus lactis",
+      "count": 31
+    },
+    {
+      "name": "Escherichia coli bl21(de3)",
+      "count": 31
+    },
+    {
+      "name": "Escherichia coli str. k-12 substr. mg1655",
+      "count": 31
+    },
+    {
+      "name": "Tenebrio molitor",
+      "count": 31
+    },
+    {
+      "name": "Pongo pygmaeus morio",
+      "count": 31
+    },
+    {
+      "name": "Nepenthes alata",
+      "count": 31
+    },
+    {
+      "name": "Feces metagenome",
+      "count": 30
+    },
+    {
+      "name": "Bubalus bubalis",
+      "count": 30
+    },
+    {
+      "name": "Bacillus thuringiensis",
+      "count": 30
+    },
+    {
+      "name": "Enchytraeus crypticus",
+      "count": 30
+    },
+    {
+      "name": "Trichomonas vaginalis",
+      "count": 30
+    },
+    {
+      "name": "Pyrococcus furiosus dsm 3638",
+      "count": 30
+    },
+    {
+      "name": "Synechococcus sp. wh 8012",
+      "count": 30
+    },
+    {
+      "name": "Xanthium strumarium",
+      "count": 30
+    },
+    {
+      "name": "Histoplasma ohiense",
+      "count": 30
+    },
+    {
+      "name": "Glossina morsitans",
+      "count": 29
+    },
+    {
+      "name": "Scophthalmus maximus",
+      "count": 29
+    },
+    {
+      "name": "Nematostella vectensis",
+      "count": 29
+    },
+    {
+      "name": "Plasmodium berghei anka",
+      "count": 28
+    },
+    {
+      "name": "Helicobacter pylori j99",
+      "count": 28
+    },
+    {
+      "name": "Coffea arabica",
+      "count": 28
+    },
+    {
+      "name": "Toxoplasma gondii me49",
+      "count": 27
+    },
+    {
+      "name": "Staphylococcus epidermidis",
+      "count": 27
+    },
+    {
+      "name": "Thermus thermophilus",
+      "count": 27
+    },
+    {
+      "name": "Schizosaccharomyces pombe 927",
+      "count": 26
+    },
+    {
+      "name": "Enterococcus faecalis",
+      "count": 26
+    },
+    {
+      "name": "Wastewater metagenome",
+      "count": 26
+    },
+    {
+      "name": "Blank sample",
+      "count": 26
+    },
+    {
+      "name": "Citrus maxima",
+      "count": 24
+    },
+    {
+      "name": "Xanthomonas campestris",
+      "count": 24
+    },
+    {
+      "name": "Anas platyrhynchos",
+      "count": 24
+    },
+    {
+      "name": "Staphylococcus haemolyticus",
+      "count": 24
+    },
+    {
+      "name": "Zymomonas mobilis",
+      "count": 24
+    },
+    {
+      "name": "Galleria mellonella",
+      "count": 24
+    },
+    {
+      "name": "Citrus sinensis",
+      "count": 24
+    },
+    {
+      "name": "Bacillus subtilis subsp. subtilis 6051-hgw",
+      "count": 24
+    },
+    {
+      "name": "Cyprinodon variegatus",
+      "count": 24
+    },
+    {
+      "name": "Prunus avium subsp. avium",
+      "count": 24
+    },
+    {
+      "name": "Oryzias latipes",
+      "count": 23
+    },
+    {
+      "name": "Human feces metagenome",
+      "count": 23
+    },
+    {
+      "name": "Enterobacter cloacae",
+      "count": 23
+    },
+    {
+      "name": "Mouse gut metagenome",
+      "count": 22
+    },
+    {
+      "name": "Cicer arietinum",
+      "count": 22
+    },
+    {
+      "name": "Aedes aegypti",
+      "count": 22
+    },
+    {
+      "name": "Gossypium hirsutum",
+      "count": 21
+    },
+    {
+      "name": "Paracoccidioides brasiliensis",
+      "count": 21
+    },
+    {
+      "name": "Enterococcus faecium",
+      "count": 21
+    },
+    {
+      "name": "Clostridium botulinum",
+      "count": 21
+    },
+    {
+      "name": "Fungi",
+      "count": 21
+    },
+    {
+      "name": "Komagataella phaffii",
+      "count": 21
+    },
+    {
+      "name": "Tragelaphus oryx",
+      "count": 21
+    },
+    {
+      "name": "Paulownia",
+      "count": 20
+    },
+    {
+      "name": "Camellia sinensis",
+      "count": 20
+    },
+    {
+      "name": "Dictyostelium discoideum",
+      "count": 20
+    },
+    {
+      "name": "Methanobacterium",
+      "count": 20
+    },
+    {
+      "name": "Vibrio vulnificus cmcp6",
+      "count": 20
+    },
+    {
+      "name": "Thalassiosira pseudonana ccmp1335",
+      "count": 20
+    },
+    {
+      "name": "Ctenopharyngodon idella",
+      "count": 20
+    },
+    {
+      "name": "Ensifer adhaerens",
+      "count": 20
+    },
+    {
+      "name": "Shigella flexneri",
+      "count": 20
+    },
+    {
+      "name": "Akkermansia muciniphila",
+      "count": 20
+    },
+    {
+      "name": "Acyrthosiphon pisum",
+      "count": 20
+    },
+    {
+      "name": "Giardia duodenalis",
+      "count": 20
+    },
+    {
+      "name": "Eulimnogammarus verrucosus",
+      "count": 20
+    },
+    {
+      "name": "Prorocentrum donghaiense",
+      "count": 20
+    },
+    {
+      "name": "Streptococcus pyogenes serotype m1",
+      "count": 20
+    },
+    {
+      "name": "Theileria sp. ex hiroshima sika deer",
+      "count": 20
+    },
+    {
+      "name": "Penaeus vannamei",
+      "count": 20
+    },
+    {
+      "name": "Thermothielavioides terrestris",
+      "count": 20
+    },
+    {
+      "name": "Cynoglossus semilaevis",
+      "count": 20
+    },
+    {
+      "name": "Chara australis",
+      "count": 19
+    },
+    {
+      "name": "Zalophus californianus",
+      "count": 19
+    },
+    {
+      "name": "Diaphorina citri",
+      "count": 19
+    },
+    {
+      "name": "Phocaeicola vulgatus",
+      "count": 19
+    },
+    {
+      "name": "Naja ashei",
+      "count": 19
+    },
+    {
+      "name": "Fasciola hepatica",
+      "count": 19
+    },
+    {
+      "name": "Tribolium castaneum",
+      "count": 19
+    },
+    {
+      "name": "Paenibacillus polymyxa",
+      "count": 19
+    },
+    {
+      "name": "Pteropus alecto",
+      "count": 18
+    },
+    {
+      "name": "Burkholderia pseudomallei",
+      "count": 18
+    },
+    {
+      "name": "Mycolicibacterium smegmatis mc2 155",
+      "count": 18
+    },
+    {
+      "name": "Anser cygnoides",
+      "count": 18
+    },
+    {
+      "name": "Tursiops truncatus",
+      "count": 18
+    },
+    {
+      "name": "Fusobacterium nucleatum",
+      "count": 18
+    },
+    {
+      "name": "Laurasiatheria",
+      "count": 18
+    },
+    {
+      "name": "Burkholderia thailandensis",
+      "count": 18
+    },
+    {
+      "name": "Rhizobium favelukesii",
+      "count": 18
+    },
+    {
+      "name": "Leishmania tarentolae",
+      "count": 18
+    },
+    {
+      "name": "Alligator sinensis",
+      "count": 18
+    },
+    {
+      "name": "Chlamydia trachomatis e/c599",
+      "count": 18
+    },
+    {
+      "name": "Saccharomyces cf. cerevisiae",
+      "count": 18
+    },
+    {
+      "name": "Gigantopelta aegis",
+      "count": 18
+    },
+    {
+      "name": "Marine plankton environmental sample",
+      "count": 18
+    },
+    {
+      "name": "Mycobacterium tuberculosis h37rv_2009",
+      "count": 18
+    },
+    {
+      "name": "Pseudomonas",
+      "count": 18
+    },
+    {
+      "name": "Pseudomonas aeruginosa pa14",
+      "count": 18
+    },
+    {
+      "name": "Fungal yeast sp. s26-10",
+      "count": 18
+    },
+    {
+      "name": "Capsicum annuum",
+      "count": 18
+    },
+    {
+      "name": "Streptomyces iranensis",
+      "count": 18
+    },
+    {
+      "name": "Lacticaseibacillus casei bl23",
+      "count": 18
+    },
+    {
+      "name": "Brugia malayi",
+      "count": 18
+    },
+    {
+      "name": "Sporisorium scitamineum",
+      "count": 18
+    },
+    {
+      "name": "Proteus mirabilis bb2000",
+      "count": 18
+    },
+    {
+      "name": "Shigella flexneri 5a",
+      "count": 18
+    },
+    {
+      "name": "Pseudomonas aeruginosa bwhpsa046",
+      "count": 18
+    },
+    {
+      "name": "Pseudomonas aeruginosa ucsf15-17",
+      "count": 18
+    },
+    {
+      "name": "Parabacteroides johnsonii cl02t12c29",
+      "count": 18
+    },
+    {
+      "name": "Hevea brasiliensis",
+      "count": 18
+    },
+    {
+      "name": "Klebsiella variicola",
+      "count": 18
+    },
+    {
+      "name": "Rhizobium leguminosarum bv. viciae",
+      "count": 18
+    },
+    {
+      "name": "Procambarus virginalis",
+      "count": 18
+    },
+    {
+      "name": "Felis chaus",
+      "count": 18
+    },
+    {
+      "name": "Silene conica",
+      "count": 18
+    },
+    {
+      "name": "Hermetia illucens",
+      "count": 18
+    },
+    {
+      "name": "Emiliania huxleyi",
+      "count": 17
+    },
+    {
+      "name": "Neurospora crassa",
+      "count": 17
+    },
+    {
+      "name": "Eubacterium maltosivorans",
+      "count": 17
+    },
+    {
+      "name": "Methanosarcina mazei",
+      "count": 17
+    },
+    {
+      "name": "Boehmeria nivea",
+      "count": 16
+    },
+    {
+      "name": "Panopea generosa",
+      "count": 16
+    },
+    {
+      "name": "Carausius morosus",
+      "count": 16
+    },
+    {
+      "name": "Azospirillum brasilense fp2",
+      "count": 16
+    },
+    {
+      "name": "Methylocystis sp. sc2",
+      "count": 16
+    },
+    {
+      "name": "Myotis pilosus",
+      "count": 16
+    },
+    {
+      "name": "Willaertia magna",
+      "count": 16
+    },
+    {
+      "name": "Fragaria x ananassa",
+      "count": 16
+    },
+    {
+      "name": "Sars bat coronavirus",
+      "count": 16
+    },
+    {
+      "name": "Acinetobacter baumannii ab_tg2631",
+      "count": 16
+    },
+    {
+      "name": "Takydromus septentrionalis",
+      "count": 16
+    },
+    {
+      "name": "Streptomyces sp. mbt42",
+      "count": 16
+    },
+    {
+      "name": "Mycobacterium tuberculosis sumu001",
+      "count": 16
+    },
+    {
+      "name": "Komagataeibacter",
+      "count": 16
+    },
+    {
+      "name": "Pseudomonas aeruginosa pao1lm10",
+      "count": 16
+    },
+    {
+      "name": "Borreliella burgdorferi",
+      "count": 16
+    },
+    {
+      "name": "Populus trichocarpa",
+      "count": 16
+    },
+    {
+      "name": "Modified vaccinia ankara virus",
+      "count": 16
+    },
+    {
+      "name": "Clostridium pasteurianum",
+      "count": 16
+    },
+    {
+      "name": "Trypanosoma cruzi dm28c",
+      "count": 16
+    },
+    {
+      "name": "Lucilia cuprina",
+      "count": 16
+    },
+    {
+      "name": "Pandoravirus dulcis",
+      "count": 15
+    },
+    {
+      "name": "Pyropia yezoensis",
+      "count": 15
+    },
+    {
+      "name": "Cocos nucifera",
+      "count": 15
+    },
+    {
+      "name": "Plasmodium knowlesi",
+      "count": 15
+    },
+    {
+      "name": "Aliivibrio salmonicida lfi1238",
+      "count": 15
+    },
+    {
+      "name": "Picea abies",
+      "count": 15
+    },
+    {
+      "name": "Microcystis aeruginosa",
+      "count": 15
+    },
+    {
+      "name": "Desulfovibrio ferrophilus",
+      "count": 15
+    },
+    {
+      "name": "Labeo rohita",
+      "count": 15
+    },
+    {
+      "name": "Nostoc flagelliforme",
+      "count": 15
+    },
+    {
+      "name": "Pyropia haitanensis",
+      "count": 15
+    },
+    {
+      "name": "Nothobranchius furzeri",
+      "count": 15
+    },
+    {
+      "name": "Burkholderia thailandensis e264",
+      "count": 15
+    },
+    {
+      "name": "Thauera aromatica k172",
+      "count": 15
+    },
+    {
+      "name": "Gordonia polyisoprenivorans",
+      "count": 15
+    },
+    {
+      "name": "Yersinia enterocolitica lc20",
+      "count": 15
+    },
+    {
+      "name": "Cryptococcus neoformans bt1",
+      "count": 15
+    },
+    {
+      "name": "Bacillus cereus ah187",
+      "count": 15
+    },
+    {
+      "name": "Streptomyces sp. sirexaa-e",
+      "count": 15
+    },
+    {
+      "name": "Campylobacter jejuni subsp. jejuni atcc 33560",
+      "count": 15
+    },
+    {
+      "name": "Campylobacter coli rm2228",
+      "count": 15
+    },
+    {
+      "name": "Myodes glareolus",
+      "count": 14
+    },
+    {
+      "name": "Trichoderma cf. viride dis 217i",
+      "count": 14
+    },
+    {
+      "name": "Fusarium oxysporum",
+      "count": 14
+    },
+    {
+      "name": "Betacoronavirus sp.",
+      "count": 14
+    },
+    {
+      "name": "Staphylococcus epidermidis rp62a",
+      "count": 14
+    },
+    {
+      "name": "Xanthomonas retroflexus",
+      "count": 14
+    },
+    {
+      "name": "Halobacterium salinarum",
+      "count": 14
+    },
+    {
+      "name": "Proteus penneri",
+      "count": 14
+    },
+    {
+      "name": "Procapra picticaudata",
+      "count": 14
+    },
+    {
+      "name": "Sphingobacterium sp. w2",
+      "count": 14
+    },
+    {
+      "name": "Chryseobacterium sp. p567",
+      "count": 14
+    },
+    {
+      "name": "Rhodococcus erythropolis",
+      "count": 14
+    },
+    {
+      "name": "Halimeda",
+      "count": 14
+    },
+    {
+      "name": "Dehalococcoides sp.",
+      "count": 14
+    },
+    {
+      "name": "Pseudomonas aeruginosa pao579",
+      "count": 14
+    },
+    {
+      "name": "Haloferax volcanii sb1",
+      "count": 14
+    },
+    {
+      "name": "Drosophila mojavensis",
+      "count": 14
+    },
+    {
+      "name": "Chromobacterium violaceum",
+      "count": 14
+    },
+    {
+      "name": "Streptococcus pneumoniae",
+      "count": 13
+    },
+    {
+      "name": "Aerococcus urinae",
+      "count": 13
+    },
+    {
+      "name": "Deinococcus radiodurans",
+      "count": 13
+    },
+    {
+      "name": "Methanothermobacter thermautotrophicus",
+      "count": 13
+    },
+    {
+      "name": "Abortiporus biennis",
+      "count": 13
+    },
+    {
+      "name": "Zophobas atratus",
+      "count": 13
+    },
+    {
+      "name": "Yarrowia lipolytica",
+      "count": 13
+    },
+    {
+      "name": "Bacillus phage phi3t-spbeta hybrid",
+      "count": 13
+    },
+    {
+      "name": "Escherichia coli o157:nm",
+      "count": 12
+    },
+    {
+      "name": "Pseudomonas fluorescens",
+      "count": 12
+    },
+    {
+      "name": "Radix auricularia",
+      "count": 12
+    },
+    {
+      "name": "Felis catus",
+      "count": 12
+    },
+    {
+      "name": "Helicoverpa armigera",
+      "count": 12
+    },
+    {
+      "name": "Leishmania <subgenus>",
+      "count": 12
+    },
+    {
+      "name": "Anopheles albimanus",
+      "count": 12
+    },
+    {
+      "name": "Rhizobium leguminosarum bv. viciae vc2",
+      "count": 12
+    },
+    {
+      "name": "Diuraphis noxia",
+      "count": 12
+    },
+    {
+      "name": "Jatropha curcas",
+      "count": 12
+    },
+    {
+      "name": "Mycolicibacterium smegmatis mkd8",
+      "count": 12
+    },
+    {
+      "name": "Globicatella sanguinis",
+      "count": 12
+    },
+    {
+      "name": "Olindias sambaquiensis",
+      "count": 12
+    },
+    {
+      "name": "Cajanus cajan",
+      "count": 12
+    },
+    {
+      "name": "Klebsiella pneumoniae subsp. pneumoniae",
+      "count": 12
+    },
+    {
+      "name": "Aspergillus niger",
+      "count": 12
+    },
+    {
+      "name": "Pseudomonas syringae",
+      "count": 12
+    },
+    {
+      "name": "Human immunodeficiency virus 1",
+      "count": 12
+    },
+    {
+      "name": "Cricetulus barabensis",
+      "count": 12
+    },
+    {
+      "name": "Plasmodium vivax",
+      "count": 12
+    },
+    {
+      "name": "Schistosoma mansoni",
+      "count": 12
+    },
+    {
+      "name": "Anopheles gambiae",
+      "count": 12
+    },
+    {
+      "name": "Bombus terrestris",
+      "count": 12
+    },
+    {
+      "name": "Saccharum spontaneum",
+      "count": 12
+    },
+    {
+      "name": "Yersinia enterocolitica",
+      "count": 12
+    },
+    {
+      "name": "Portulaca oleracea",
+      "count": 12
+    },
+    {
+      "name": "Enterobacter sp. 198",
+      "count": 12
+    },
+    {
+      "name": "Klebsiella sp. rcj4",
+      "count": 12
+    },
+    {
+      "name": "Maruca vitrata",
+      "count": 12
+    },
+    {
+      "name": "Aspergillus oryzae",
+      "count": 12
+    },
+    {
+      "name": "Dipodascus albidus",
+      "count": 12
+    },
+    {
+      "name": "Theobroma cacao",
+      "count": 12
+    },
+    {
+      "name": "Anaeramoeba flamelloides",
+      "count": 12
+    },
+    {
+      "name": "Shigella flexneri 5b",
+      "count": 12
+    },
+    {
+      "name": "Montipora capitata",
+      "count": 12
+    },
+    {
+      "name": "Chrysemys picta",
+      "count": 12
+    },
+    {
+      "name": "Echinococcus granulosus",
+      "count": 12
+    },
+    {
+      "name": "Plasmodium falciparum mlw.2749",
+      "count": 12
+    },
+    {
+      "name": "Acinetobacter baylyi",
+      "count": 12
+    },
+    {
+      "name": "Leishmania donovani bpk282a1",
+      "count": 12
+    },
+    {
+      "name": "Rhipicephalus microplus",
+      "count": 12
+    },
+    {
+      "name": "Riemerella anatipestifer ra-ch-1",
+      "count": 12
+    },
+    {
+      "name": "Alteromonas macleodii atcc 27126",
+      "count": 12
+    },
+    {
+      "name": "Eptesicus fuscus",
+      "count": 12
+    },
+    {
+      "name": "Granulicatella elegans",
+      "count": 12
+    },
+    {
+      "name": "Neisseria gonorrhoeae",
+      "count": 12
+    },
+    {
+      "name": "Blumea",
+      "count": 12
+    },
+    {
+      "name": "Phytophthora cinnamomi",
+      "count": 12
+    },
+    {
+      "name": "Setaria italica",
+      "count": 12
+    },
+    {
+      "name": "Saccharomyces pastorianus",
+      "count": 12
+    },
+    {
+      "name": "Neisseria meningitidis serogroup b",
+      "count": 12
+    },
+    {
+      "name": "Rhyparobia maderae",
+      "count": 12
+    },
+    {
+      "name": "Carassius",
+      "count": 12
+    },
+    {
+      "name": "Culter alburnus",
+      "count": 12
+    },
+    {
+      "name": "Pinctada fucata",
+      "count": 12
+    },
+    {
+      "name": "Vicia costata",
+      "count": 12
+    },
+    {
+      "name": "Bacillus sp. b-23280",
+      "count": 12
+    },
+    {
+      "name": "Enterococcus faecium erv165",
+      "count": 12
+    },
+    {
+      "name": "Phaeodactylum tricornutum",
+      "count": 11
+    },
+    {
+      "name": "Spodoptera frugiperda",
+      "count": 11
+    },
+    {
+      "name": "Paramoeba perurans",
+      "count": 11
+    },
+    {
+      "name": "Ricinus communis",
+      "count": 11
+    },
+    {
+      "name": "Helicobacter pylori p12",
+      "count": 11
+    },
+    {
+      "name": "Proteus mirabilis",
+      "count": 11
+    },
+    {
+      "name": "Orthobunyavirus",
+      "count": 11
+    },
+    {
+      "name": "Dugesia japonica",
+      "count": 10
+    },
+    {
+      "name": "Mollivirus sibericum",
+      "count": 10
+    },
+    {
+      "name": "Stenocereus stellatus",
+      "count": 10
+    },
+    {
+      "name": "Takifugu fasciatus",
+      "count": 10
+    },
+    {
+      "name": "Vibrio alginolyticus",
+      "count": 10
+    },
+    {
+      "name": "Medicago sativa",
+      "count": 10
+    },
+    {
+      "name": "Chlorocebus aethiops",
+      "count": 10
+    },
+    {
+      "name": "Streptococcus pyogenes",
+      "count": 10
+    },
+    {
+      "name": "Ralstonia solanacearum",
+      "count": 10
+    },
+    {
+      "name": "Rattus rattus",
+      "count": 10
+    },
+    {
+      "name": "Callithrix jacchus",
+      "count": 10
+    },
+    {
+      "name": "Daphnia magna",
+      "count": 10
+    },
+    {
+      "name": "Peniophora incarnata",
+      "count": 10
+    },
+    {
+      "name": "Schaalia odontolytica",
+      "count": 10
+    },
+    {
+      "name": "Leishmania braziliensis",
+      "count": 10
+    },
+    {
+      "name": "Coilia nasus",
+      "count": 10
+    },
+    {
+      "name": "Anncaliia algerae",
+      "count": 10
+    },
+    {
+      "name": "Burkholderia thailandensis e555",
+      "count": 10
+    },
+    {
+      "name": "Arthrobacter sp. s2",
+      "count": 10
+    },
+    {
+      "name": "Streptomyces sp. PU10",
+      "count": 10
+    },
+    {
+      "name": "Ganoderma lucidum",
+      "count": 10
+    },
+    {
+      "name": "Hansenula polymorpha vector pam619",
+      "count": 10
+    },
+    {
+      "name": "Rousettus aegyptiacus",
+      "count": 10
+    },
+    {
+      "name": "Undaria pinnatifida",
+      "count": 10
+    },
+    {
+      "name": "Methanobrevibacter olleyae",
+      "count": 10
+    },
+    {
+      "name": "Candida maltosa xu316",
+      "count": 10
+    },
+    {
+      "name": "Unidentified",
+      "count": 9
+    },
+    {
+      "name": "Polynucleobacter asymbioticus",
+      "count": 9
+    },
+    {
+      "name": "Mycobacterium tuberculosis cdc1551",
+      "count": 9
+    },
+    {
+      "name": "Wenzhouxiangellaceae bacterium",
+      "count": 9
+    },
+    {
+      "name": "Corynebacterium diphtheriae",
+      "count": 9
+    },
+    {
+      "name": "Dactylorhiza",
+      "count": 9
+    },
+    {
+      "name": "Serendipita indica",
+      "count": 9
+    },
+    {
+      "name": "Steinernema carpocapsae",
+      "count": 9
+    },
+    {
+      "name": "Lactobacillus sp. y10",
+      "count": 9
+    },
+    {
+      "name": "Toxoplasma gondii pru",
+      "count": 9
+    },
+    {
+      "name": "Polyporus umbellatus gsx09",
+      "count": 9
+    },
+    {
+      "name": "Achromobacter xylosoxidans a8",
+      "count": 9
+    },
+    {
+      "name": "Rhodotorula toruloides np11",
+      "count": 9
+    },
+    {
+      "name": "Elysia crispata",
+      "count": 9
+    },
+    {
+      "name": "Pycnoporus <basidiomycete fungi>",
+      "count": 9
+    },
+    {
+      "name": "Nitrosophilus labii",
+      "count": 9
+    },
+    {
+      "name": "Escherichia coli o107",
+      "count": 9
+    },
+    {
+      "name": "Aspergillus parasiticus",
+      "count": 9
+    },
+    {
+      "name": "Anopheles gambiae str. pest",
+      "count": 9
+    },
+    {
+      "name": "Pleurotus pulmonarius",
+      "count": 9
+    },
+    {
+      "name": "Pochonia chlamydosporia",
+      "count": 9
+    },
+    {
+      "name": "Levilactobacillus brevis atcc 367",
+      "count": 9
+    },
+    {
+      "name": "Mammalian orthoreovirus 3 dearing",
+      "count": 9
+    },
+    {
+      "name": "Theileria parva",
+      "count": 9
+    },
+    {
+      "name": "Candidozyma aff. auris",
+      "count": 9
+    },
+    {
+      "name": "Prion",
+      "count": 9
+    },
+    {
+      "name": "Bartonella henselae",
+      "count": 8
+    },
+    {
+      "name": "Schizosaccharomyces pombe",
+      "count": 8
+    },
+    {
+      "name": "Alternaria tomato",
+      "count": 8
+    },
+    {
+      "name": "Ruegeria pomeroyi",
+      "count": 8
+    },
+    {
+      "name": "Crotalus viridis",
+      "count": 8
+    },
+    {
+      "name": "Ficus carica",
+      "count": 8
+    },
+    {
+      "name": "Aspergillus fumigatus var. fumigatus",
+      "count": 8
+    },
+    {
+      "name": "Sulfolobus acidocaldarius",
+      "count": 8
+    },
+    {
+      "name": "Vibrio vulnificus vv",
+      "count": 8
+    },
+    {
+      "name": "Neisseria meningitidis",
+      "count": 8
+    },
+    {
+      "name": "Chenopodium quinoa",
+      "count": 8
+    },
+    {
+      "name": "Uncultured desulfatiglans sp.",
+      "count": 8
+    },
+    {
+      "name": "Candida albicans sc5314",
+      "count": 8
+    },
+    {
+      "name": "Leptospira interrogans serovar manilae",
+      "count": 8
+    },
+    {
+      "name": "Solanum melongena",
+      "count": 8
+    },
+    {
+      "name": "Hypsibius exemplaris",
+      "count": 8
+    },
+    {
+      "name": "Cryptococcus neoformans",
+      "count": 8
+    },
+    {
+      "name": "Leishmania infantum",
+      "count": 8
+    },
+    {
+      "name": "Tupaia chinensis",
+      "count": 8
+    },
+    {
+      "name": "Candidatus kuenenia",
+      "count": 8
+    },
+    {
+      "name": "Bacteriophage sp.",
+      "count": 8
+    },
+    {
+      "name": "Phytophthora sojae",
+      "count": 8
+    },
+    {
+      "name": "Murine norovirus 1",
+      "count": 8
+    },
+    {
+      "name": "Dactylopius opuntiae",
+      "count": 8
+    },
+    {
+      "name": "Spinacia oleracea",
+      "count": 7
+    },
+    {
+      "name": "Toxoplasma gondii ctco5",
+      "count": 7
+    },
+    {
+      "name": "Propionibacterium freudenreichii",
+      "count": 7
+    },
+    {
+      "name": "Synechococcus sp. pcc 7002 x microcystis aeruginosa taihu98 coculture",
+      "count": 7
+    },
+    {
+      "name": "Escherichia phage phix174",
+      "count": 7
+    },
+    {
+      "name": "Citrobacter rodentium icc168",
+      "count": 7
+    },
+    {
+      "name": "Pyrus x bretschneideri",
+      "count": 6
+    },
+    {
+      "name": "Uncultured soil microorganism",
+      "count": 6
+    },
+    {
+      "name": "Bombyx mori",
+      "count": 6
+    },
+    {
+      "name": "Hadrurus spadix",
+      "count": 6
+    },
+    {
+      "name": "Staphylococcus carnosus",
+      "count": 6
+    },
+    {
+      "name": "Sarcophilus harrisii",
+      "count": 6
+    },
+    {
+      "name": "Centruroides hentzi",
+      "count": 6
+    },
+    {
+      "name": "Scolopendra viridis",
+      "count": 6
+    },
+    {
+      "name": "Microbiota",
+      "count": 6
+    },
+    {
+      "name": "Hemiscolopendra marginata",
+      "count": 6
+    },
+    {
+      "name": "Olea europaea",
+      "count": 6
+    },
+    {
+      "name": "Palaemonetes sp. common grass shrimp associated circular virus",
+      "count": 6
+    },
+    {
+      "name": "Pseudomonas aeruginosa sjtd-1",
+      "count": 6
+    },
+    {
+      "name": "Uncultivated soil bacterium",
+      "count": 6
+    },
+    {
+      "name": "Escherichia coli bl21",
+      "count": 6
+    },
+    {
+      "name": "Chroococcidiopsis thermalis pcc 7203",
+      "count": 6
+    },
+    {
+      "name": "Human herpesvirus 4 strain b95-8",
+      "count": 6
+    },
+    {
+      "name": "Schizosaccharomyces pombe 972h-",
+      "count": 6
+    },
+    {
+      "name": "Dehalococcoides mccartyi",
+      "count": 6
+    },
+    {
+      "name": "Helicobacter pylori g27",
+      "count": 6
+    },
+    {
+      "name": "Mahonia",
+      "count": 6
+    },
+    {
+      "name": "Human oral bacteria ensemble",
+      "count": 6
+    },
+    {
+      "name": "Phytophthora cactorum",
+      "count": 6
+    },
+    {
+      "name": "Escherichia phage t4",
+      "count": 6
+    },
+    {
+      "name": "Artibeus jamaicensis",
+      "count": 6
+    },
+    {
+      "name": "Aquifex aeolicus",
+      "count": 6
+    },
+    {
+      "name": "Proteus mirabilis hi4320",
+      "count": 6
+    },
+    {
+      "name": "Vicia faba var. minor",
+      "count": 6
+    },
+    {
+      "name": "Bacillus licheniformis",
+      "count": 6
+    },
+    {
+      "name": "Opecarcinus crescentus",
+      "count": 6
+    },
+    {
+      "name": "Spongilla lacustris",
+      "count": 6
+    },
+    {
+      "name": "Lyssavirus rabies",
+      "count": 6
+    },
+    {
+      "name": "Enterocloster bolteae atcc baa-613",
+      "count": 6
+    },
+    {
+      "name": "Biofilm metagenome",
+      "count": 6
+    },
+    {
+      "name": "Nostoc sp.",
+      "count": 6
+    },
+    {
+      "name": "Ruminococcus",
+      "count": 6
+    },
+    {
+      "name": "Salmonella phage sfp10",
+      "count": 6
+    },
+    {
+      "name": "Azospirillum sp. sp 7",
+      "count": 6
+    },
+    {
+      "name": "Klebsiella oxytoca",
+      "count": 6
+    },
+    {
+      "name": "Candida albicans 23r",
+      "count": 6
+    },
+    {
+      "name": "Vickermania",
+      "count": 6
+    },
+    {
+      "name": "Escherichia phage ms2",
+      "count": 6
+    },
+    {
+      "name": "Fagus sylvatica",
+      "count": 6
+    },
+    {
+      "name": "Bacillus phage spo1",
+      "count": 6
+    },
+    {
+      "name": "Dysosmobacter welbionis",
+      "count": 6
+    },
+    {
+      "name": "Phaffia rhodozyma",
+      "count": 6
+    },
+    {
+      "name": "Glaesserella parasuis sh0165",
+      "count": 6
+    },
+    {
+      "name": "Chrysoperla carnea",
+      "count": 6
+    },
+    {
+      "name": "Larimichthys crocea",
+      "count": 6
+    },
+    {
+      "name": "Obama nungara",
+      "count": 6
+    },
+    {
+      "name": "Pantoea agglomerans pv. betae",
+      "count": 6
+    },
+    {
+      "name": "Klebsiella sp. 'medkleb'",
+      "count": 6
+    },
+    {
+      "name": "Protopterus dolloi",
+      "count": 5
+    },
+    {
+      "name": "Sediment metagenome",
+      "count": 5
+    },
+    {
+      "name": "Cucumis sativus",
+      "count": 5
+    },
+    {
+      "name": "Salmonella enterica subsp. enterica serovar typhimurium",
+      "count": 5
+    },
+    {
+      "name": "Klebsiella pneumoniae jh1",
+      "count": 5
+    },
+    {
+      "name": "Acinetobacter sp. pm-14",
+      "count": 5
+    },
+    {
+      "name": "Klebsiella variicola at-22",
+      "count": 5
+    },
+    {
+      "name": "Streptococcus pyogenes abc020006030",
+      "count": 5
+    },
+    {
+      "name": "Monodelphis domestica",
+      "count": 5
+    },
+    {
+      "name": "Cyperus rotundus",
+      "count": 5
+    },
+    {
+      "name": "Sclerotinia sclerotiorum",
+      "count": 5
+    },
+    {
+      "name": "Trichoplax sp. h2",
+      "count": 5
+    },
+    {
+      "name": "Bartonella grahamii",
+      "count": 5
+    },
+    {
+      "name": "Xiphophorus malinche x xiphophorus birchmanni",
+      "count": 5
+    },
+    {
+      "name": "Anolis carolinensis",
+      "count": 5
+    },
+    {
+      "name": "Klebsiella grimontii",
+      "count": 5
+    },
+    {
+      "name": "Pseudomonas aeruginosa pa103",
+      "count": 5
+    },
+    {
+      "name": "Shigella sonnei",
+      "count": 5
+    },
+    {
+      "name": "Citrobacter freundii complex",
+      "count": 5
+    },
+    {
+      "name": "Klebsiella quasipneumoniae",
+      "count": 5
+    },
+    {
+      "name": "Morganella morganii subsp. morganii",
+      "count": 5
+    },
+    {
+      "name": "Enterococcus faecium com15",
+      "count": 5
+    },
+    {
+      "name": "Diaporthe sp. t1",
+      "count": 5
+    },
+    {
+      "name": "Aspergillus uvarum",
+      "count": 5
+    },
+    {
+      "name": "Podospora anserina",
+      "count": 4
+    },
+    {
+      "name": "Unclassified marseilleviridae",
+      "count": 4
+    },
+    {
+      "name": "Plasmodium yoelii",
+      "count": 4
+    },
+    {
+      "name": "Microcebus murinus",
+      "count": 4
+    },
+    {
+      "name": "Synechocystis nigrescens",
+      "count": 4
+    },
+    {
+      "name": "Gasterosteus aculeatus",
+      "count": 4
+    },
+    {
+      "name": "Mustela putorius furo",
+      "count": 4
+    },
+    {
+      "name": "Zika virus",
+      "count": 4
+    },
+    {
+      "name": "Pseudomonas aeruginosa pao1h2o",
+      "count": 4
+    },
+    {
+      "name": "Acanthamoeba castellanii mimivirus",
+      "count": 4
+    },
+    {
+      "name": "Klebsiella pneumoniae atcc baa-2146",
+      "count": 4
+    },
+    {
+      "name": "Antipathes griggi",
+      "count": 4
+    },
+    {
+      "name": "Plasmodium berghei",
+      "count": 4
+    },
+    {
+      "name": "Mesotaenium sp. jh0031",
+      "count": 4
+    },
+    {
+      "name": "Blautia hydrogenotrophica dsm 10507",
+      "count": 4
+    },
+    {
+      "name": "Phocaeicola vulgatus atcc 8482",
+      "count": 4
+    },
+    {
+      "name": "Bacteroides ovatus atcc 8483",
+      "count": 4
+    },
+    {
+      "name": "Bacteroides uniformis atcc 8492",
+      "count": 4
+    },
+    {
+      "name": "Bdellovibrio bacteriovorus",
+      "count": 4
+    },
+    {
+      "name": "Pinus nigra",
+      "count": 4
+    },
+    {
+      "name": "Recombinant sars coronavirus",
+      "count": 4
+    },
+    {
+      "name": "Juglans regia",
+      "count": 4
+    },
+    {
+      "name": "Spirometra",
+      "count": 4
+    },
+    {
+      "name": "Rhodospirillum rubrum",
+      "count": 4
+    },
+    {
+      "name": "Measles morbillivirus",
+      "count": 4
+    },
+    {
+      "name": "Spirodela polyrhiza",
+      "count": 4
+    },
+    {
+      "name": "Haemaphysalis flava",
+      "count": 4
+    },
+    {
+      "name": "Escherichia coli bw25113",
+      "count": 4
+    },
+    {
+      "name": "Vaccinia virus wr",
+      "count": 4
+    },
+    {
+      "name": "Enterocloster citroniae",
+      "count": 4
+    },
+    {
+      "name": "Salmonella enterica subsp. enterica serovar typhimurium str. stm1",
+      "count": 4
+    },
+    {
+      "name": "Methanococcus maripaludis",
+      "count": 4
+    },
+    {
+      "name": "Synechococcus elongatus",
+      "count": 4
+    },
+    {
+      "name": "Dendrobium huoshanense",
+      "count": 4
+    },
+    {
+      "name": "Aspergillus fumigatus cea10",
+      "count": 3
+    },
+    {
+      "name": "Tropilaelaps mercedesae",
+      "count": 3
+    },
+    {
+      "name": "Malus baccata",
+      "count": 3
+    },
+    {
+      "name": "Streptococcus suis",
+      "count": 3
+    },
+    {
+      "name": "Saccharomycopsis schoenii",
+      "count": 3
+    },
+    {
+      "name": "Mycobacterium tuberculosis k",
+      "count": 3
+    },
+    {
+      "name": "Phytophthora infestans t30-4",
+      "count": 3
+    },
+    {
+      "name": "Leptospira interrogans",
+      "count": 3
+    },
+    {
+      "name": "Rift valley fever virus",
+      "count": 3
+    },
+    {
+      "name": "Cassiopea andromeda",
+      "count": 3
+    },
+    {
+      "name": "Oryctolagus sp. 'rabbit_od'",
+      "count": 3
+    },
+    {
+      "name": "Actinosynnema pretiosum",
+      "count": 3
+    },
+    {
+      "name": "Weeksella virosa",
+      "count": 3
+    },
+    {
+      "name": "Numida meleagris",
+      "count": 3
+    },
+    {
+      "name": "Chelydra serpentina",
+      "count": 3
+    },
+    {
+      "name": "Janthinobacterium lividum",
+      "count": 3
+    },
+    {
+      "name": "Eubalaena glacialis",
+      "count": 3
+    },
+    {
+      "name": "Zobellia galactanivorans",
+      "count": 3
+    },
+    {
+      "name": "Anisakis simplex",
+      "count": 3
+    },
+    {
+      "name": "Panthera spelaea",
+      "count": 3
+    },
+    {
+      "name": "Cedratvirus ce2-1",
+      "count": 3
+    },
+    {
+      "name": "Fusarium oxysporum f. sp. lycopersici 4286",
+      "count": 3
+    },
+    {
+      "name": "Carollia perspicillata",
+      "count": 3
+    },
+    {
+      "name": "Varanus komodoensis",
+      "count": 2
+    },
+    {
+      "name": "Leishmania donovani",
+      "count": 2
+    },
+    {
+      "name": "Saccharolobus solfataricus",
+      "count": 2
+    },
+    {
+      "name": "Thalassiosira pseudonana",
+      "count": 2
+    },
+    {
+      "name": "Aspergillus niger atcc 13496",
+      "count": 2
+    },
+    {
+      "name": "Populus cathayana",
+      "count": 2
+    },
+    {
+      "name": "Myotis lucifugus",
+      "count": 2
+    },
+    {
+      "name": "Cercopithecus",
+      "count": 2
+    },
+    {
+      "name": "Coronavirus predict cov-19",
+      "count": 2
+    },
+    {
+      "name": "La crosse virus",
+      "count": 2
+    },
+    {
+      "name": "Human alphaherpesvirus 1",
+      "count": 2
+    },
+    {
+      "name": "Orthopoxvirus vaccinia",
+      "count": 2
+    },
+    {
+      "name": "Vesicular stomatitis virus",
+      "count": 2
+    },
+    {
+      "name": "Human coronavirus 229e",
+      "count": 2
+    },
+    {
+      "name": "Eucalyptus grandis",
+      "count": 2
+    },
+    {
+      "name": "Salmonella enterica subsp. enterica serovar infantis",
+      "count": 2
+    },
+    {
+      "name": "Moraxella bovis",
+      "count": 2
+    },
+    {
+      "name": "Pseudoalteromonas prydzensis acam 620",
+      "count": 2
+    },
+    {
+      "name": "Streptococcus thermophilus",
+      "count": 2
+    },
+    {
+      "name": "Oculina patagonica",
+      "count": 2
+    },
+    {
+      "name": "Stenotrophomonas maltophilia",
+      "count": 2
+    },
+    {
+      "name": "Aspergillus fumigatus",
+      "count": 2
+    },
+    {
+      "name": "Streptococcus salivarius k12",
+      "count": 2
+    },
+    {
+      "name": "Brucella canis atcc 23365",
+      "count": 2
+    },
+    {
+      "name": "Tetrahymena thermophila cu428",
+      "count": 2
+    },
+    {
+      "name": "Sipunculus nudus",
+      "count": 2
+    },
+    {
+      "name": "Lathyrus oleraceus",
+      "count": 2
+    },
+    {
+      "name": "Kocuria rhizophila",
+      "count": 2
+    },
+    {
+      "name": "Hipposideros armiger",
+      "count": 2
+    },
+    {
+      "name": "Anthoceros agrestis",
+      "count": 2
+    },
+    {
+      "name": "Streptomyces sp. acm38",
+      "count": 2
+    },
+    {
+      "name": "Python bivittatus",
+      "count": 2
+    },
+    {
+      "name": "Haematococcus lacustris",
+      "count": 2
+    },
+    {
+      "name": "Erysipelotrichaceae bacterium",
+      "count": 2
+    },
+    {
+      "name": "Euglena gracilis",
+      "count": 2
+    },
+    {
+      "name": "Vibrio phage icp1_2006_e",
+      "count": 2
+    },
+    {
+      "name": "Oreochromis niloticus",
+      "count": 2
+    },
+    {
+      "name": "Prymnesium kappa virus",
+      "count": 2
+    },
+    {
+      "name": "Pandalus borealis",
+      "count": 2
+    },
+    {
+      "name": "Porphyromonas gingivalis w50",
+      "count": 2
+    },
+    {
+      "name": "Brucella melitensis",
+      "count": 2
+    },
+    {
+      "name": "Panthera leo",
+      "count": 2
+    },
+    {
+      "name": "Panthera tigris",
+      "count": 2
+    },
+    {
+      "name": "Staphylococcus saprophyticus",
+      "count": 2
+    },
+    {
+      "name": "Naja kaouthia",
+      "count": 2
+    },
+    {
+      "name": "Groundwater metagenome",
+      "count": 1
+    },
+    {
+      "name": "Erysipelothrix rhusiopathiae",
+      "count": 1
+    },
+    {
+      "name": "Cuminum cyminum",
+      "count": 1
+    },
+    {
+      "name": "Taiwanofungus camphoratus",
+      "count": 1
+    },
+    {
+      "name": "Sulfobacillus thermosulfidooxidans",
+      "count": 1
+    },
+    {
+      "name": "Granulicatella adiacens atcc 49175",
+      "count": 1
+    },
+    {
+      "name": "Vairimorpha necatrix",
+      "count": 1
+    },
+    {
+      "name": "Rhizosphere metagenome",
+      "count": 1
+    },
+    {
+      "name": "Aminomonas paucivorans",
+      "count": 1
+    },
+    {
+      "name": "Archaeoglobus fulgidus",
+      "count": 1
+    },
+    {
+      "name": "Archaeoglobus profundus",
+      "count": 1
+    },
+    {
+      "name": "Bacteroides fragilis",
+      "count": 1
+    },
+    {
+      "name": "Bacteroides uniformis",
+      "count": 1
+    },
+    {
+      "name": "Bifidobacterium longum subsp. longum",
+      "count": 1
+    },
+    {
+      "name": "Bifidobacterium adolescentis",
+      "count": 1
+    },
+    {
+      "name": "Blautia obeum",
+      "count": 1
+    },
+    {
+      "name": "Caldisericum exile",
+      "count": 1
+    },
+    {
+      "name": "Caldithrix abyssi",
+      "count": 1
+    },
+    {
+      "name": "Chromera velia",
+      "count": 1
+    },
+    {
+      "name": "Enterocloster bolteae",
+      "count": 1
+    },
+    {
+      "name": "Clostridium perfringens",
+      "count": 1
+    },
+    {
+      "name": "[Clostridium] saccharolyticum WM1",
+      "count": 1
+    },
+    {
+      "name": "Collinsella aerofaciens",
+      "count": 1
+    },
+    {
+      "name": "Coprococcus comes",
+      "count": 1
+    },
+    {
+      "name": "Denitrovibrio acetiphilus",
+      "count": 1
+    },
+    {
+      "name": "Dethiosulfovibrio peptidovorans",
+      "count": 1
+    },
+    {
+      "name": "Dictyoglomus thermophilum",
+      "count": 1
+    },
+    {
+      "name": "Dorea formicigenerans",
+      "count": 1
+    },
+    {
+      "name": "Eggerthella lenta",
+      "count": 1
+    },
+    {
+      "name": "Escherichia coli ed1a",
+      "count": 1
+    },
+    {
+      "name": "Agathobacter rectalis",
+      "count": 1
+    },
+    {
+      "name": "Ferroglobus placidus",
+      "count": 1
+    },
+    {
+      "name": "Fusobacterium nucleatum subsp. nucleatum",
+      "count": 1
+    },
+    {
+      "name": "Granulicella tundricola",
+      "count": 1
+    },
+    {
+      "name": "Guillardia theta",
+      "count": 1
+    },
+    {
+      "name": "Haloarcula marismortui",
+      "count": 1
+    },
+    {
+      "name": "Halobacterium",
+      "count": 1
+    },
+    {
+      "name": "Haloferax mediterranei",
+      "count": 1
+    },
+    {
+      "name": "Lacticaseibacillus paracasei",
+      "count": 1
+    },
+    {
+      "name": "Methanocaldococcus jannaschii",
+      "count": 1
+    },
+    {
+      "name": "Methanopyrus kandleri",
+      "count": 1
+    },
+    {
+      "name": "Methanosarcina barkeri",
+      "count": 1
+    },
+    {
+      "name": "Methanothermobacter marburgensis",
+      "count": 1
+    },
+    {
+      "name": "Mycoplasma",
+      "count": 1
+    },
+    {
+      "name": "Odoribacter splanchnicus",
+      "count": 1
+    },
+    {
+      "name": "Parabacteroides distasonis",
+      "count": 1
+    },
+    {
+      "name": "Parabacteroides merdae",
+      "count": 1
+    },
+    {
+      "name": "Persephonella marina",
+      "count": 1
+    },
+    {
+      "name": "Petrotoga halophila",
+      "count": 1
+    },
+    {
+      "name": "Picrophilus oshimae",
+      "count": 1
+    },
+    {
+      "name": "Porphyra umbilicalis",
+      "count": 1
+    },
+    {
+      "name": "Segatella copri",
+      "count": 1
+    },
+    {
+      "name": "Pseudothermotoga hypogea",
+      "count": 1
+    },
+    {
+      "name": "Roseburia intestinalis",
+      "count": 1
+    },
+    {
+      "name": "Ruminococcus bromii",
+      "count": 1
+    },
+    {
+      "name": "Mediterraneibacter gnavus",
+      "count": 1
+    },
+    {
+      "name": "[Ruminococcus] torques",
+      "count": 1
+    },
+    {
+      "name": "Winmispira thermophila",
+      "count": 1
+    },
+    {
+      "name": "Stentor coeruleus",
+      "count": 1
+    },
+    {
+      "name": "Streptococcus parasanguinis",
+      "count": 1
+    },
+    {
+      "name": "Symbiodinium microadriaticum",
+      "count": 1
+    },
+    {
+      "name": "Tardigrada",
+      "count": 1
+    },
+    {
+      "name": "Thermococcus litoralis",
+      "count": 1
+    },
+    {
+      "name": "Thermodesulfatator indicus",
+      "count": 1
+    },
+    {
+      "name": "Thermodesulfobacterium commune",
+      "count": 1
+    },
+    {
+      "name": "Thermoplasma acidophilum",
+      "count": 1
+    },
+    {
+      "name": "Thermoplasma volcanium",
+      "count": 1
+    },
+    {
+      "name": "Thermoproteus tenax",
+      "count": 1
+    },
+    {
+      "name": "Thermotoga maritima",
+      "count": 1
+    },
+    {
+      "name": "Treponema denticola",
+      "count": 1
+    },
+    {
+      "name": "Veillonella parvula",
+      "count": 1
+    },
+    {
+      "name": "Didelphis virginiana",
+      "count": 1
+    },
+    {
+      "name": "Staphylococcus sp. kdm4",
+      "count": 1
+    },
+    {
+      "name": "Vibrio fluvialis",
+      "count": 1
+    },
+    {
+      "name": "Encephalomyocarditis virus",
+      "count": 1
+    },
+    {
+      "name": "Influenza a virus",
+      "count": 1
+    },
+    {
+      "name": "Murine hepatitis virus",
+      "count": 1
+    },
+    {
+      "name": "Semliki forest virus",
+      "count": 1
+    },
+    {
+      "name": "Thogotovirus",
+      "count": 1
+    },
+    {
+      "name": "Citrobacter freundii",
+      "count": 1
+    },
+    {
+      "name": "Sars coronavirus sin3765v",
+      "count": 1
+    },
+    {
+      "name": "Staphylococcus pasteuri",
+      "count": 1
+    },
+    {
+      "name": "Cryptosporidium parvum iowa ii",
+      "count": 1
+    },
+    {
+      "name": "Oxalobacter formigenes",
+      "count": 1
+    },
+    {
+      "name": "Clarias gariepinus",
+      "count": 1
+    },
+    {
+      "name": "Methanoculleus marisnigri jr1",
+      "count": 1
+    },
+    {
+      "name": "Deinagkistrodon acutus",
+      "count": 1
+    },
+    {
+      "name": "Archaea",
+      "count": 1
+    },
+    {
+      "name": "Rhodomicrobium vannielii atcc 17100",
+      "count": 1
+    },
+    {
+      "name": "Dhillonvirus",
+      "count": 1
+    },
+    {
+      "name": "Ancylostoma ceylanicum",
+      "count": 1
+    },
+    {
+      "name": "Panax notoginseng",
+      "count": 1
+    },
+    {
+      "name": "Trichoplusia ni",
+      "count": 1
+    },
+    {
+      "name": "Bdellovibrio bacteriovorus hd100",
+      "count": 1
+    },
+    {
+      "name": "Lepeophtheirus salmonis",
+      "count": 1
+    },
+    {
+      "name": "Promethearchaeum syntrophicum",
+      "count": 1
+    },
+    {
+      "name": "Pyrodictium abyssi",
+      "count": 1
+    },
+    {
+      "name": "Methylohalobius crimeensis 10ki",
+      "count": 1
+    },
+    {
+      "name": "Suncus murinus",
+      "count": 1
+    },
+    {
+      "name": "Micrococcus luteus",
+      "count": 1
+    },
+    {
+      "name": "Trionyx triunguis",
+      "count": 1
+    },
+    {
+      "name": "Lupinus mutabilis",
+      "count": 1
+    },
+    {
+      "name": "Mannheimia haemolytica m42548",
+      "count": 1
+    },
+    {
+      "name": "Anabaena sp. bta17",
+      "count": 1
+    },
+    {
+      "name": "Lacticaseibacillus casei",
+      "count": 1
+    },
+    {
+      "name": "Naja fuxi",
+      "count": 1
+    },
+    {
+      "name": "Naja siamensis",
+      "count": 1
+    },
+    {
+      "name": "Trimeresurus albolabris",
+      "count": 1
+    },
+    {
+      "name": "Ophiophagus hannah",
+      "count": 1
+    }
+  ],
+  "diseases": [
+    {
+      "name": "cervical adenocarcinoma",
+      "count": 3605
+    },
+    {
+      "name": "acute myeloid leukemia",
+      "count": 3515
+    },
+    {
+      "name": "lung adenocarcinoma",
+      "count": 3487
+    },
+    {
+      "name": "Alzheimer disease",
+      "count": 2027
+    },
+    {
+      "name": "Huntington disease",
+      "count": 1437
+    },
+    {
+      "name": "COVID-19",
+      "count": 1063
+    },
+    {
+      "name": "endocervical adenocarcinoma",
+      "count": 953
+    },
+    {
+      "name": "chronic myeloid leukemia",
+      "count": 517
+    },
+    {
+      "name": "squamous cell lung cancer",
+      "count": 464
+    },
+    {
+      "name": "obesity",
+      "count": 455
+    },
+    {
+      "name": "pancreatic ductal adenocarcinoma",
+      "count": 453
+    },
+    {
+      "name": "Rheumatic heart disease",
+      "count": 418
+    },
+    {
+      "name": "cervical cancer",
+      "count": 398
+    },
+    {
+      "name": "glioblastoma",
+      "count": 366
+    },
+    {
+      "name": "leukemia",
+      "count": 357
+    },
+    {
+      "name": "colorectal cancer",
+      "count": 316
+    },
+    {
+      "name": "melanoma",
+      "count": 297
+    },
+    {
+      "name": "prostate carcinoma",
+      "count": 278
+    },
+    {
+      "name": "epithelial cervix carcinoma",
+      "count": 273
+    },
+    {
+      "name": "chronic myelogenous leukemia",
+      "count": 260
+    },
+    {
+      "name": "colorectal carcinoma",
+      "count": 250
+    },
+    {
+      "name": "adenocarcinoma",
+      "count": 248
+    },
+    {
+      "name": "Hepatocellular carcinoma",
+      "count": 248
+    },
+    {
+      "name": "Acute ischemic stroke",
+      "count": 244
+    },
+    {
+      "name": "breast cancer",
+      "count": 229
+    },
+    {
+      "name": "stomach carcinoma",
+      "count": 190
+    },
+    {
+      "name": "ulcerative colitis",
+      "count": 177
+    },
+    {
+      "name": "fibrosis",
+      "count": 176
+    },
+    {
+      "name": "stomach cancer",
+      "count": 167
+    },
+    {
+      "name": "colitis",
+      "count": 163
+    },
+    {
+      "name": "hepatocellular carcinoma (HCC)",
+      "count": 160
+    },
+    {
+      "name": "diastolic heart failure",
+      "count": 160
+    },
+    {
+      "name": "osteosarcoma",
+      "count": 159
+    },
+    {
+      "name": "colon carcinoma",
+      "count": 157
+    },
+    {
+      "name": "prostate adenocarcinoma",
+      "count": 150
+    },
+    {
+      "name": "Disease",
+      "count": 134
+    },
+    {
+      "name": "neutropenia",
+      "count": 132
+    },
+    {
+      "name": "breast adenocarcinoma",
+      "count": 131
+    },
+    {
+      "name": "uninfected",
+      "count": 127
+    },
+    {
+      "name": "aortic valve disorder",
+      "count": 126
+    },
+    {
+      "name": "Melanoma",
+      "count": 123
+    },
+    {
+      "name": "Breast Cancer",
+      "count": 114
+    },
+    {
+      "name": "type 1 diabetes mellitus",
+      "count": 113
+    },
+    {
+      "name": "inflammatory bowel disease",
+      "count": 113
+    },
+    {
+      "name": "Clear Cell Renal Cell Carcinoma",
+      "count": 110
+    },
+    {
+      "name": "intrahepatic cholangiocarcinoma",
+      "count": 106
+    },
+    {
+      "name": "T-cell childhood acute lymphocytic leukemia",
+      "count": 99
+    },
+    {
+      "name": "hypertrophic cardiomyopathy",
+      "count": 98
+    },
+    {
+      "name": "ovarian high grade serous adenocarcinoma",
+      "count": 93
+    },
+    {
+      "name": "Breast ductal carcinoma",
+      "count": 91
+    },
+    {
+      "name": "cystic fibrosis",
+      "count": 90
+    },
+    {
+      "name": "hepatocellular carcinoma",
+      "count": 88
+    },
+    {
+      "name": "aortic valve stenosis",
+      "count": 87
+    },
+    {
+      "name": "primary human medulloblastomas",
+      "count": 86
+    },
+    {
+      "name": "Colorectal Cancer",
+      "count": 80
+    },
+    {
+      "name": "non-small cell lung cancer",
+      "count": 77
+    },
+    {
+      "name": "male infertility",
+      "count": 77
+    },
+    {
+      "name": "Prostate cancer",
+      "count": 73
+    },
+    {
+      "name": "Meningioma",
+      "count": 73
+    },
+    {
+      "name": "Invasive breast carcinoma of no special type",
+      "count": 71
+    },
+    {
+      "name": "Triple-negative breast cancer",
+      "count": 71
+    },
+    {
+      "name": "endometriosis",
+      "count": 71
+    },
+    {
+      "name": "TANGO2 dysfunction",
+      "count": 71
+    },
+    {
+      "name": "citrobacter infection, non-human animal",
+      "count": 71
+    },
+    {
+      "name": "Colorectal cancer",
+      "count": 66
+    },
+    {
+      "name": "Dengue",
+      "count": 66
+    },
+    {
+      "name": "abdominal obesity-metabolic syndrome",
+      "count": 66
+    },
+    {
+      "name": "premature birth",
+      "count": 64
+    },
+    {
+      "name": "type 2 diabetes mellitus",
+      "count": 62
+    },
+    {
+      "name": "dilated cardiomyopathy",
+      "count": 62
+    },
+    {
+      "name": "C",
+      "count": 62
+    },
+    {
+      "name": "Breast carcinoma",
+      "count": 60
+    },
+    {
+      "name": "Non-demented control",
+      "count": 60
+    },
+    {
+      "name": "latent tuberculosis",
+      "count": 59
+    },
+    {
+      "name": "breast carcinoma",
+      "count": 59
+    },
+    {
+      "name": "Breast cancer",
+      "count": 59
+    },
+    {
+      "name": "Glioblastoma",
+      "count": 57
+    },
+    {
+      "name": "colon adenocarcinoma",
+      "count": 57
+    },
+    {
+      "name": "Zika",
+      "count": 56
+    },
+    {
+      "name": "Colon Adenocarcinoma",
+      "count": 55
+    },
+    {
+      "name": "Lung small cell carcinoma",
+      "count": 53
+    },
+    {
+      "name": "oligoasthenoteratozoospermia",
+      "count": 53
+    },
+    {
+      "name": "cholangiocarcinoma",
+      "count": 53
+    },
+    {
+      "name": "LC",
+      "count": 53
+    },
+    {
+      "name": "Colorectal adenocarcinoma",
+      "count": 52
+    },
+    {
+      "name": "cardiomyopathy",
+      "count": 52
+    },
+    {
+      "name": "Crohn's disease",
+      "count": 51
+    },
+    {
+      "name": "locally advanced non-metastatic colorectal cancer",
+      "count": 50
+    },
+    {
+      "name": "metastatic cutaneous melanoma",
+      "count": 50
+    },
+    {
+      "name": "t1dm",
+      "count": 50
+    },
+    {
+      "name": "Benigne Prostate Hyperplasia",
+      "count": 49
+    },
+    {
+      "name": "Lung Squamous Cell Carcinoma",
+      "count": 49
+    },
+    {
+      "name": "lung large cell carcinoma",
+      "count": 48
+    },
+    {
+      "name": "Breast adenocarcinoma",
+      "count": 47
+    },
+    {
+      "name": "Osteosarcoma",
+      "count": 46
+    },
+    {
+      "name": "Colon adenocarcinoma",
+      "count": 46
+    },
+    {
+      "name": "malignant melanoma",
+      "count": 46
+    },
+    {
+      "name": "first-degree relative of type 1 diabetes mellitus patient",
+      "count": 46
+    },
+    {
+      "name": "Late-stage age-related macular degeneration",
+      "count": 45
+    },
+    {
+      "name": "Crohn disease",
+      "count": 44
+    },
+    {
+      "name": "superficial spreading melanoma",
+      "count": 44
+    },
+    {
+      "name": "Alzheimer's Disease",
+      "count": 44
+    },
+    {
+      "name": "colon cancer",
+      "count": 43
+    },
+    {
+      "name": "intraductal papillary mucinous neoplasm",
+      "count": 42
+    },
+    {
+      "name": "Williams-Beuren syndrome",
+      "count": 41
+    },
+    {
+      "name": "atopic eczema",
+      "count": 40
+    },
+    {
+      "name": "myocardial infarction",
+      "count": 40
+    },
+    {
+      "name": "tuberculosis",
+      "count": 37
+    },
+    {
+      "name": "colorectal adenocarcinoma",
+      "count": 37
+    },
+    {
+      "name": "Mlignant Melanoma",
+      "count": 36
+    },
+    {
+      "name": "Breast Adenocarcinoma",
+      "count": 36
+    },
+    {
+      "name": "Pancreatic Carcinoma",
+      "count": 36
+    },
+    {
+      "name": "ischemic cardiomyopathy",
+      "count": 36
+    },
+    {
+      "name": "blast phase chronic myelogenous leukemia, BCR-ABL1 positive",
+      "count": 36
+    },
+    {
+      "name": "nodular melanoma",
+      "count": 35
+    },
+    {
+      "name": "undifferentiated pancreatic carcinoma",
+      "count": 35
+    },
+    {
+      "name": "N",
+      "count": 35
+    },
+    {
+      "name": "covid",
+      "count": 34
+    },
+    {
+      "name": "ovarian cystadenocarcinoma",
+      "count": 34
+    },
+    {
+      "name": "Gastric Cancer",
+      "count": 33
+    },
+    {
+      "name": "Prostate adenocarcinoma",
+      "count": 32
+    },
+    {
+      "name": "heart failure",
+      "count": 32
+    },
+    {
+      "name": "Not Reported",
+      "count": 31
+    },
+    {
+      "name": "metabolic dysfunction-associated steatohepatitis",
+      "count": 31
+    },
+    {
+      "name": "Myalgic encephalomyelitis/chronic fatigue syndrome",
+      "count": 31
+    },
+    {
+      "name": "Pancretic cancer",
+      "count": 30
+    },
+    {
+      "name": "Helicobacter pylori infectious disease",
+      "count": 30
+    },
+    {
+      "name": "osteoarthritis",
+      "count": 30
+    },
+    {
+      "name": "gastroenteritis",
+      "count": 30
+    },
+    {
+      "name": "non-syndromic male infertility due to sperm motility disorder",
+      "count": 29
+    },
+    {
+      "name": "human African trypanosomiasis",
+      "count": 28
+    },
+    {
+      "name": "HCV-related hepatic fibrosis",
+      "count": 27
+    },
+    {
+      "name": "epithelial ovarian cancer",
+      "count": 27
+    },
+    {
+      "name": "Chromophobe renal cell carcinoma (chRCC)",
+      "count": 27
+    },
+    {
+      "name": "Rectal Adenocarcinoma",
+      "count": 26
+    },
+    {
+      "name": "non-small cell lung carcinoma",
+      "count": 26
+    },
+    {
+      "name": "Esophageal squamous cell carcinoma",
+      "count": 26
+    },
+    {
+      "name": "CRC",
+      "count": 26
+    },
+    {
+      "name": "Crohn ileitis",
+      "count": 25
+    },
+    {
+      "name": "Non-Tumor",
+      "count": 25
+    },
+    {
+      "name": "squamous cell carcinoma",
+      "count": 25
+    },
+    {
+      "name": "non-alcoholic fatty liver disease",
+      "count": 25
+    },
+    {
+      "name": "renal cell carcinoma",
+      "count": 24
+    },
+    {
+      "name": "Pancreatic cancer",
+      "count": 24
+    },
+    {
+      "name": "metastatic melanoma tumor",
+      "count": 24
+    },
+    {
+      "name": "Duchenne muscular dystrophy",
+      "count": 24
+    },
+    {
+      "name": "cutaneous melanoma",
+      "count": 23
+    },
+    {
+      "name": "membranous glomerulonephritis",
+      "count": 23
+    },
+    {
+      "name": "HPV16-positive",
+      "count": 23
+    },
+    {
+      "name": "Brain meningioma",
+      "count": 22
+    },
+    {
+      "name": "Ewing sarcoma",
+      "count": 22
+    },
+    {
+      "name": "Neuroblastoma",
+      "count": 22
+    },
+    {
+      "name": "Myopia",
+      "count": 22
+    },
+    {
+      "name": "SLC25 knockout",
+      "count": 22
+    },
+    {
+      "name": "mercury poisoning",
+      "count": 21
+    },
+    {
+      "name": "dilated left atria",
+      "count": 21
+    },
+    {
+      "name": "Breast cancer (BC)",
+      "count": 21
+    },
+    {
+      "name": "pregnant",
+      "count": 21
+    },
+    {
+      "name": "Alzheimer's disease",
+      "count": 20
+    },
+    {
+      "name": "pancreatic ductal adenocarcinoma (PDAC)",
+      "count": 20
+    },
+    {
+      "name": "mitral valve insufficiency",
+      "count": 20
+    },
+    {
+      "name": "Giardiasis",
+      "count": 20
+    },
+    {
+      "name": "polycystic ovary syndrome",
+      "count": 20
+    },
+    {
+      "name": "Parkinson's disease",
+      "count": 20
+    },
+    {
+      "name": "amelanotic melanoma",
+      "count": 19
+    },
+    {
+      "name": "acral lentiginous melanoma",
+      "count": 19
+    },
+    {
+      "name": "Renal cell carcinoma",
+      "count": 19
+    },
+    {
+      "name": "habitual spontaneous abortion",
+      "count": 19
+    },
+    {
+      "name": "Acute myeloid leukemia",
+      "count": 18
+    },
+    {
+      "name": "cardiac hypertrophy",
+      "count": 18
+    },
+    {
+      "name": "Crohn's Disease",
+      "count": 18
+    },
+    {
+      "name": "prostate cancer",
+      "count": 18
+    },
+    {
+      "name": "bladder papillary urothelial carcinoma",
+      "count": 18
+    },
+    {
+      "name": "Estradiol-treated",
+      "count": 18
+    },
+    {
+      "name": "Transformed follicular lymphoma",
+      "count": 17
+    },
+    {
+      "name": "Colorecral adenocarcinoma",
+      "count": 17
+    },
+    {
+      "name": "Autism Spectrum Disorder",
+      "count": 17
+    },
+    {
+      "name": "Papillary Renal Cell Carcinomas",
+      "count": 17
+    },
+    {
+      "name": "Bladder carcinoma",
+      "count": 17
+    },
+    {
+      "name": "Cutaneous melanoma",
+      "count": 17
+    },
+    {
+      "name": "nodular malignant melanoma",
+      "count": 17
+    },
+    {
+      "name": "Chronic Kidney Disease, Stage 4",
+      "count": 17
+    },
+    {
+      "name": "Rectum adenocarcinoma",
+      "count": 16
+    },
+    {
+      "name": "colorectal adenoma",
+      "count": 16
+    },
+    {
+      "name": "Burkitt lymphoma",
+      "count": 16
+    },
+    {
+      "name": "Ovarian cancer",
+      "count": 16
+    },
+    {
+      "name": "primary ductal carcinoma",
+      "count": 16
+    },
+    {
+      "name": "systolic heart failure",
+      "count": 16
+    },
+    {
+      "name": "multiple myeloma",
+      "count": 15
+    },
+    {
+      "name": "Anaplastic large cell lymphoma",
+      "count": 15
+    },
+    {
+      "name": "Lung cancer",
+      "count": 15
+    },
+    {
+      "name": "acute coronary syndrome",
+      "count": 15
+    },
+    {
+      "name": "Plasma cell myeloma",
+      "count": 15
+    },
+    {
+      "name": "Tongue squamous cell carcinoma",
+      "count": 15
+    },
+    {
+      "name": "High grade ovarian serous adenocarcinoma",
+      "count": 15
+    },
+    {
+      "name": "Childhood T acute lymphoblastic leukemia",
+      "count": 14
+    },
+    {
+      "name": "neuroblastoma",
+      "count": 14
+    },
+    {
+      "name": "Gastric adenocarcinoma",
+      "count": 14
+    },
+    {
+      "name": "invasive breast carcinoma",
+      "count": 14
+    },
+    {
+      "name": "Lung squamous cell carcinoma",
+      "count": 14
+    },
+    {
+      "name": "melanocytic nevus",
+      "count": 14
+    },
+    {
+      "name": "pancreas pancreatic ductal adenocarcinoma",
+      "count": 14
+    },
+    {
+      "name": "Mantle cell lymphoma",
+      "count": 13
+    },
+    {
+      "name": "senile cataract",
+      "count": 13
+    },
+    {
+      "name": "primary angle-closure glaucoma",
+      "count": 13
+    },
+    {
+      "name": "open-angle glaucoma",
+      "count": 13
+    },
+    {
+      "name": "metastasizing cutaneous squamous cell carcinoma",
+      "count": 13
+    },
+    {
+      "name": "irritable bowel syndrome",
+      "count": 13
+    },
+    {
+      "name": "celiac disease",
+      "count": 13
+    },
+    {
+      "name": "NSCLC",
+      "count": 13
+    },
+    {
+      "name": "clear cell renal carcinoma",
+      "count": 12
+    },
+    {
+      "name": "gastric carcinoma",
+      "count": 12
+    },
+    {
+      "name": "Cancer",
+      "count": 12
+    },
+    {
+      "name": "Warburg Micro syndrome",
+      "count": 12
+    },
+    {
+      "name": "Pancreatic adenocarcinoma",
+      "count": 12
+    },
+    {
+      "name": "Diffuse large b-cell lymphoma germinal center b-cell type",
+      "count": 12
+    },
+    {
+      "name": "Long term persistent COVID-19",
+      "count": 12
+    },
+    {
+      "name": "ocular hypertension",
+      "count": 12
+    },
+    {
+      "name": "Chronic Kidney Disease, Stage 1",
+      "count": 12
+    },
+    {
+      "name": "BMI 35.8",
+      "count": 12
+    },
+    {
+      "name": "Infected with S. Typhimurium",
+      "count": 12
+    },
+    {
+      "name": "ovarian serous cystadenocarcinoma",
+      "count": 11
+    },
+    {
+      "name": "cirrhosis of liver",
+      "count": 11
+    },
+    {
+      "name": "congenital aortic valve stenosis",
+      "count": 11
+    },
+    {
+      "name": "Childhood B acute lymphoblastic leukemia",
+      "count": 11
+    },
+    {
+      "name": "Pancreatic ductal adenocarcinoma",
+      "count": 11
+    },
+    {
+      "name": "Chronic myelogenous leukemia",
+      "count": 11
+    },
+    {
+      "name": "Clear cell renal cell carcinoma",
+      "count": 11
+    },
+    {
+      "name": "Lung large cell carcinoma",
+      "count": 11
+    },
+    {
+      "name": "pouchitis",
+      "count": 11
+    },
+    {
+      "name": "heart infarction",
+      "count": 10
+    },
+    {
+      "name": "Metastatic melanoma",
+      "count": 10
+    },
+    {
+      "name": "colon and rectal tumors",
+      "count": 10
+    },
+    {
+      "name": "Human papillomavirus-related endocervical adenocarcinoma",
+      "count": 10
+    },
+    {
+      "name": "high grade ovarian serous adenocarcinoma",
+      "count": 10
+    },
+    {
+      "name": "ductal carcinoma",
+      "count": 10
+    },
+    {
+      "name": "invasive high-grade bladder cancer",
+      "count": 10
+    },
+    {
+      "name": "nontumorigenic",
+      "count": 10
+    },
+    {
+      "name": "chorioamnionitis",
+      "count": 10
+    },
+    {
+      "name": "Adult hepatocellular carcinoma",
+      "count": 10
+    },
+    {
+      "name": "congenital diaphragmatic hernia",
+      "count": 10
+    },
+    {
+      "name": "secondary focal segmental glo merulosclerosis",
+      "count": 10
+    },
+    {
+      "name": "Colon Mucinous Adenocarcinoma",
+      "count": 9
+    },
+    {
+      "name": "rectum adenocarcinoma",
+      "count": 9
+    },
+    {
+      "name": "Colon carcinoma",
+      "count": 9
+    },
+    {
+      "name": "Classical Hodgkin lymphoma",
+      "count": 9
+    },
+    {
+      "name": "diffuse histiocytic lymphoma",
+      "count": 9
+    },
+    {
+      "name": "Anaplastic large cell lymphoma,",
+      "count": 9
+    },
+    {
+      "name": "astrocytoma",
+      "count": 9
+    },
+    {
+      "name": "invasive ductal carcinoma",
+      "count": 9
+    },
+    {
+      "name": "Disease free",
+      "count": 9
+    },
+    {
+      "name": "basal-like breast carcinoma",
+      "count": 9
+    },
+    {
+      "name": "luminal A breast carcinoma",
+      "count": 9
+    },
+    {
+      "name": "HER2 Positive Breast Carcinoma",
+      "count": 9
+    },
+    {
+      "name": "luminal B breast carcinoma",
+      "count": 9
+    },
+    {
+      "name": "Normal Breast-Like Subtype of Breast Carcinoma",
+      "count": 9
+    },
+    {
+      "name": "mitral valve disease",
+      "count": 9
+    },
+    {
+      "name": "polycythemia vera",
+      "count": 9
+    },
+    {
+      "name": "Lung non-small cell carcinoma",
+      "count": 9
+    },
+    {
+      "name": "Pleural epithelioid mesothelioma",
+      "count": 9
+    },
+    {
+      "name": "cholangiocellular carcinoma",
+      "count": 8
+    },
+    {
+      "name": "Hepatoblastoma",
+      "count": 8
+    },
+    {
+      "name": "Prostate carcinoma",
+      "count": 8
+    },
+    {
+      "name": "plasmacytoma",
+      "count": 8
+    },
+    {
+      "name": "high grade serous ovarian cancer",
+      "count": 8
+    },
+    {
+      "name": "ovarian cancer",
+      "count": 8
+    },
+    {
+      "name": "malaria",
+      "count": 8
+    },
+    {
+      "name": "colon adenoma",
+      "count": 8
+    },
+    {
+      "name": "type II diabetes mellitus",
+      "count": 8
+    },
+    {
+      "name": "Non-small cell lung carcinoma",
+      "count": 8
+    },
+    {
+      "name": "myocardial ischemia",
+      "count": 8
+    },
+    {
+      "name": "Brain astrocytoma",
+      "count": 8
+    },
+    {
+      "name": "Cecum adenocarcinoma",
+      "count": 8
+    },
+    {
+      "name": "myopia",
+      "count": 8
+    },
+    {
+      "name": "IgA glomerulonephritis",
+      "count": 8
+    },
+    {
+      "name": "uveal melanoma",
+      "count": 8
+    },
+    {
+      "name": "head and neck cancer",
+      "count": 8
+    },
+    {
+      "name": "tongue squamous cell carcinoma",
+      "count": 8
+    },
+    {
+      "name": "membranous nephropathy",
+      "count": 8
+    },
+    {
+      "name": "penile carcinoma",
+      "count": 8
+    },
+    {
+      "name": "Uninfected",
+      "count": 8
+    },
+    {
+      "name": "neonatal sepsis",
+      "count": 7
+    },
+    {
+      "name": "Primary mediastinal large B-cell lymphoma",
+      "count": 7
+    },
+    {
+      "name": "Invasive breast lobular carcinoma",
+      "count": 7
+    },
+    {
+      "name": "idiopathic disease",
+      "count": 7
+    },
+    {
+      "name": "post-infectious olfactory disorder",
+      "count": 7
+    },
+    {
+      "name": "severe cystitis with reactive urothelial atypia",
+      "count": 7
+    },
+    {
+      "name": "overweight/obese",
+      "count": 7
+    },
+    {
+      "name": "leptomeningeal melanoma metastases",
+      "count": 7
+    },
+    {
+      "name": "Thyroid gland anaplastic carcinoma",
+      "count": 7
+    },
+    {
+      "name": "Human papillomavirus-related cervical squamous cell carcinoma",
+      "count": 7
+    },
+    {
+      "name": "Rectal adenocarcinoma",
+      "count": 7
+    },
+    {
+      "name": "Adrenal gland neuroblastoma",
+      "count": 7
+    },
+    {
+      "name": "primary focal segmental glo merulosclerosis",
+      "count": 7
+    },
+    {
+      "name": "PDAC",
+      "count": 7
+    },
+    {
+      "name": "necrotizing enterocolitis",
+      "count": 6
+    },
+    {
+      "name": "Xanthomonas oryzae pv. oryzae",
+      "count": 6
+    },
+    {
+      "name": "Burkitt's lymphoma",
+      "count": 6
+    },
+    {
+      "name": "malignant non-Hodgkin's lymphoma",
+      "count": 6
+    },
+    {
+      "name": "Multiple Myeloma",
+      "count": 6
+    },
+    {
+      "name": "glioma",
+      "count": 6
+    },
+    {
+      "name": "skin cutaneous melanoma",
+      "count": 6
+    },
+    {
+      "name": "triple-negative breast cancer",
+      "count": 6
+    },
+    {
+      "name": "recessive dystrophyic epidermolysis bullosa cutaneous squamous cell carcinoma",
+      "count": 6
+    },
+    {
+      "name": "Adult t acute lymphoblastic leukemia",
+      "count": 6
+    },
+    {
+      "name": "Endometrial adenocarcinoma",
+      "count": 6
+    },
+    {
+      "name": "Esophageal adenocarcinoma",
+      "count": 6
+    },
+    {
+      "name": "Hodgkin lymphoma",
+      "count": 6
+    },
+    {
+      "name": "Minimally invasive lung adenocarcinoma",
+      "count": 6
+    },
+    {
+      "name": "Pleural malignant mesothelioma",
+      "count": 6
+    },
+    {
+      "name": "Monkeypox",
+      "count": 6
+    },
+    {
+      "name": "diabetes",
+      "count": 6
+    },
+    {
+      "name": "propionic acidemia",
+      "count": 6
+    },
+    {
+      "name": "Alphavirus infectious disease",
+      "count": 6
+    },
+    {
+      "name": "minimal change disease",
+      "count": 6
+    },
+    {
+      "name": "BMI 31.2",
+      "count": 6
+    },
+    {
+      "name": "BMI 36.6",
+      "count": 6
+    },
+    {
+      "name": "BMI 26",
+      "count": 6
+    },
+    {
+      "name": "BMI 35.6",
+      "count": 6
+    },
+    {
+      "name": "BMI 29.9",
+      "count": 6
+    },
+    {
+      "name": "ER+ breast cancer",
+      "count": 6
+    },
+    {
+      "name": "disease free",
+      "count": 6
+    },
+    {
+      "name": "Lipopolysaccharide-incuded inflammation",
+      "count": 6
+    },
+    {
+      "name": "lung disease",
+      "count": 5
+    },
+    {
+      "name": "Cell Lines",
+      "count": 5
+    },
+    {
+      "name": "Bone osteosarcoma",
+      "count": 5
+    },
+    {
+      "name": "chronic heart failure",
+      "count": 5
+    },
+    {
+      "name": "cerebral malaria",
+      "count": 5
+    },
+    {
+      "name": "Breast acantholytic squamous cell carcinoma",
+      "count": 5
+    },
+    {
+      "name": "Low-risk cutaneous squamous cell carcinoma",
+      "count": 5
+    },
+    {
+      "name": "Hydrocephalus",
+      "count": 5
+    },
+    {
+      "name": "SARS-Cov2_infected",
+      "count": 5
+    },
+    {
+      "name": "aortic valve insufficiency",
+      "count": 5
+    },
+    {
+      "name": "Adult B acute lymphoblastic leukemia",
+      "count": 5
+    },
+    {
+      "name": "Anaplastic astrocytoma",
+      "count": 5
+    },
+    {
+      "name": "Anaplastic large cell lymphoma, ALK-positive",
+      "count": 5
+    },
+    {
+      "name": "Ovarian clear cell adenocarcinoma",
+      "count": 5
+    },
+    {
+      "name": "Ovarian serous adenocarcinoma",
+      "count": 5
+    },
+    {
+      "name": "B-cell non-hodgkin lymphoma",
+      "count": 5
+    },
+    {
+      "name": "CML",
+      "count": 5
+    },
+    {
+      "name": "endometriosis of pelvic peritoneum",
+      "count": 5
+    },
+    {
+      "name": "Cryopreservation",
+      "count": 5
+    },
+    {
+      "name": "small cell lung cancer",
+      "count": 4
+    },
+    {
+      "name": "metastatic malignant neoplasm in the liver",
+      "count": 4
+    },
+    {
+      "name": "Rectal Mucinous Adenocarcinoma",
+      "count": 4
+    },
+    {
+      "name": "cardiopulmonary insufficiency",
+      "count": 4
+    },
+    {
+      "name": "lymphoma",
+      "count": 4
+    },
+    {
+      "name": "follicular lymphoma",
+      "count": 4
+    },
+    {
+      "name": "ovarian carcinoma",
+      "count": 4
+    },
+    {
+      "name": "renal cell adenocarcinoma",
+      "count": 4
+    },
+    {
+      "name": "lung carcinoma",
+      "count": 4
+    },
+    {
+      "name": "breast ductal adenocarcinoma",
+      "count": 4
+    },
+    {
+      "name": "large cell lung carcinoma",
+      "count": 4
+    },
+    {
+      "name": "squamous  cell carcinoma",
+      "count": 4
+    },
+    {
+      "name": "Metastatic breast lobular carcinoma",
+      "count": 4
+    },
+    {
+      "name": "metastatic ovarian high grade serous adenocarcinoma",
+      "count": 4
+    },
+    {
+      "name": "brain glioblastoma",
+      "count": 4
+    },
+    {
+      "name": "metastatic melanoma",
+      "count": 4
+    },
+    {
+      "name": "fibrocystic disease",
+      "count": 4
+    },
+    {
+      "name": "primary acantholytic squamous cell carcinoma",
+      "count": 4
+    },
+    {
+      "name": "medulallary carcinoma",
+      "count": 4
+    },
+    {
+      "name": "primary breast tumor",
+      "count": 4
+    },
+    {
+      "name": "Hendra virus infection",
+      "count": 4
+    },
+    {
+      "name": "Amelanotic melanoma",
+      "count": 4
+    },
+    {
+      "name": "Ovarian endometrioid adenocarcinoma",
+      "count": 4
+    },
+    {
+      "name": "Diffuse large b-cell lymphoma",
+      "count": 4
+    },
+    {
+      "name": "Primary effusion lymphoma",
+      "count": 4
+    },
+    {
+      "name": "Hairy cell leukemia",
+      "count": 4
+    },
+    {
+      "name": "Chondrosarcoma",
+      "count": 4
+    },
+    {
+      "name": "Gliosarcoma",
+      "count": 4
+    },
+    {
+      "name": "Thyroid gland follicular carcinoma",
+      "count": 4
+    },
+    {
+      "name": "Lung adenosquamous carcinoma",
+      "count": 4
+    },
+    {
+      "name": "Laryngeal squamous cell carcinoma",
+      "count": 4
+    },
+    {
+      "name": "Adult acute monocytic leukemia",
+      "count": 4
+    },
+    {
+      "name": "paratuberculosis",
+      "count": 4
+    },
+    {
+      "name": "ovarian endometriosis",
+      "count": 4
+    },
+    {
+      "name": "multiple sclerosis",
+      "count": 4
+    },
+    {
+      "name": "monoclonal gammopathy",
+      "count": 3
+    },
+    {
+      "name": "Menopause",
+      "count": 3
+    },
+    {
+      "name": "Normal healthy",
+      "count": 3
+    },
+    {
+      "name": "Lung adenocarcinoma",
+      "count": 3
+    },
+    {
+      "name": "Chronic myelogenous leukemia, BCR-ABL1 positive",
+      "count": 3
+    },
+    {
+      "name": "Invasive ductal carcinoma, not otherwise specified",
+      "count": 3
+    },
+    {
+      "name": "Diffuse large B-cell lymphoma",
+      "count": 3
+    },
+    {
+      "name": "Burkitt's lymphoma (American)",
+      "count": 3
+    },
+    {
+      "name": "Nodular lymphocyte predominant Hodgkin lymphoma",
+      "count": 3
+    },
+    {
+      "name": "cutaneous T cell lymphoma",
+      "count": 3
+    },
+    {
+      "name": "Sezary Syndrome",
+      "count": 3
+    },
+    {
+      "name": "Aggressive NK-cell leukemia",
+      "count": 3
+    },
+    {
+      "name": "acute T cell leukemia",
+      "count": 3
+    },
+    {
+      "name": "non-small cell lung adenocarcinoma",
+      "count": 3
+    },
+    {
+      "name": "childhood T acute lymphoblastic leukemia",
+      "count": 3
+    },
+    {
+      "name": "anaplastic large cell lymphoma",
+      "count": 3
+    },
+    {
+      "name": "Alzheimer's and cerebrovascular disease",
+      "count": 3
+    },
+    {
+      "name": "atrial fibrillation",
+      "count": 3
+    },
+    {
+      "name": "metastatic carcinoma",
+      "count": 3
+    },
+    {
+      "name": "pulmonary tuberculosis",
+      "count": 3
+    },
+    {
+      "name": "schistosomiasis",
+      "count": 3
+    },
+    {
+      "name": "Adenocarcinoma",
+      "count": 3
+    },
+    {
+      "name": "Embryonal rhabdomyosarcoma",
+      "count": 3
+    },
+    {
+      "name": "Skin squamous cell carcinoma",
+      "count": 3
+    },
+    {
+      "name": "Head and neck squamous cell carcinoma",
+      "count": 3
+    },
+    {
+      "name": "Ovarian adenocarcinoma",
+      "count": 3
+    },
+    {
+      "name": "Ovarian serous cystadenocarcinoma",
+      "count": 3
+    },
+    {
+      "name": "Intrahepatic cholangiocarcinoma",
+      "count": 3
+    },
+    {
+      "name": "Endocervical adenocarcinoma",
+      "count": 3
+    },
+    {
+      "name": "Floor of mouth squamous cell carcinoma",
+      "count": 3
+    },
+    {
+      "name": "Fibrosarcoma",
+      "count": 3
+    },
+    {
+      "name": "Gastric signet ring cell adenocarcinoma",
+      "count": 3
+    },
+    {
+      "name": "Hepatitis C infection",
+      "count": 3
+    },
+    {
+      "name": "Pancreatic carcinoma",
+      "count": 3
+    },
+    {
+      "name": "Gastric tubular adenocarcinoma",
+      "count": 3
+    },
+    {
+      "name": "Pleural biphasic mesothelioma",
+      "count": 3
+    },
+    {
+      "name": "Pleural sarcomatoid mesothelioma",
+      "count": 3
+    },
+    {
+      "name": "Lung carcinoid tumor",
+      "count": 3
+    },
+    {
+      "name": "Alveolar rhabdomyosarcoma",
+      "count": 3
+    },
+    {
+      "name": "Blast phase chronic myelogenous leukemia, BCR-ABL1 positive",
+      "count": 3
+    },
+    {
+      "name": "ischemia",
+      "count": 3
+    },
+    {
+      "name": "BeAn",
+      "count": 3
+    },
+    {
+      "name": "OROV",
+      "count": 3
+    },
+    {
+      "name": "NicheProt",
+      "count": 3
+    },
+    {
+      "name": "lung embolism",
+      "count": 2
+    },
+    {
+      "name": "acute lymphoblastic leukemia",
+      "count": 2
+    },
+    {
+      "name": "renal clear cell adenocarcinoma",
+      "count": 2
+    },
+    {
+      "name": "chronic myelogenic leukemia",
+      "count": 2
+    },
+    {
+      "name": "promyelocytic leukemia",
+      "count": 2
+    },
+    {
+      "name": "renal carcinoma",
+      "count": 2
+    },
+    {
+      "name": "renal adenocarcinoma",
+      "count": 2
+    },
+    {
+      "name": "acute T lymphoblastic leukaemia",
+      "count": 2
+    },
+    {
+      "name": "mesothelioma",
+      "count": 2
+    },
+    {
+      "name": "ovarian adenocarcinoma",
+      "count": 2
+    },
+    {
+      "name": "immunoblastic large cell lymphoma",
+      "count": 2
+    },
+    {
+      "name": "Breast inflammatory carcinoma",
+      "count": 2
+    },
+    {
+      "name": "breast fibrocystic disease",
+      "count": 2
+    },
+    {
+      "name": "adult acute myeloid leukemia",
+      "count": 2
+    },
+    {
+      "name": "Ovarian Endometrioid Adenocarcinoma",
+      "count": 2
+    },
+    {
+      "name": "adult T acute lymphoblastic leukemia",
+      "count": 2
+    },
+    {
+      "name": "Pleural Epithelioid Mesothelioma",
+      "count": 2
+    },
+    {
+      "name": "gliosarcoma",
+      "count": 2
+    },
+    {
+      "name": "Alzheimer's disease 3",
+      "count": 2
+    },
+    {
+      "name": "Alzheimer's disease 5",
+      "count": 2
+    },
+    {
+      "name": "Alzheimer's disease 7",
+      "count": 2
+    },
+    {
+      "name": "compensated hypertrophy",
+      "count": 2
+    },
+    {
+      "name": "hydrocephalus",
+      "count": 2
+    },
+    {
+      "name": "Carcinoma",
+      "count": 2
+    },
+    {
+      "name": "Gerstmann-Straussler-Scheinker syndrome",
+      "count": 2
+    },
+    {
+      "name": "cerebral amyloid angiopathy",
+      "count": 2
+    },
+    {
+      "name": "Alveolar ridge squamous cell carcinoma",
+      "count": 2
+    },
+    {
+      "name": "Vulvar squamous cell carcinoma",
+      "count": 2
+    },
+    {
+      "name": "Thoracic SMARCA4-deficient undifferentiated tumor",
+      "count": 2
+    },
+    {
+      "name": "Cervical carcinoma",
+      "count": 2
+    },
+    {
+      "name": "Gastric small cell carcinoma",
+      "count": 2
+    },
+    {
+      "name": "Lung mucoepidermoid carcinoma",
+      "count": 2
+    },
+    {
+      "name": "Barrett adenocarcinoma",
+      "count": 2
+    },
+    {
+      "name": "Undifferentiated pleomorphic sarcoma",
+      "count": 2
+    },
+    {
+      "name": "Gastric carcinoma",
+      "count": 2
+    },
+    {
+      "name": "Oral cavity squamous cell carcinoma",
+      "count": 2
+    },
+    {
+      "name": "Gestational choriocarcinoma",
+      "count": 2
+    },
+    {
+      "name": "Adult acute myelomonocytic leukemia",
+      "count": 2
+    },
+    {
+      "name": "Lung giant cell carcinoma",
+      "count": 2
+    },
+    {
+      "name": "Endometrial adenosquamous carcinoma",
+      "count": 2
+    },
+    {
+      "name": "Childhood acute monocytic leukemia",
+      "count": 2
+    },
+    {
+      "name": "Testicular embryonal carcinoma",
+      "count": 2
+    },
+    {
+      "name": "Natural killer cell lymphoblastic leukemia/lymphoma",
+      "count": 2
+    },
+    {
+      "name": "Primitive neuroectodermal tumor",
+      "count": 2
+    },
+    {
+      "name": "Uterine corpus leiomyosarcoma",
+      "count": 2
+    },
+    {
+      "name": "Hypoxia",
+      "count": 2
+    },
+    {
+      "name": "rectal mucinous adenocarcinoma",
+      "count": 1
+    },
+    {
+      "name": "Breast pleomorphic carcinoma",
+      "count": 1
+    },
+    {
+      "name": "Normal Colorectum",
+      "count": 1
+    },
+    {
+      "name": "rectosigmoid adenocarcinoma",
+      "count": 1
+    },
+    {
+      "name": "Alzheimer's disease 9",
+      "count": 1
+    },
+    {
+      "name": "Alzheimer's disease0",
+      "count": 1
+    },
+    {
+      "name": "indeterminate colitis",
+      "count": 1
+    },
+    {
+      "name": "other",
+      "count": 1
+    },
+    {
+      "name": "lentigo maligna melanoma",
+      "count": 1
+    },
+    {
+      "name": "mucosal",
+      "count": 1
+    },
+    {
+      "name": "Alzheimer's disease (stage VI)",
+      "count": 1
+    },
+    {
+      "name": "carcinoma",
+      "count": 1
+    },
+    {
+      "name": "pheochromocytoma",
+      "count": 1
+    },
+    {
+      "name": "native_1",
+      "count": 1
+    },
+    {
+      "name": "cancer or benign tumor",
+      "count": 1
+    },
+    {
+      "name": "Chronic Myelogenous Leukemia Cml",
+      "count": 1
+    },
+    {
+      "name": "Ureter urothelial carcinoma",
+      "count": 1
+    },
+    {
+      "name": "Submandibular gland squamous cell carcinoma",
+      "count": 1
+    },
+    {
+      "name": "Papillary renal cell carcinoma",
+      "count": 1
+    },
+    {
+      "name": "Acanthosis nigricans",
+      "count": 1
+    },
+    {
+      "name": "Poorly differentiated thyroid gland carcinoma",
+      "count": 1
+    },
+    {
+      "name": "Renal pelvis urothelial carcinoma",
+      "count": 1
+    },
+    {
+      "name": "Benign prostatic hyperplasia",
+      "count": 1
+    },
+    {
+      "name": "Human papillomavirus-independent cervical squamous cell carcinoma",
+      "count": 1
+    },
+    {
+      "name": "Gingival squamous cell carcinoma",
+      "count": 1
+    },
+    {
+      "name": "Tongue adenosquamous carcinoma",
+      "count": 1
+    },
+    {
+      "name": "Dedifferentiated chondrosarcoma",
+      "count": 1
+    },
+    {
+      "name": "Cystic fibrosis",
+      "count": 1
+    },
+    {
+      "name": "Thyroid gland squamous cell carcinoma",
+      "count": 1
+    },
+    {
+      "name": "Bronchogenic carcinoma",
+      "count": 1
+    },
+    {
+      "name": "Lung carcinoma",
+      "count": 1
+    },
+    {
+      "name": "Medulloblastoma, non-WNT/non-SHH, group 3",
+      "count": 1
+    },
+    {
+      "name": "Medulloblastoma, SHH-activated, TP53-mutant",
+      "count": 1
+    },
+    {
+      "name": "Pharyngeal squamous cell carcinoma",
+      "count": 1
+    },
+    {
+      "name": "Colorectal carcinoma",
+      "count": 1
+    },
+    {
+      "name": "Oral epithelial dysplasia",
+      "count": 1
+    },
+    {
+      "name": "Ovarian mucinous adenocarcinoma",
+      "count": 1
+    },
+    {
+      "name": "Endometrial carcinoma",
+      "count": 1
+    },
+    {
+      "name": "Chronic eosinophilic leukemia, not otherwise specified",
+      "count": 1
+    },
+    {
+      "name": "Gastroesophageal junction adenocarcinoma",
+      "count": 1
+    },
+    {
+      "name": "Endometrioid stromal sarcoma",
+      "count": 1
+    },
+    {
+      "name": "Hypopharyngeal squamous cell carcinoma",
+      "count": 1
+    },
+    {
+      "name": "Rhabdoid tumor of the kidney",
+      "count": 1
+    },
+    {
+      "name": "Kidney neoplasm",
+      "count": 1
+    },
+    {
+      "name": "Adult Burkitt leukemia",
+      "count": 1
+    },
+    {
+      "name": "Vulvar melanoma",
+      "count": 1
+    },
+    {
+      "name": "Sezary syndrome",
+      "count": 1
+    },
+    {
+      "name": "B acute lymphoblastic leukemia with TCF3-HLF rearrangement",
+      "count": 1
+    },
+    {
+      "name": "Extraskeletal myxoid chondrosarcoma",
+      "count": 1
+    },
+    {
+      "name": "Childhood hepatocellular carcinoma",
+      "count": 1
+    },
+    {
+      "name": "Primary cutaneous t-cell non-hodgkin lymphoma",
+      "count": 1
+    },
+    {
+      "name": "Vaginal melanoma",
+      "count": 1
+    },
+    {
+      "name": "Buccal mucosa squamous cell carcinoma",
+      "count": 1
+    },
+    {
+      "name": "Oligodendroglioma",
+      "count": 1
+    },
+    {
+      "name": "Diffuse large B-cell lymphoma germinal center B-cell type",
+      "count": 1
+    },
+    {
+      "name": "Recurrent bladder carcinoma",
+      "count": 1
+    },
+    {
+      "name": "Duodenal adenocarcinoma",
+      "count": 1
+    },
+    {
+      "name": "Thyroid gland papillary carcinoma",
+      "count": 1
+    },
+    {
+      "name": "B acute lymphoblastic leukemia",
+      "count": 1
+    },
+    {
+      "name": "B-cell prolymphocytic leukemia",
+      "count": 1
+    },
+    {
+      "name": "Childhood acute myeloid leukemia with maturation",
+      "count": 1
+    },
+    {
+      "name": "Down syndrome",
+      "count": 1
+    },
+    {
+      "name": "Acute myeloid leukemia without maturation",
+      "count": 1
+    },
+    {
+      "name": "Ovarian granulosa cell tumor",
+      "count": 1
+    },
+    {
+      "name": "Erythroleukemia",
+      "count": 1
+    },
+    {
+      "name": "Pancreatic adenosquamous carcinoma",
+      "count": 1
+    },
+    {
+      "name": "Askin tumor",
+      "count": 1
+    },
+    {
+      "name": "Uterine corpus sarcoma",
+      "count": 1
+    },
+    {
+      "name": "Pancreatic undifferentiated carcinoma",
+      "count": 1
+    },
+    {
+      "name": "Acute biphenotypic leukemia",
+      "count": 1
+    },
+    {
+      "name": "Acute promyelocytic leukemia with PML-RARA",
+      "count": 1
+    },
+    {
+      "name": "Cervical small cell carcinoma",
+      "count": 1
+    },
+    {
+      "name": "Lung sarcomatoid carcinoma",
+      "count": 1
+    },
+    {
+      "name": "Parotid gland mucoepidermoid carcinoma",
+      "count": 1
+    },
+    {
+      "name": "Lung papillary adenocarcinoma",
+      "count": 1
+    },
+    {
+      "name": "Prostate small cell carcinoma",
+      "count": 1
+    },
+    {
+      "name": "Embryonal carcinoma",
+      "count": 1
+    },
+    {
+      "name": "Diffuse large b-cell lymphoma activated b-cell type",
+      "count": 1
+    },
+    {
+      "name": "Acute erythroid leukemia",
+      "count": 1
+    },
+    {
+      "name": "Cervical squamous cell carcinoma",
+      "count": 1
+    },
+    {
+      "name": "Medulloblastoma, SHH-activated, TP53-wildtype",
+      "count": 1
+    },
+    {
+      "name": "Ovarian carcinoma",
+      "count": 1
+    },
+    {
+      "name": "Childhood acute myeloid leukemia",
+      "count": 1
+    },
+    {
+      "name": "Ovarian mixed germ cell tumor",
+      "count": 1
+    },
+    {
+      "name": "Pyriform fossa squamous cell carcinoma",
+      "count": 1
+    },
+    {
+      "name": "Tonsillar squamous cell carcinoma",
+      "count": 1
+    },
+    {
+      "name": "BRCA2-related cancer predisposition",
+      "count": 1
+    },
+    {
+      "name": "Acute promyelocytic leukemia",
+      "count": 1
+    },
+    {
+      "name": "Pancreatic somatostatinoma",
+      "count": 1
+    },
+    {
+      "name": "Ovarian leiomyosarcoma",
+      "count": 1
+    },
+    {
+      "name": "Follicular lymphoma",
+      "count": 1
+    },
+    {
+      "name": "Gastric choriocarcinoma",
+      "count": 1
+    },
+    {
+      "name": "Gastric fundus carcinoma",
+      "count": 1
+    },
+    {
+      "name": "Hepatobiliary neoplasm",
+      "count": 1
+    },
+    {
+      "name": "Vulvar leiomyosarcoma",
+      "count": 1
+    },
+    {
+      "name": "Adult acute myeloid leukemia",
+      "count": 1
+    },
+    {
+      "name": "Splenic marginal zone lymphoma",
+      "count": 1
+    },
+    {
+      "name": "Childhood T lymphoblastic lymphoma",
+      "count": 1
+    },
+    {
+      "name": "Adrenal cortex carcinoma",
+      "count": 1
+    },
+    {
+      "name": "Liposarcoma",
+      "count": 1
+    },
+    {
+      "name": "Vulvar carcinoma",
+      "count": 1
+    },
+    {
+      "name": "Biphasic synovial sarcoma",
+      "count": 1
+    },
+    {
+      "name": "Rhabdomyosarcoma",
+      "count": 1
+    },
+    {
+      "name": "Gallbladder undifferentiated carcinoma",
+      "count": 1
+    },
+    {
+      "name": "Hereditary thyroid gland medullary carcinoma",
+      "count": 1
+    },
+    {
+      "name": "Lymphoblastic lymphoma",
+      "count": 1
+    },
+    {
+      "name": "Sacral chordoma",
+      "count": 1
+    },
+    {
+      "name": "BRCA1-related cancer predisposition",
+      "count": 1
+    },
+    {
+      "name": "Epithelioid sarcoma",
+      "count": 1
+    },
+    {
+      "name": "Hereditary spherocytosis",
+      "count": 1
+    },
+    {
+      "name": "hypogonadotropic hypogonadism",
+      "count": 1
+    },
+    {
+      "name": "cancer of unknown primary site",
+      "count": 1
+    },
+    {
+      "name": "head and neck squamous cell carcinoma",
+      "count": 1
+    },
+    {
+      "name": "ureter transitional cell carcinoma",
+      "count": 1
+    },
+    {
+      "name": "Breast Fibrocystic Disease",
+      "count": 1
+    },
+    {
+      "name": "Sjogren syndrome",
+      "count": 1
+    },
+    {
+      "name": "autoimmune thrombocytopenic purpura",
+      "count": 1
+    }
+  ],
+  "labels": [
+    {
+      "name": "LFQ",
+      "count": 188084
+    },
+    {
+      "name": "TMT",
+      "count": 63050
+    },
+    {
+      "name": "SILAC",
+      "count": 6552
+    },
+    {
+      "name": "Other",
+      "count": 5520
+    },
+    {
+      "name": "iTRAQ",
+      "count": 1565
+    }
+  ],
+  "acquisitions": [
+    {
+      "name": "DDA",
+      "count": 223278
+    },
+    {
+      "name": "DIA",
+      "count": 41022
+    },
+    {
+      "name": "SRM/MRM",
+      "count": 637
+    },
+    {
+      "name": "Other",
+      "count": 11
+    }
+  ]
+}

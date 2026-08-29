@@ -33,6 +33,7 @@ jobs:
       - name: Generate README stats and plots
         env:
           MPLCONFIGDIR: /tmp/matplotlib
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: python .github/scripts/generate_readme_stats.py
 
       - name: Open or update stats PR

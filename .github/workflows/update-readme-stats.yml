@@ -49,17 +49,30 @@ jobs:
         env:
           MPLCONFIGDIR: /tmp/matplotlib
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: python .github/scripts/generate_readme_stats.py
-
-      - name: Reset standing stats branch onto current main
         run: |
-          # create-pull-request rebases the existing PR branch onto this
-          # checkout. That rebase conflicts whenever main already has a later
-          # README/docs/stats commit (previous stats PR merge, badge commit
-          # sitting under a newer stats snapshot, or a human stats merge).
-          # Point the reused branch at current main first so the action only
-          # adds one fresh commit and cannot replay a stale stats snapshot.
-          git push origin "HEAD:refs/heads/chore/readme-resource-stats" --force
+          set -euo pipefail
+          # Generation takes ~1–2 minutes. A standing stats PR can be merged
+          # in that window (#270 merged while the #269 job was still running,
+          # which then opened conflicted #271 from the pre-merge main tip).
+          # Rebuild from origin/main whenever it moves, and only publish the
+          # reused branch once HEAD still matches current main.
+          for attempt in 1 2 3; do
+            git fetch origin main
+            git checkout main
+            git reset --hard origin/main
+            base="$(git rev-parse HEAD)"
+            echo "Generating stats from ${base} (attempt ${attempt})"
+            python .github/scripts/generate_readme_stats.py
+            git fetch origin main
+            if [ "$(git rev-parse origin/main)" = "${base}" ]; then
+              echo "main still at ${base}; resetting chore/readme-resource-stats"
+              git push origin "HEAD:refs/heads/chore/readme-resource-stats" --force
+              exit 0
+            fi
+            echo "main moved to $(git rev-parse origin/main) during generation; retrying"
+          done
+          echo "main kept moving during stats generation" >&2
+          exit 1
 
       - name: Open or update stats PR
         uses: peter-evans/create-pull-request@22a9089034f40e5a961c8808d113e2c98fb63676 # v7.0.11

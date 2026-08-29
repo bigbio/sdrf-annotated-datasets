@@ -14,7 +14,7 @@ The SDRF specification lives in [`bigbio/proteomics-sample-metadata`](https://gi
 <!-- STATS:START -->
 ## Resource at a glance
 
-_Auto-generated from curated `datasets/` on 2026-08-28T09:03:52Z. Sandbox drafts are excluded._
+_Auto-generated from curated `datasets/` on 2026-08-29T09:09:50Z. Sandbox drafts are excluded._
 
 | Metric | Count |
 | --- | ---: |

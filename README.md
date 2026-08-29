@@ -26,15 +26,11 @@ _Auto-generated from curated `datasets/` on 2026-08-28T09:03:52Z. Sandbox drafts
 
 **Highlights:** most common organism is **Homo sapiens**; **40,809** DIA assay rows; **63,271** TMT and **192,395** LFQ assay rows.
 
-![Organisms](docs/stats/plots/organisms.png)
+![Organisms in curated annotations](docs/stats/plots/organisms.png)
 
-![Samples by organism](docs/stats/plots/samples_by_organism.png)
+![Disease annotations](docs/stats/plots/diseases.png)
 
-![Diseases](docs/stats/plots/diseases.png)
-
-![Quantification methods](docs/stats/plots/quant_methods.png)
-
-![Acquisition methods](docs/stats/plots/acquisition.png)
+![Quantification and acquisition methods](docs/stats/plots/methods.png)
 
 <!-- STATS:END -->
 

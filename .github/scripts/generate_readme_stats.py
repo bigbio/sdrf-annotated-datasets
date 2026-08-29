@@ -3,8 +3,10 @@
 
 Scans datasets/**/*.sdrf.tsv (sandbox excluded), writes:
   docs/stats/summary.json
-  docs/stats/plots/*.png
+  docs/stats/plots/{organisms,diseases,methods}.png
   and replaces the README markers <!-- STATS:START --> ... <!-- STATS:END -->.
+
+Pass --plots-only to redraw figures from an existing summary.json.
 """
 
 from __future__ import annotations
@@ -12,6 +14,7 @@ from __future__ import annotations
 import csv
 import json
 import re
+import sys
 from collections import Counter, defaultdict
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
@@ -21,6 +24,7 @@ import matplotlib
 
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt  # noqa: E402
+from matplotlib.ticker import FuncFormatter  # noqa: E402
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 DATASETS_DIR = REPO_ROOT / "datasets"
@@ -319,32 +323,190 @@ def top_with_other(
     return head
 
 
-def _shorten_label(text: str, max_len: int = 36) -> str:
+INK = "#1B2838"
+MUTED = "#5B6775"
+GRID = "#E4E8F0"
+AXIS = "#C5CAD3"
+FACE = "#FFFFFF"
+OTHER_COLOR = "#B7BDC6"
+
+# Shared categorical colours so the same organism matches across panels.
+ORGANISM_COLORS = [
+    "#1F4E79",
+    "#2E86AB",
+    "#1A7F7A",
+    "#3D8B5C",
+    "#7A9B3C",
+    "#C4922A",
+    "#D36B2F",
+    "#C44536",
+    "#8E4A73",
+    "#5C6B8A",
+    "#6D7C8B",
+]
+
+DISEASE_COLORS = [
+    "#4A0E32",
+    "#6B1D4A",
+    "#8B2E5F",
+    "#A63D70",
+    "#C04A7E",
+    "#D16B94",
+    "#DC8AA9",
+    "#E5A8BE",
+    "#EDC4D2",
+    "#C9A0B8",
+]
+
+LABEL_COLORS = {
+    "LFQ": "#1F4E79",
+    "TMT": "#D36B2F",
+    "SILAC": "#1A7F7A",
+    "iTRAQ": "#8E4A73",
+    "Other": OTHER_COLOR,
+}
+
+ACQ_COLORS = {
+    "DDA": "#1F4E79",
+    "DIA": "#2E9A8F",
+    "SRM/MRM": "#C4922A",
+    "Other": OTHER_COLOR,
+}
+
+_BINOMIAL_BLOCKLIST = {
+    "human",
+    "severe",
+    "other",
+    "bacteria",
+    "unknown",
+}
+
+SAVE_DPI = 200
+
+
+def _apply_style() -> None:
+    plt.rcParams.update(
+        {
+            "font.family": "sans-serif",
+            "font.sans-serif": [
+                "DejaVu Sans",
+                "Liberation Sans",
+                "Arial",
+                "Helvetica",
+            ],
+            "font.size": 10,
+            "text.color": INK,
+            "axes.titlesize": 12,
+            "axes.titleweight": "bold",
+            "axes.titlecolor": INK,
+            "axes.labelsize": 10,
+            "axes.labelcolor": MUTED,
+            "axes.edgecolor": AXIS,
+            "axes.linewidth": 0.7,
+            "axes.spines.top": False,
+            "axes.spines.right": False,
+            "xtick.color": MUTED,
+            "ytick.color": INK,
+            "xtick.labelsize": 9,
+            "ytick.labelsize": 10,
+            "figure.facecolor": FACE,
+            "axes.facecolor": FACE,
+            "savefig.facecolor": FACE,
+            "savefig.dpi": SAVE_DPI,
+            "axes.grid": False,
+        }
+    )
+
+
+def _shorten_label(text: str, max_len: int = 34) -> str:
     text = text.strip()
     if len(text) <= max_len:
         return text
     return text[: max_len - 1].rstrip() + "…"
 
 
-def _empty_plot(path: Path, title: str) -> None:
-    fig, ax = plt.subplots(figsize=(8, 3.5))
-    ax.text(0.5, 0.5, "No data", ha="center", va="center", fontsize=12)
-    ax.set_title(title, fontsize=13, pad=10, fontweight="bold")
-    ax.set_axis_off()
-    fig.tight_layout()
-    fig.savefig(path, dpi=160, bbox_inches="tight", facecolor="white")
-    plt.close(fig)
+def _is_binomial(name: str) -> bool:
+    parts = name.split()
+    if len(parts) not in {2, 3}:
+        return False
+    if not parts[0][:1].isupper():
+        return False
+    if not all(p.isalpha() for p in parts):
+        return False
+    if parts[0].lower() in _BINOMIAL_BLOCKLIST:
+        return False
+    return all(p[:1].islower() for p in parts[1:])
+
+
+def _split_other(
+    items: list[tuple[str, int]],
+) -> tuple[list[tuple[str, int]], int]:
+    named = [(k, v) for k, v in items if k != "Other"]
+    other = sum(v for k, v in items if k == "Other")
+    named.sort(key=lambda kv: kv[1], reverse=True)
+    return named, other
 
 
 def _order_hbar_items(
     items: list[tuple[str, int]],
 ) -> list[tuple[str, int]]:
-    named = [(k, v) for k, v in items if k != "Other"]
-    other = [(k, v) for k, v in items if k == "Other"]
-    return sorted(named, key=lambda kv: kv[1], reverse=True) + other
+    named, other = _split_other(items)
+    if other:
+        named = named + [("Other", other)]
+    return named
 
 
-def _annotate_hbar_values(
+def _count_tick(value: float, _pos=None) -> str:
+    if value <= 0:
+        return "0"
+    if value >= 1_000_000:
+        as_m = value / 1_000_000
+        return f"{as_m:.1f}M".replace(".0M", "M")
+    if value >= 1000:
+        as_k = value / 1000
+        if abs(as_k - round(as_k)) < 1e-6:
+            return f"{int(round(as_k))}k"
+        return f"{as_k:.1f}k"
+    return f"{int(value)}"
+
+
+def _organism_colors(names: list[str]) -> dict[str, str]:
+    mapping: dict[str, str] = {"Other": OTHER_COLOR}
+    palette = [c for c in ORGANISM_COLORS]
+    idx = 0
+    for name in names:
+        if name in mapping:
+            continue
+        mapping[name] = palette[idx % len(palette)]
+        idx += 1
+    return mapping
+
+
+def _style_axes(ax, *, xlabel: str | None = None) -> None:
+    ax.set_axisbelow(True)
+    ax.grid(axis="x", color=GRID, linewidth=0.7, linestyle="-")
+    ax.tick_params(axis="y", length=0, pad=5)
+    ax.tick_params(axis="x", length=3, width=0.6, color=AXIS)
+    ax.spines["left"].set_visible(False)
+    ax.spines["bottom"].set_color(AXIS)
+    if xlabel:
+        ax.set_xlabel(xlabel, fontsize=9, color=MUTED, labelpad=6)
+    ax.xaxis.set_major_formatter(FuncFormatter(_count_tick))
+
+
+def _italicize_binomial_ticks(ax, names: list[str]) -> None:
+    for tick, name in zip(ax.get_yticklabels(), names, strict=True):
+        if _is_binomial(name):
+            tick.set_fontstyle("italic")
+
+
+def _contrasting_text(face_rgba) -> str:
+    r, g, b = face_rgba[:3]
+    luminance = 0.299 * r + 0.587 * g + 0.114 * b
+    return FACE if luminance < 0.62 else INK
+
+
+def _annotate_bars(
     ax,
     bars,
     values: list[int],
@@ -355,68 +517,71 @@ def _annotate_hbar_values(
 ) -> None:
     for bar, value in zip(bars, values, strict=True):
         pct = 100.0 * value / total
-        label = f"{value:,} ({pct:.1f}%)" if show_percent else f"{value:,}"
+        label = f"{value:,} ({pct:.0f}%)" if show_percent else f"{value:,}"
+        inside = bar.get_width() >= xmax * 0.28
+        text_color = (
+            _contrasting_text(bar.get_facecolor()) if inside else INK
+        )
         ax.text(
-            bar.get_width() + xmax * 0.02,
+            bar.get_width() * 0.985 if inside else bar.get_width() + xmax * 0.018,
             bar.get_y() + bar.get_height() / 2,
             label,
             va="center",
-            ha="left",
-            fontsize=9,
-            color="#24292f",
+            ha="right" if inside else "left",
+            fontsize=8.5,
+            color=text_color,
+            fontweight="bold" if inside else "normal",
+            clip_on=False,
         )
 
 
-def hbar_plot(
-    path: Path,
-    title: str,
+def _draw_hbar(
+    ax,
     items: list[tuple[str, int]],
-    color: str,
     *,
+    colors: list[str],
     show_percent: bool = False,
-    colors: list[str] | None = None,
+    italic_binomials: bool = False,
+    xlabel: str = "Count",
 ) -> None:
-    """Horizontal bars — readable long labels, no pie-slice collisions."""
-    path.parent.mkdir(parents=True, exist_ok=True)
     if not items:
-        _empty_plot(path, title)
+        ax.set_axis_off()
+        ax.text(0.5, 0.5, "No data", ha="center", va="center", color=MUTED)
         return
 
     ordered = _order_hbar_items(items)
-    labels = [_shorten_label(k) for k, _ in ordered]
+    names = [k for k, _ in ordered]
+    labels = [_shorten_label(k) for k in names]
     values = [v for _, v in ordered]
     total = sum(values) or 1
     n = len(values)
-
-    height = max(3.8, 0.48 * n + 1.6)
-    fig, ax = plt.subplots(figsize=(10.0, height))
     y = list(range(n))
-    bar_colors = (
-        [colors[i % len(colors)] for i in range(n)]
-        if colors
-        else [color] * n
-    )
+    bar_colors = [colors[i] if i < len(colors) else OTHER_COLOR for i in range(n)]
+
     bars = ax.barh(
         y,
         values,
         color=bar_colors,
-        edgecolor="white",
+        edgecolor=FACE,
         linewidth=0.6,
         height=0.72,
+        zorder=3,
     )
-    ax.set_yticks(y)
-    ax.set_yticklabels(labels, fontsize=10)
-    ax.invert_yaxis()
-    ax.set_xlabel("Count", fontsize=10)
-    ax.set_title(title, fontsize=13, pad=12, fontweight="bold")
-    ax.spines["top"].set_visible(False)
-    ax.spines["right"].set_visible(False)
-    ax.grid(axis="x", linestyle=":", alpha=0.45)
-    ax.set_axisbelow(True)
+    for bar, name in zip(bars, names, strict=True):
+        if name == "Other":
+            bar.set_color(OTHER_COLOR)
+            bar.set_alpha(0.95)
 
-    xmax = max(values)
-    ax.set_xlim(0, xmax * 1.28)
-    _annotate_hbar_values(
+    ax.set_yticks(y)
+    ax.set_yticklabels(labels)
+    ax.invert_yaxis()
+    if italic_binomials:
+        _italicize_binomial_ticks(ax, names)
+
+    xmax = max(values) if values else 1
+    ax.set_xlim(0, xmax * 1.24)
+    _style_axes(ax, xlabel=xlabel)
+    _annotate_bars(
         ax,
         bars,
         values,
@@ -425,55 +590,419 @@ def hbar_plot(
         show_percent=show_percent,
     )
 
-    fig.tight_layout()
-    fig.savefig(path, dpi=160, bbox_inches="tight", facecolor="white")
+
+def _draw_donut(
+    ax,
+    items: list[tuple[str, int]],
+    *,
+    color_map: dict[str, str],
+    center_caption: str,
+    legend: str = "none",
+) -> None:
+    ordered = _order_hbar_items(items)
+    if not ordered:
+        ax.set_axis_off()
+        ax.text(0.5, 0.5, "No data", ha="center", va="center", color=MUTED)
+        return
+
+    names = [k for k, _ in ordered]
+    values = [v for _, v in ordered]
+    total = sum(values) or 1
+    colors = [color_map.get(name, OTHER_COLOR) for name in names]
+
+    wedges, _ = ax.pie(
+        values,
+        colors=colors,
+        startangle=90,
+        counterclock=False,
+        wedgeprops=dict(width=0.48, edgecolor=FACE, linewidth=2.2),
+        radius=1.0,
+    )
+    ax.set_aspect("equal")
+    ax.set_xlim(-1.25, 1.25)
+    ax.set_ylim(-1.25, 1.25)
+    for spine in ax.spines.values():
+        spine.set_visible(False)
+    ax.set_xticks([])
+    ax.set_yticks([])
+
+    ax.text(
+        0,
+        0.10,
+        f"{total:,}",
+        ha="center",
+        va="center",
+        fontsize=13,
+        fontweight="bold",
+        color=INK,
+    )
+    ax.text(
+        0,
+        -0.18,
+        center_caption,
+        ha="center",
+        va="center",
+        fontsize=8,
+        color=MUTED,
+    )
+
+    if legend == "none":
+        return
+
+    legend_labels = [
+        f"{name}   {value:,}  ({100.0 * value / total:.1f}%)"
+        for name, value in ordered
+    ]
+    loc, bbox = (
+        ("upper center", (0.5, -0.04))
+        if legend == "below"
+        else ("center left", (1.08, 0.5))
+    )
+    legend_artist = ax.legend(
+        wedges,
+        legend_labels,
+        loc=loc,
+        bbox_to_anchor=bbox,
+        ncol=1,
+        frameon=False,
+        fontsize=8.5,
+        handlelength=1.05,
+        handleheight=1.05,
+        borderaxespad=0.0,
+        labelspacing=0.6,
+    )
+    for text in legend_artist.get_texts():
+        text.set_color(INK)
+
+
+def _draw_color_key(
+    ax,
+    items: list[tuple[str, int]],
+    color_map: dict[str, str],
+) -> None:
+    ordered = _order_hbar_items(items)
+    ax.set_axis_off()
+    if not ordered:
+        return
+    total = sum(v for _, v in ordered) or 1
+    n = len(ordered)
+    ax.set_xlim(0, 1)
+    ax.set_ylim(-(n + 1) / 2.0, (n + 1) / 2.0)
+    for i, (name, value) in enumerate(ordered):
+        y = (n - 1) / 2.0 - i
+        ax.scatter(
+            [0.04],
+            [y],
+            s=90,
+            c=[color_map.get(name, OTHER_COLOR)],
+            marker="s",
+            linewidths=0,
+            zorder=3,
+            clip_on=False,
+        )
+        pct = 100.0 * value / total
+        ax.text(
+            0.12,
+            y,
+            f"{name}    {value:,}   ({pct:.1f}%)",
+            fontsize=9,
+            va="center",
+            ha="left",
+            color=INK,
+            clip_on=False,
+        )
+
+
+def _panel_title(ax, letter: str, title: str) -> None:
+    ax.set_title(
+        f"{letter}   {title}",
+        loc="left",
+        fontsize=11,
+        fontweight="bold",
+        pad=8,
+        color=INK,
+    )
+
+
+def _make_figure(
+    *,
+    nrows: int,
+    ncols: int,
+    figsize: tuple[float, float],
+    title: str,
+    subtitle: str,
+    width_ratios: list[float] | None = None,
+    wspace: float = 0.28,
+    hspace: float = 0.34,
+    left: float = 0.08,
+    right: float = 0.97,
+    top: float = 0.97,
+    bottom: float = 0.08,
+    header_ratio: float = 0.16,
+):
+    fig = plt.figure(figsize=figsize)
+    outer = fig.add_gridspec(
+        2,
+        1,
+        height_ratios=[header_ratio, 1.0],
+        hspace=0.08,
+        left=left,
+        right=right,
+        top=top,
+        bottom=bottom,
+    )
+    header = fig.add_subplot(outer[0, 0])
+    header.set_axis_off()
+    header.set_xlim(0, 1)
+    header.set_ylim(0, 1)
+    header.text(
+        0.0,
+        0.70,
+        title,
+        fontsize=13.5,
+        fontweight="bold",
+        va="center",
+        ha="left",
+        color=INK,
+    )
+    header.text(
+        0.0,
+        0.12,
+        subtitle,
+        fontsize=8.5,
+        color=MUTED,
+        va="center",
+        ha="left",
+    )
+    header.plot(
+        [0, 1],
+        [-0.18, -0.18],
+        color=GRID,
+        linewidth=0.9,
+        clip_on=False,
+        transform=header.transAxes,
+    )
+
+    inner = outer[1, 0].subgridspec(
+        nrows,
+        ncols,
+        wspace=wspace,
+        hspace=hspace,
+        width_ratios=width_ratios,
+    )
+    axes = [
+        [fig.add_subplot(inner[r, c]) for c in range(ncols)] for r in range(nrows)
+    ]
+    if nrows == 1 and ncols == 1:
+        return fig, axes[0][0]
+    if nrows == 1:
+        return fig, axes[0]
+    if ncols == 1:
+        return fig, [row[0] for row in axes]
+    return fig, axes
+
+
+def _save(fig, path: Path) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    fig.savefig(
+        path,
+        dpi=SAVE_DPI,
+        bbox_inches="tight",
+        pad_inches=0.16,
+        facecolor=FACE,
+    )
     plt.close(fig)
 
 
+def _empty_figure(path: Path, title: str) -> None:
+    fig, ax = plt.subplots(figsize=(8.4, 3.2))
+    ax.set_axis_off()
+    ax.text(0.5, 0.5, "No data", ha="center", va="center", fontsize=12, color=MUTED)
+    ax.set_title(title, fontsize=13, pad=10, fontweight="bold")
+    _save(fig, path)
+
+
+def render_organism_figure(
+    path: Path,
+    accessions: list[tuple[str, int]],
+    samples: list[tuple[str, int]],
+) -> None:
+    acc_items = top_with_other(accessions, 10)
+    sample_items = top_with_other(samples, 10)
+    if not acc_items and not sample_items:
+        _empty_figure(path, "Organisms")
+        return
+
+    names_for_color: list[str] = []
+    for items in (acc_items, sample_items):
+        for name, _ in _order_hbar_items(items):
+            if name not in names_for_color:
+                names_for_color.append(name)
+    cmap = _organism_colors(names_for_color)
+
+    fig, axes = _make_figure(
+        nrows=2,
+        ncols=1,
+        figsize=(8.6, 9.8),
+        title="Organisms in curated annotations",
+        subtitle="Top 10 taxa plus remaining organisms aggregated as Other.",
+        hspace=0.28,
+        left=0.28,
+        right=0.97,
+        bottom=0.06,
+        header_ratio=0.11,
+    )
+
+    for ax, items, letter, title, xlabel in (
+        (axes[0], acc_items, "A", "Accessions", "Accessions"),
+        (axes[1], sample_items, "B", "Samples", "Samples"),
+    ):
+        ordered = _order_hbar_items(items)
+        colors = [cmap.get(name, OTHER_COLOR) for name, _ in ordered]
+        _panel_title(ax, letter, title)
+        _draw_hbar(
+            ax,
+            items,
+            colors=colors,
+            italic_binomials=True,
+            xlabel=xlabel,
+        )
+
+    _save(fig, path)
+
+
+def render_disease_figure(path: Path, diseases: list[tuple[str, int]]) -> None:
+    items = top_with_other(diseases, 10)
+    named, other = _split_other(items)
+    if not named and not other:
+        _empty_figure(path, "Diseases")
+        return
+
+    n_other_terms = max(0, len(diseases) - 10)
+    share_items = [
+        ("Top 10 terms", sum(v for _, v in named)),
+        ("Other terms", other),
+    ]
+    share_colors = {"Top 10 terms": "#8B2E5F", "Other terms": OTHER_COLOR}
+
+    fig, axes = _make_figure(
+        nrows=1,
+        ncols=3,
+        figsize=(10.0, 5.6),
+        title="Disease annotations",
+        subtitle=(
+            "Healthy / normal / control samples excluded. "
+            f"{n_other_terms:,} additional disease terms aggregated as Other."
+        ),
+        width_ratios=[1.65, 0.95, 0.90],
+        wspace=0.12,
+        left=0.20,
+        right=0.98,
+        bottom=0.10,
+        header_ratio=0.24,
+    )
+
+    _panel_title(axes[0], "A", "Most frequent terms")
+    _draw_hbar(
+        axes[0],
+        named,
+        colors=DISEASE_COLORS[: len(named)],
+        xlabel="Samples",
+    )
+
+    _panel_title(axes[1], "B", "Share of annotated samples")
+    _draw_donut(
+        axes[1],
+        share_items,
+        color_map=share_colors,
+        center_caption="samples",
+        legend="none",
+    )
+    axes[2].set_title(" ", pad=8)
+    _draw_color_key(axes[2], share_items, share_colors)
+
+    _save(fig, path)
+
+
+def render_methods_figure(
+    path: Path,
+    labels: list[tuple[str, int]],
+    acquisitions: list[tuple[str, int]],
+) -> None:
+    if not labels and not acquisitions:
+        _empty_figure(path, "Assay methods")
+        return
+
+    fig, axes = _make_figure(
+        nrows=1,
+        ncols=4,
+        figsize=(10.4, 4.6),
+        title="Quantification and acquisition",
+        subtitle=(
+            "Assay rows with a recognized quantification label or acquisition method."
+        ),
+        width_ratios=[1.20, 0.92, 1.20, 1.05],
+        wspace=0.05,
+        left=0.02,
+        right=0.99,
+        bottom=0.06,
+        header_ratio=0.22,
+    )
+
+    _panel_title(axes[0], "A", "Quantification label")
+    _draw_donut(
+        axes[0],
+        labels,
+        color_map=LABEL_COLORS,
+        center_caption="assay rows",
+        legend="none",
+    )
+    axes[1].set_title(" ", pad=8)
+    _draw_color_key(axes[1], labels, LABEL_COLORS)
+
+    _panel_title(axes[2], "B", "Acquisition method")
+    _draw_donut(
+        axes[2],
+        acquisitions,
+        color_map=ACQ_COLORS,
+        center_caption="assay rows",
+        legend="none",
+    )
+    axes[3].set_title(" ", pad=8)
+    _draw_color_key(axes[3], acquisitions, ACQ_COLORS)
+
+    _save(fig, path)
+
+
+def _cleanup_stale_plots(keep: set[str]) -> None:
+    if not PLOTS_DIR.exists():
+        return
+    for png in PLOTS_DIR.glob("*.png"):
+        if png.name not in keep:
+            png.unlink()
+
+
 def render_plots(stats: dict) -> dict[str, str]:
+    _apply_style()
     PLOTS_DIR.mkdir(parents=True, exist_ok=True)
     paths = {
         "organisms": "plots/organisms.png",
-        "samples_by_organism": "plots/samples_by_organism.png",
         "diseases": "plots/diseases.png",
-        "quant_methods": "plots/quant_methods.png",
-        "acquisition": "plots/acquisition.png",
+        "methods": "plots/methods.png",
     }
 
-    hbar_plot(
+    render_organism_figure(
         STATS_DIR / paths["organisms"],
-        "Organisms by accession count",
-        top_with_other(stats["organisms"], 10),
-        "#1f6feb",
+        stats["organisms"],
+        stats["samples_by_organism"],
     )
-    hbar_plot(
-        STATS_DIR / paths["samples_by_organism"],
-        "Samples by organism",
-        top_with_other(stats["samples_by_organism"], 10),
-        "#098658",
-    )
-    hbar_plot(
-        STATS_DIR / paths["diseases"],
-        "Top annotated diseases (healthy/normal excluded)",
-        top_with_other(stats["diseases"], 10),
-        "#bf3989",
-    )
-    hbar_plot(
-        STATS_DIR / paths["quant_methods"],
-        "Assay rows by quantification label",
+    render_disease_figure(STATS_DIR / paths["diseases"], stats["diseases"])
+    render_methods_figure(
+        STATS_DIR / paths["methods"],
         stats["labels"],
-        "#1f6feb",
-        show_percent=True,
-        colors=["#1f6feb", "#f78166", "#bf8700", "#8250df", "#6e7781"],
-    )
-    hbar_plot(
-        STATS_DIR / paths["acquisition"],
-        "Assay rows by acquisition method",
         stats["acquisitions"],
-        "#0969da",
-        show_percent=True,
-        colors=["#0969da", "#1a7f37", "#9a6700", "#6e7781"],
     )
+    _cleanup_stale_plots({Path(p).name for p in paths.values()})
     return paths
 
 
@@ -509,18 +1038,14 @@ def build_readme_section(stats: dict, plot_paths: dict[str, str]) -> str:
         f"**{fmt_int(dia)}** DIA assay rows; "
         f"**{fmt_int(tmt)}** TMT and **{fmt_int(lfq)}** LFQ assay rows.",
         "",
-        f"![Organisms](docs/stats/{plot_paths['organisms']})",
+        f"![Organisms in curated annotations]"
+        f"(docs/stats/{plot_paths['organisms']})",
         "",
-        f"![Samples by organism]"
-        f"(docs/stats/{plot_paths['samples_by_organism']})",
+        f"![Disease annotations]"
+        f"(docs/stats/{plot_paths['diseases']})",
         "",
-        f"![Diseases](docs/stats/{plot_paths['diseases']})",
-        "",
-        f"![Quantification methods]"
-        f"(docs/stats/{plot_paths['quant_methods']})",
-        "",
-        f"![Acquisition methods]"
-        f"(docs/stats/{plot_paths['acquisition']})",
+        f"![Quantification and acquisition methods]"
+        f"(docs/stats/{plot_paths['methods']})",
         "",
         STATS_END,
     ]
@@ -545,6 +1070,23 @@ def update_readme(section: str) -> None:
     README_PATH.write_text(
         text if text.endswith("\n") else text + "\n", encoding="utf-8"
     )
+
+
+def load_summary() -> dict:
+    payload = json.loads((STATS_DIR / "summary.json").read_text(encoding="utf-8"))
+
+    def pairs(key: str) -> list[tuple[str, int]]:
+        return [(row["name"], int(row["count"])) for row in payload[key]]
+
+    return {
+        "generated_at": payload["generated_at"],
+        "totals": payload["totals"],
+        "organisms": pairs("organisms"),
+        "samples_by_organism": pairs("samples_by_organism"),
+        "diseases": pairs("diseases"),
+        "labels": pairs("labels"),
+        "acquisitions": pairs("acquisitions"),
+    }
 
 
 def write_summary(stats: dict) -> None:
@@ -572,10 +1114,17 @@ def write_summary(stats: dict) -> None:
     )
 
 
-def main() -> int:
-    stats = aggregate()
+def main(argv: list[str] | None = None) -> int:
+    argv = list(sys.argv[1:] if argv is None else argv)
+    plots_only = "--plots-only" in argv
+
+    if plots_only:
+        stats = load_summary()
+    else:
+        stats = aggregate()
+        write_summary(stats)
+
     plot_paths = render_plots(stats)
-    write_summary(stats)
     update_readme(build_readme_section(stats, plot_paths))
 
     totals = stats["totals"]

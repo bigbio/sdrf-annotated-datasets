@@ -3,7 +3,7 @@
 
 Scans datasets/**/*.sdrf.tsv (sandbox excluded), writes:
   docs/stats/summary.json
-  docs/stats/plots/{organisms,diseases,methods,completeness,templates}.png
+  docs/stats/plots/{organisms,diseases,methods,completeness,templates,contributions}.png
   and replaces the README markers <!-- STATS:START --> ... <!-- STATS:END -->.
 
 Pass --plots-only to redraw figures from an existing summary.json.
@@ -14,6 +14,7 @@ from __future__ import annotations
 import csv
 import json
 import re
+import subprocess
 import sys
 from collections import Counter, defaultdict
 from dataclasses import dataclass, field
@@ -112,6 +113,33 @@ TECHNOLOGY_TEMPLATES = {
     "affinity-proteomics",
     "ms-metabolomics",
 }
+
+AGENT_EMAILS = {
+    "cursoragent@cursor.com": "Cursor",
+    "noreply@anthropic.com": "Claude",
+    "198982749+copilot@users.noreply.github.com": "Copilot",
+    "175728472+copilot@users.noreply.github.com": "Copilot",
+    "annotator@sdrf-skills.local": "SDRF Annotator",
+}
+
+AGENT_NAME_PATTERNS = (
+    (re.compile(r"cursor", re.I), "Cursor"),
+    (re.compile(r"claude", re.I), "Claude"),
+    (re.compile(r"copilot", re.I), "Copilot"),
+    (re.compile(r"sdrf annotator", re.I), "SDRF Annotator"),
+    (re.compile(r"chatgpt|openai", re.I), "ChatGPT"),
+    (re.compile(r"\bcodex\b", re.I), "Codex"),
+    (re.compile(r"gemini", re.I), "Gemini"),
+)
+
+HUMAN_NAME_ALIASES = {
+    "ypriverol": "Yasset Perez-Riverol",
+    "jeroen van goey": "Jeroen Van Goey",
+}
+
+_COAUTHOR_RE = re.compile(
+    r"^Co-authored-by:\s*(.+?)\s*<([^>]+)>", flags=re.IGNORECASE
+)
 
 HEALTHY_DISEASE_TOKENS = {
     "normal",
@@ -301,6 +329,227 @@ def iter_sdrf_files() -> list[Path]:
     if not DATASETS_DIR.exists():
         return []
     return sorted(DATASETS_DIR.rglob("*.sdrf.tsv"))
+
+
+def _canonical_human_name(name: str) -> str:
+    cleaned = re.sub(r"\s+", " ", name).strip()
+    return HUMAN_NAME_ALIASES.get(cleaned.lower(), cleaned)
+
+
+def classify_contributor(name: str, email: str) -> str | None:
+    """Return an agent label, or None if this looks like a human identity."""
+    email_l = (email or "").strip().lower()
+    name_s = (name or "").strip()
+    if email_l in AGENT_EMAILS:
+        return AGENT_EMAILS[email_l]
+    for pattern, label in AGENT_NAME_PATTERNS:
+        if pattern.search(name_s) or pattern.search(email_l):
+            return label
+    return None
+
+
+def _is_ignored_identity(name: str, email: str) -> bool:
+    """Bots and empty identities are neither human nor AI contributors."""
+    email_l = (email or "").strip().lower()
+    name_s = (name or "").strip()
+    if not name_s and not email_l:
+        return True
+    lowered = name_s.lower()
+    if lowered.endswith("[bot]"):
+        return True
+    if lowered in {"github actions", "dependabot", "web-flow"}:
+        return True
+    if "github-actions" in email_l:
+        return True
+    return False
+
+
+def _add_identity(name: str, email: str, agents: set[str], humans: set[str]) -> None:
+    label = classify_contributor(name, email)
+    if label:
+        agents.add(label)
+        return
+    if _is_ignored_identity(name, email):
+        return
+    human = _canonical_human_name(name)
+    if human:
+        humans.add(human)
+
+
+def _parse_commit_identities(author_name: str, author_email: str, body: str):
+    agents: set[str] = set()
+    humans: set[str] = set()
+    _add_identity(author_name, author_email, agents, humans)
+    for line in body.splitlines():
+        match = _COAUTHOR_RE.match(line.strip())
+        if not match:
+            continue
+        _add_identity(match.group(1), match.group(2), agents, humans)
+    lower_body = body.lower()
+    if "generated with claude" in lower_body:
+        agents.add("Claude")
+    if "generated with cursor" in lower_body:
+        agents.add("Cursor")
+    return agents, humans
+
+
+def _git_output(args: list[str], *, timeout: int) -> str:
+    try:
+        return subprocess.check_output(
+            ["git", "-C", str(REPO_ROOT), *args],
+            text=True,
+            errors="replace",
+            timeout=timeout,
+        )
+    except (OSError, subprocess.SubprocessError):
+        return ""
+
+
+def _git_commit_identities() -> dict[str, tuple[frozenset[str], frozenset[str]]]:
+    """Map commit SHA to agent/human identities from author + message trailers."""
+    raw = _git_output(
+        ["log", "--pretty=format:%H%x00%an%x00%ae%x00%B%x1e"],
+        timeout=120,
+    )
+    identities: dict[str, tuple[frozenset[str], frozenset[str]]] = {}
+    for record in raw.split("\x1e"):
+        record = record.strip("\n")
+        if not record:
+            continue
+        parts = record.split("\x00", 3)
+        if len(parts) != 4:
+            continue
+        sha, name, email, body = parts
+        agents, humans = _parse_commit_identities(name, email, body)
+        identities[sha] = (frozenset(agents), frozenset(humans))
+    return identities
+
+
+def _git_first_add_paths() -> dict[str, str]:
+    """Map datasets/ path to the oldest commit that added it."""
+    raw = _git_output(
+        [
+            "log",
+            "--reverse",
+            "--diff-filter=A",
+            "--name-only",
+            "--pretty=format:COMMIT %H",
+            "--",
+            "datasets",
+        ],
+        timeout=120,
+    )
+    first: dict[str, str] = {}
+    sha = None
+    for line in raw.splitlines():
+        if line.startswith("COMMIT "):
+            sha = line.split(" ", 1)[1].strip()
+            continue
+        path = line.strip()
+        if sha and path.endswith(".sdrf.tsv") and path not in first:
+            first[path] = sha
+    return first
+
+
+def _git_first_add_for_path(rel: str) -> tuple[str, str, str] | None:
+    out = _git_output(
+        [
+            "log",
+            "--follow",
+            "--diff-filter=A",
+            "-1",
+            "--pretty=format:%an%x09%ae%n%B",
+            "--",
+            rel,
+        ],
+        timeout=15,
+    )
+    if not out.strip():
+        return None
+    first, _, rest = out.partition("\n")
+    if "\t" not in first:
+        return None
+    name, email = first.split("\t", 1)
+    return name, email, rest
+
+
+def collect_contributions(current_files: list[Path]) -> dict:
+    """Attribute each current datasets/ SDRF to the commit that first added it."""
+    current = {p.resolve().relative_to(REPO_ROOT).as_posix() for p in current_files}
+    first: dict[str, tuple[frozenset[str], frozenset[str]]] = {}
+
+    identities = _git_commit_identities()
+    added = _git_first_add_paths()
+    for path in current:
+        sha = added.get(path)
+        if sha and sha in identities:
+            first[path] = identities[sha]
+
+    for path in sorted(current - set(first)):
+        ident = _git_first_add_for_path(path)
+        if not ident:
+            continue
+        name, email, body = ident
+        agents, humans = _parse_commit_identities(name, email, body)
+        first[path] = (frozenset(agents), frozenset(humans))
+
+    acc_agents: dict[str, set[str]] = defaultdict(set)
+    acc_humans: dict[str, set[str]] = defaultdict(set)
+    file_agents: Counter = Counter()
+    file_humans: Counter = Counter()
+    file_origin = Counter()
+    acc_origin: dict[str, str] = {}
+
+    for path, (agents, humans) in first.items():
+        accession = Path(path).parent.name
+        if agents:
+            file_origin["Agent-assisted"] += 1
+            acc_origin[accession] = "Agent-assisted"
+            for agent in agents:
+                file_agents[agent] += 1
+                acc_agents[accession].add(agent)
+        elif humans:
+            file_origin["Human-only"] += 1
+            acc_origin.setdefault(accession, "Human-only")
+        for human in humans:
+            if not human:
+                continue
+            file_humans[human] += 1
+            acc_humans[accession].add(human)
+
+    origin_acc = Counter(acc_origin.values())
+    agent_acc: Counter = Counter()
+    for agents in acc_agents.values():
+        agent_acc.update(agents)
+    human_acc: Counter = Counter()
+    for humans in acc_humans.values():
+        human_acc.update(humans)
+
+    unattributed = len(current) - len(first)
+    return {
+        "attributed_files": len(first),
+        "unattributed_files": unattributed,
+        "origin": [
+            {
+                "name": "Human-only",
+                "accessions": int(origin_acc.get("Human-only", 0)),
+                "files": int(file_origin.get("Human-only", 0)),
+            },
+            {
+                "name": "Agent-assisted",
+                "accessions": int(origin_acc.get("Agent-assisted", 0)),
+                "files": int(file_origin.get("Agent-assisted", 0)),
+            },
+        ],
+        "agents": [
+            {"name": name, "accessions": count, "files": int(file_agents[name])}
+            for name, count in agent_acc.most_common()
+        ],
+        "humans": [
+            {"name": name, "accessions": count, "files": int(file_humans[name])}
+            for name, count in human_acc.most_common()
+        ],
+    }
 
 
 @dataclass
@@ -588,6 +837,7 @@ def aggregate() -> dict:
         "completeness_by_organism": completeness_by_organism,
         "templates": templates,
         "specialties": specialties,
+        "contributions": collect_contributions(files),
     }
 
 
@@ -1274,6 +1524,21 @@ SPECIALTY_COLORS = {
     "Oncology": "#A63D70",
 }
 
+ORIGIN_COLORS = {
+    "Human-only": "#1F4E79",
+    "Agent-assisted": "#D36B2F",
+}
+
+AGENT_COLORS = {
+    "Cursor": "#F54E00",
+    "Claude": "#D97757",
+    "Copilot": "#6E40C9",
+    "SDRF Annotator": "#1A7F7A",
+    "ChatGPT": "#10A37F",
+    "Codex": "#3D8B5C",
+    "Gemini": "#4285F4",
+}
+
 COMPLETE_CMAP = LinearSegmentedColormap.from_list(
     "sdrf_complete", ["#F2F4F7", "#7FB8B2", "#1A7F7A", "#1F4E79"]
 )
@@ -1506,6 +1771,134 @@ def render_templates_figure(
     _save(fig, path)
 
 
+def render_contributions_figure(path: Path, contributions: dict) -> None:
+    origin = contributions.get("origin") or []
+    agents = contributions.get("agents") or []
+    humans = contributions.get("humans") or []
+    if not origin and not agents and not humans:
+        _empty_figure(path, "Contributions")
+        return
+
+    unattr = int(contributions.get("unattributed_files", 0))
+    attributed = int(contributions.get("attributed_files", 0))
+    extra = (
+        f"{unattr:,} current files could not be matched to an add commit."
+        if unattr
+        else f"{attributed:,} current SDRF files attributed from git history."
+    )
+
+    fig = plt.figure(figsize=(10.4, 8.6))
+    outer = fig.add_gridspec(
+        2,
+        1,
+        height_ratios=[0.18, 1.0],
+        hspace=0.06,
+        left=0.20,
+        right=0.97,
+        top=0.97,
+        bottom=0.07,
+    )
+    header = fig.add_subplot(outer[0, 0])
+    header.set_axis_off()
+    header.set_xlim(0, 1)
+    header.set_ylim(0, 1)
+    header.text(
+        0.0,
+        0.72,
+        "Who annotated the curated corpus",
+        fontsize=13.5,
+        fontweight="bold",
+        va="center",
+        ha="left",
+        color=INK,
+    )
+    header.text(
+        0.0,
+        0.12,
+        "Each current datasets/ SDRF is attributed to the git commit that "
+        "first added it.\nAgent-assisted means an AI identity in the author "
+        f"or Co-authored-by trailer. {extra}",
+        fontsize=8.5,
+        color=MUTED,
+        va="center",
+        ha="left",
+        linespacing=1.35,
+    )
+    header.plot(
+        [0, 1],
+        [-0.18, -0.18],
+        color=GRID,
+        linewidth=0.9,
+        clip_on=False,
+        transform=header.transAxes,
+    )
+    body = outer[1, 0].subgridspec(
+        2,
+        3,
+        height_ratios=[1.05, 1.20],
+        hspace=0.38,
+        wspace=0.08,
+        width_ratios=[1.15, 1.15, 1.45],
+    )
+    ax_origin = fig.add_subplot(body[0, 0])
+    ax_key = fig.add_subplot(body[0, 1])
+    ax_agents = fig.add_subplot(body[0, 2])
+    ax_humans = fig.add_subplot(body[1, :])
+
+    origin_items = [
+        (row["name"], int(row["accessions"]))
+        for row in origin
+        if int(row["accessions"])
+    ]
+    _panel_title(ax_origin, "A", "Human vs agent-assisted")
+    _draw_donut(
+        ax_origin,
+        origin_items,
+        color_map=ORIGIN_COLORS,
+        center_caption="accessions",
+        legend="none",
+    )
+    ax_key.set_title(" ", pad=8)
+    _draw_color_key(ax_key, origin_items, ORIGIN_COLORS)
+
+    _panel_title(ax_agents, "B", "AI agent")
+    agent_items = [
+        (row["name"], int(row["accessions"]))
+        for row in agents
+        if int(row["accessions"])
+    ]
+    agent_colors = [
+        AGENT_COLORS.get(name, OTHER_COLOR) for name, _ in agent_items
+    ]
+    _draw_hbar(
+        ax_agents,
+        agent_items,
+        colors=agent_colors,
+        xlabel="Accessions",
+        preserve_order=True,
+    )
+
+    _panel_title(ax_humans, "C", "Human / user contributors")
+    human_pairs = [
+        (row["name"], int(row["accessions"]))
+        for row in humans
+        if row.get("name") and int(row["accessions"])
+    ]
+    human_pairs = top_with_other(human_pairs, 8)
+    human_colors = [
+        "#1F4E79" if name != "Other" else OTHER_COLOR for name, _ in human_pairs
+    ]
+    _draw_hbar(
+        ax_humans,
+        human_pairs,
+        colors=human_colors,
+        xlabel="Accessions",
+        preserve_order=True,
+    )
+
+    _save(fig, path)
+
+
 def _cleanup_stale_plots(keep: set[str]) -> None:
     if not PLOTS_DIR.exists():
         return
@@ -1523,6 +1916,7 @@ def render_plots(stats: dict) -> dict[str, str]:
         "methods": "plots/methods.png",
         "completeness": "plots/completeness.png",
         "templates": "plots/templates.png",
+        "contributions": "plots/contributions.png",
     }
 
     render_organism_figure(
@@ -1546,6 +1940,10 @@ def render_plots(stats: dict) -> dict[str, str]:
         stats.get("templates", []),
         stats.get("specialties", []),
         stats.get("totals", {}),
+    )
+    render_contributions_figure(
+        STATS_DIR / paths["contributions"],
+        stats.get("contributions") or {},
     )
     _cleanup_stale_plots({Path(p).name for p in paths.values()})
     return paths
@@ -1581,19 +1979,44 @@ def build_readme_section(stats: dict, plot_paths: dict[str, str]) -> str:
     n_cell = _lookup_specialty(stats.get("specialties", []), "Cell lines")
     n_meta = _lookup_specialty(stats.get("specialties", []), "Metaproteomics")
     n_tmpl = int(totals.get("accessions_with_template", 0))
+    contrib = stats.get("contributions") or {}
+    origin_map = {row["name"]: int(row["accessions"]) for row in contrib.get("origin", [])}
+    n_human = origin_map.get("Human-only", 0)
+    n_agent = origin_map.get("Agent-assisted", 0)
+    top_agent = (
+        contrib.get("agents", [{}])[0].get("name") if contrib.get("agents") else None
+    )
+    top_human = (
+        contrib.get("humans", [{}])[0].get("name") if contrib.get("humans") else None
+    )
 
     completeness_bits = []
     if disease_pct is not None:
         completeness_bits.append(f"disease {disease_pct:.0f}%")
     if age_pct is not None:
         completeness_bits.append(f"age {age_pct:.0f}%")
-    completeness_note = (
-        "; sample-field completeness (applicable samples): "
-        + ", ".join(completeness_bits)
-        + "."
-        if completeness_bits
-        else "."
-    )
+
+    highlight_parts = [
+        f"most common organism is **{top_org}**",
+        f"**{fmt_int(dia)}** DIA assay rows",
+        f"**{fmt_int(tmt)}** TMT and **{fmt_int(lfq)}** LFQ assay rows",
+        f"**{fmt_int(n_single)}** single-cell, **{fmt_int(n_cell)}** cell-line, "
+        f"and **{fmt_int(n_meta)}** metaproteomics accessions",
+    ]
+    if completeness_bits:
+        highlight_parts.append(
+            "sample-field completeness (applicable samples): "
+            + ", ".join(completeness_bits)
+        )
+    if n_human or n_agent:
+        agent_bit = f"**{fmt_int(n_agent)}** accessions are agent-assisted"
+        if top_agent:
+            agent_bit += f" (mostly **{top_agent}**)"
+        human_bit = f"**{fmt_int(n_human)}** are human-only"
+        if top_human:
+            human_bit += f", led by **{top_human}**"
+        highlight_parts.append(agent_bit)
+        highlight_parts.append(human_bit)
 
     lines = [
         STATS_START,
@@ -1613,12 +2036,7 @@ def build_readme_section(stats: dict, plot_paths: dict[str, str]) -> str:
         f"{fmt_int(totals['runs'])} |",
         f"| Assay rows | {fmt_int(totals['assay_rows'])} |",
         "",
-        f"**Highlights:** most common organism is **{top_org}**; "
-        f"**{fmt_int(dia)}** DIA assay rows; "
-        f"**{fmt_int(tmt)}** TMT and **{fmt_int(lfq)}** LFQ assay rows; "
-        f"**{fmt_int(n_single)}** single-cell, **{fmt_int(n_cell)}** cell-line, "
-        f"and **{fmt_int(n_meta)}** metaproteomics accessions"
-        f"{completeness_note}",
+        "**Highlights:** " + "; ".join(highlight_parts) + ".",
         "",
         f"![Organisms in curated annotations]"
         f"(docs/stats/{plot_paths['organisms']})",
@@ -1634,6 +2052,9 @@ def build_readme_section(stats: dict, plot_paths: dict[str, str]) -> str:
         "",
         f"![Templates and specialized collections]"
         f"(docs/stats/{plot_paths['templates']})",
+        "",
+        f"![Who annotated the curated corpus]"
+        f"(docs/stats/{plot_paths['contributions']})",
         "",
         STATS_END,
     ]
@@ -1680,6 +2101,7 @@ def load_summary() -> dict:
         ),
         "templates": payload.get("templates", []),
         "specialties": payload.get("specialties", []),
+        "contributions": payload.get("contributions") or {},
     }
 
 
@@ -1708,6 +2130,7 @@ def write_summary(stats: dict) -> None:
         ),
         "templates": stats.get("templates", []),
         "specialties": stats.get("specialties", []),
+        "contributions": stats.get("contributions") or {},
     }
     (STATS_DIR / "summary.json").write_text(
         json.dumps(payload, indent=2) + "\n", encoding="utf-8"

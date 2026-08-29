@@ -132,6 +132,11 @@ AGENT_NAME_PATTERNS = (
     (re.compile(r"gemini", re.I), "Gemini"),
 )
 
+HUMAN_NAME_ALIASES = {
+    "ypriverol": "Yasset Perez-Riverol",
+    "jeroen van goey": "Jeroen Van Goey",
+}
+
 _COAUTHOR_RE = re.compile(
     r"^Co-authored-by:\s*(.+?)\s*<([^>]+)>", flags=re.IGNORECASE
 )
@@ -354,8 +359,16 @@ def _is_ignored_identity(name: str, email: str) -> bool:
     return False
 
 
+def _human_key(name: str, email: str) -> str:
+    """Stable identity for unique-contributor counts; never published."""
+    cleaned = re.sub(r"\s+", " ", (name or "")).strip()
+    if cleaned:
+        return HUMAN_NAME_ALIASES.get(cleaned.lower(), cleaned)
+    return (email or "").strip().lower()
+
+
 def _add_identity(
-    name: str, email: str, agents: set[str], flags: dict[str, bool]
+    name: str, email: str, agents: set[str], humans: set[str]
 ) -> None:
     label = classify_contributor(name, email)
     if label:
@@ -363,24 +376,26 @@ def _add_identity(
         return
     if _is_ignored_identity(name, email):
         return
-    flags["has_human"] = True
+    key = _human_key(name, email)
+    if key:
+        humans.add(key)
 
 
 def _parse_commit_identities(author_name: str, author_email: str, body: str):
     agents: set[str] = set()
-    flags = {"has_human": False}
-    _add_identity(author_name, author_email, agents, flags)
+    humans: set[str] = set()
+    _add_identity(author_name, author_email, agents, humans)
     for line in body.splitlines():
         match = _COAUTHOR_RE.match(line.strip())
         if not match:
             continue
-        _add_identity(match.group(1), match.group(2), agents, flags)
+        _add_identity(match.group(1), match.group(2), agents, humans)
     lower_body = body.lower()
     if "generated with claude" in lower_body:
         agents.add("Claude")
     if "generated with cursor" in lower_body:
         agents.add("Cursor")
-    return agents, flags["has_human"]
+    return agents, humans
 
 
 def _git_output(args: list[str], *, timeout: int) -> str:
@@ -395,13 +410,13 @@ def _git_output(args: list[str], *, timeout: int) -> str:
         return ""
 
 
-def _git_commit_identities() -> dict[str, tuple[frozenset[str], bool]]:
-    """Map commit SHA to agent labels and whether a human identity is present."""
+def _git_commit_identities() -> dict[str, tuple[frozenset[str], frozenset[str]]]:
+    """Map commit SHA to agent labels and human identities (for counts only)."""
     raw = _git_output(
         ["log", "--pretty=format:%H%x00%an%x00%ae%x00%B%x1e"],
         timeout=120,
     )
-    identities: dict[str, tuple[frozenset[str], bool]] = {}
+    identities: dict[str, tuple[frozenset[str], frozenset[str]]] = {}
     for record in raw.split("\x1e"):
         record = record.strip("\n")
         if not record:
@@ -410,8 +425,8 @@ def _git_commit_identities() -> dict[str, tuple[frozenset[str], bool]]:
         if len(parts) != 4:
             continue
         sha, name, email, body = parts
-        agents, has_human = _parse_commit_identities(name, email, body)
-        identities[sha] = (frozenset(agents), has_human)
+        agents, humans = _parse_commit_identities(name, email, body)
+        identities[sha] = (frozenset(agents), frozenset(humans))
     return identities
 
 
@@ -466,7 +481,7 @@ def _git_first_add_for_path(rel: str) -> tuple[str, str, str] | None:
 def collect_contributions(current_files: list[Path]) -> dict:
     """Attribute each current datasets/ SDRF to the commit that first added it."""
     current = {p.resolve().relative_to(REPO_ROOT).as_posix() for p in current_files}
-    first: dict[str, tuple[frozenset[str], bool]] = {}
+    first: dict[str, tuple[frozenset[str], frozenset[str]]] = {}
 
     identities = _git_commit_identities()
     added = _git_first_add_paths()
@@ -480,23 +495,25 @@ def collect_contributions(current_files: list[Path]) -> dict:
         if not ident:
             continue
         name, email, body = ident
-        agents, has_human = _parse_commit_identities(name, email, body)
-        first[path] = (frozenset(agents), has_human)
+        agents, humans = _parse_commit_identities(name, email, body)
+        first[path] = (frozenset(agents), frozenset(humans))
 
     acc_agents: dict[str, set[str]] = defaultdict(set)
     file_agents: Counter = Counter()
     file_origin = Counter()
     acc_origin: dict[str, str] = {}
+    all_humans: set[str] = set()
 
-    for path, (agents, has_human) in first.items():
+    for path, (agents, humans) in first.items():
         accession = Path(path).parent.name
+        all_humans.update(humans)
         if agents:
             file_origin["Agent-assisted"] += 1
             acc_origin[accession] = "Agent-assisted"
             for agent in agents:
                 file_agents[agent] += 1
                 acc_agents[accession].add(agent)
-        elif has_human:
+        elif humans:
             file_origin["Human-only"] += 1
             acc_origin.setdefault(accession, "Human-only")
 
@@ -509,6 +526,8 @@ def collect_contributions(current_files: list[Path]) -> dict:
     return {
         "attributed_files": len(first),
         "unattributed_files": unattributed,
+        "human_contributors": len(all_humans),
+        "ai_agents": len(agent_acc),
         "origin": [
             {
                 "name": "Human-only",
@@ -1909,6 +1928,10 @@ def build_readme_section(stats: dict, plot_paths: dict[str, str]) -> str:
     origin_map = {row["name"]: int(row["accessions"]) for row in contrib.get("origin", [])}
     n_human = origin_map.get("Human-only", 0)
     n_agent = origin_map.get("Agent-assisted", 0)
+    n_people = int(contrib.get("human_contributors") or 0)
+    n_ai_agents = int(
+        contrib.get("ai_agents") or len(contrib.get("agents") or [])
+    )
     top_agent = (
         contrib.get("agents", [{}])[0].get("name") if contrib.get("agents") else None
     )
@@ -1931,12 +1954,11 @@ def build_readme_section(stats: dict, plot_paths: dict[str, str]) -> str:
             "sample-field completeness (applicable samples): "
             + ", ".join(completeness_bits)
         )
-    if n_human or n_agent:
+    if n_agent:
         agent_bit = f"**{fmt_int(n_agent)}** accessions are agent-assisted"
         if top_agent:
             agent_bit += f" (mostly **{top_agent}**)"
         highlight_parts.append(agent_bit)
-        highlight_parts.append(f"**{fmt_int(n_human)}** are human-only")
 
     lines = [
         STATS_START,
@@ -1955,6 +1977,10 @@ def build_readme_section(stats: dict, plot_paths: dict[str, str]) -> str:
         f"| Runs (unique `comment[data file]` per file) | "
         f"{fmt_int(totals['runs'])} |",
         f"| Assay rows | {fmt_int(totals['assay_rows'])} |",
+        f"| Human contributors | {fmt_int(n_people)} |",
+        f"| AI agents | {fmt_int(n_ai_agents)} |",
+        f"| Human-only accessions | {fmt_int(n_human)} |",
+        f"| Agent-assisted accessions | {fmt_int(n_agent)} |",
         "",
         "**Highlights:** " + "; ".join(highlight_parts) + ".",
         "",

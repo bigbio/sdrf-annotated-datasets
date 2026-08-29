@@ -9,6 +9,14 @@ on:
       - ".github/workflows/update-readme-stats.yml"
   workflow_dispatch:
 
+# Dataset merges often land in a burst. Each push used to start its own job
+# against the same reused chore/readme-resource-stats branch. create-pull-request
+# then rebases an older stats commit onto a newer README/docs/stats snapshot
+# and the standing PR stays conflicted (#266 / #265 race).
+concurrency:
+  group: update-readme-resource-stats
+  cancel-in-progress: true
+
 permissions:
   contents: write
   pull-requests: write
@@ -21,6 +29,13 @@ jobs:
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
+          ref: main
+
+      - name: Sync to latest main
+        run: |
+          git fetch origin main
+          git checkout main
+          git reset --hard origin/main
 
       - name: Set up Python
         uses: actions/setup-python@v5
@@ -36,12 +51,23 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: python .github/scripts/generate_readme_stats.py
 
+      - name: Reset standing stats branch onto current main
+        run: |
+          # create-pull-request rebases the existing PR branch onto this
+          # checkout. That rebase conflicts whenever main already has a later
+          # README/docs/stats commit (previous stats PR merge, badge commit
+          # sitting under a newer stats snapshot, or a human stats merge).
+          # Point the reused branch at current main first so the action only
+          # adds one fresh commit and cannot replay a stale stats snapshot.
+          git push origin "HEAD:refs/heads/chore/readme-resource-stats" --force
+
       - name: Open or update stats PR
         uses: peter-evans/create-pull-request@22a9089034f40e5a961c8808d113e2c98fb63676 # v7.0.11
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           commit-message: "chore: refresh README resource stats"
           branch: chore/readme-resource-stats
+          base: main
           delete-branch: true
           title: "chore: refresh README resource stats"
           body: |

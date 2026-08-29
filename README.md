@@ -14,7 +14,7 @@ The SDRF specification lives in [`bigbio/proteomics-sample-metadata`](https://gi
 <!-- STATS:START -->
 ## Resource at a glance
 
-_Auto-generated from curated `datasets/` on 2026-08-29T09:42:33Z. Sandbox drafts are excluded._
+_Auto-generated from curated `datasets/` on 2026-08-29T10:13:48Z. Sandbox drafts are excluded._
 
 | Metric | Count |
 | --- | ---: |
@@ -25,7 +25,7 @@ _Auto-generated from curated `datasets/` on 2026-08-29T09:42:33Z. Sandbox drafts
 | Runs (unique `comment[data file]` per file) | 206,456 |
 | Assay rows | 279,198 |
 
-**Highlights:** most common organism is **Homo sapiens**; **40,809** DIA assay rows; **61,687** TMT and **192,524** LFQ assay rows; **67** single-cell, **187** cell-line, and **117** metaproteomics accessions; sample-field completeness (applicable samples): disease 37%, age 13%; **1,325** accessions are agent-assisted (mostly **Cursor**); **4,869** are human-only, led by **Yasset Perez-Riverol**.
+**Highlights:** most common organism is **Homo sapiens**; **40,809** DIA assay rows; **61,687** TMT and **192,524** LFQ assay rows; **67** single-cell, **187** cell-line, and **117** metaproteomics accessions; sample-field completeness (applicable samples): disease 37%, age 13%; **1,325** accessions are agent-assisted (mostly **Cursor**); **4,869** are human-only.
 
 ![Organisms in curated annotations](docs/stats/plots/organisms.png)
 
@@ -37,7 +37,7 @@ _Auto-generated from curated `datasets/` on 2026-08-29T09:42:33Z. Sandbox drafts
 
 ![Templates and specialized collections](docs/stats/plots/templates.png)
 
-![Who annotated the curated corpus](docs/stats/plots/contributions.png)
+![Human and AI annotation](docs/stats/plots/contributions.png)
 
 <!-- STATS:END -->
 

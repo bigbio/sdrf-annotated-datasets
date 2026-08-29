@@ -13,6 +13,7 @@ from __future__ import annotations
 
 import csv
 import json
+import os
 import re
 import subprocess
 import sys
@@ -152,6 +153,103 @@ HUMAN_NAME_ALIASES = {
 _COAUTHOR_RE = re.compile(
     r"^Co-authored-by:\s*(.+?)\s*<([^>]+)>", flags=re.IGNORECASE
 )
+
+# Explicit agent declarations in commit messages, PR bodies, and comments.
+# Keep these tight so review-bot copy (CodeRabbit, Copilot reviewer) does not
+# count as the annotating agent.
+_AGENT_TEXT_PATTERNS = (
+    (
+        re.compile(
+            r"made with \[cursor\]|made with cursor|cursor\.com/agents|"
+            r"generated with cursor|co-authored-by:\s*cursor\b",
+            re.I,
+        ),
+        "Cursor",
+    ),
+    (
+        re.compile(
+            r"generated with \[claude|generated with claude|"
+            r"claude\.com/claude-code|co-authored-by:\s*claude\b",
+            re.I,
+        ),
+        "Claude",
+    ),
+    (
+        re.compile(
+            r"copilot-swe-agent|co-authored-by:\s*copilot\b|"
+            r"generated with github copilot",
+            re.I,
+        ),
+        "Copilot",
+    ),
+    (
+        re.compile(
+            r"sdrf annotator|annotator@sdrf-skills",
+            re.I,
+        ),
+        "SDRF Annotator",
+    ),
+    (
+        re.compile(r"made with chatgpt|generated with chatgpt", re.I),
+        "ChatGPT",
+    ),
+    (
+        re.compile(r"generated with (?:openai )?codex|made with (?:openai )?codex", re.I),
+        "Codex",
+    ),
+)
+
+# Same automated annotation pipeline as batches that declared Cursor, but
+# later squash-merges dropped Co-authored-by / "Made with Cursor".
+_CAMPAIGN_TITLE_RE = re.compile(
+    r"easy targets|automated e\.?\s*coli sdrf|escalated pride easy-target",
+    re.I,
+)
+_CAMPAIGN_BODY_RE = re.compile(
+    r"synthesi[sz]ed label-free stubs from pride|"
+    r"label-free stubs synthesi[sz]ed from pride|"
+    r"annotation pipeline recovery",
+    re.I,
+)
+_MIGRATION_TITLE_RE = re.compile(
+    r"migrate annotated sdrf|from specification repo|"
+    r"from proteomics-sample-metadata",
+    re.I,
+)
+_ANNOTATION_PR_RE = re.compile(
+    r"sdrf annotation|easy targets|automated e\.?\s*coli sdrf|"
+    r"community sdrf|escalated pride easy-target|"
+    r"bulk lfq|tissue-expression sdrf",
+    re.I,
+)
+_MECHANICAL_PR_RE = re.compile(
+    r"normalize |corpus cleanup|restore \d|review gate|^chore:|"
+    r"mechanical (?:remap|fixes)|reserved-word casing|"
+    r"migrate annotated",
+    re.I,
+)
+_PR_NUMBER_SUBJECT_RE = re.compile(r"\(#(\d+)\)\s*$")
+_PR_MERGE_SUBJECT_RE = re.compile(r"Merge pull request #(\d+)\b", re.I)
+_CODERABBIT_BLOCK_RE = re.compile(
+    r"<!-- This is an auto-generated comment:.*?"
+    r"<!-- end of auto-generated comment.*?-->",
+    flags=re.I | re.S,
+)
+
+# GitHub logins that authored the annotation, not review-only bots.
+_AGENT_LOGINS = {
+    "cursoragent": "Cursor",
+    "cursor": "Cursor",
+    "copilot-swe-agent": "Copilot",
+}
+_REVIEW_BOT_LOGINS = {
+    "copilot-pull-request-reviewer",
+    "coderabbitai",
+    "qodo-code-review",
+    "github-actions",
+    "web-flow",
+    "dependabot",
+}
 
 HEALTHY_DISEASE_TOKENS = {
     "normal",
@@ -670,6 +768,67 @@ def _add_identity(
         humans.add(key)
 
 
+def _strip_bot_boilerplate(text: str) -> str:
+    """Drop CodeRabbit / similar auto-inserted PR blocks before scanning."""
+    if not text:
+        return ""
+    return _CODERABBIT_BLOCK_RE.sub(" ", text)
+
+
+def _parse_agent_text(text: str) -> set[str]:
+    """Agent labels declared in free text (commit / PR / comment)."""
+    labels: set[str] = set()
+    if not text:
+        return labels
+    for pattern, label in _AGENT_TEXT_PATTERNS:
+        if pattern.search(text):
+            labels.add(label)
+    return labels
+
+
+def _campaign_agent(title: str, body: str = "") -> str | None:
+    """Cursor campaigns that later dropped explicit trailers on squash."""
+    if _MIGRATION_TITLE_RE.search(title or ""):
+        return None
+    if _CAMPAIGN_TITLE_RE.search(title or ""):
+        return "Cursor"
+    if _CAMPAIGN_BODY_RE.search(f"{title or ''}\n{body or ''}"):
+        return "Cursor"
+    return None
+
+
+def _normalize_github_login(login: str) -> str:
+    lowered = (login or "").strip().lower()
+    if lowered.startswith("app/"):
+        lowered = lowered[4:]
+    if lowered.endswith("[bot]"):
+        lowered = lowered[:-5]
+    return lowered
+
+
+def _agent_from_login(login: str) -> str | None:
+    return _AGENT_LOGINS.get(_normalize_github_login(login))
+
+
+def _pr_number_from_subject(subject: str) -> int | None:
+    text = (subject or "").strip()
+    match = _PR_NUMBER_SUBJECT_RE.search(text)
+    if match:
+        return int(match.group(1))
+    match = _PR_MERGE_SUBJECT_RE.search(text)
+    if match:
+        return int(match.group(1))
+    return None
+
+
+def _is_annotation_pr(title: str) -> bool:
+    """PRs that (re)annotate datasets, not corpus-wide mechanical edits."""
+    title = title or ""
+    if _MECHANICAL_PR_RE.search(title) or _MIGRATION_TITLE_RE.search(title):
+        return False
+    return bool(_ANNOTATION_PR_RE.search(title) or _CAMPAIGN_TITLE_RE.search(title))
+
+
 def _parse_commit_identities(author_name: str, author_email: str, body: str):
     agents: set[str] = set()
     humans: set[str] = set()
@@ -679,11 +838,11 @@ def _parse_commit_identities(author_name: str, author_email: str, body: str):
         if not match:
             continue
         _add_identity(match.group(1), match.group(2), agents, humans)
-    lower_body = body.lower()
-    if "generated with claude" in lower_body:
-        agents.add("Claude")
-    if "generated with cursor" in lower_body:
-        agents.add("Cursor")
+    agents.update(_parse_agent_text(body))
+    subject = body.splitlines()[0] if body.strip() else ""
+    campaign = _campaign_agent(subject, body)
+    if campaign:
+        agents.add(campaign)
     return agents, humans
 
 
@@ -702,7 +861,7 @@ def _git_output(args: list[str], *, timeout: int) -> str:
 def _git_commit_identities() -> dict[str, tuple[frozenset[str], frozenset[str]]]:
     """Map commit SHA to agent labels and human identities (for counts only)."""
     raw = _git_output(
-        ["log", "--pretty=format:%H%x00%an%x00%ae%x00%B%x1e"],
+        ["log", "--pretty=format:%H%x00%an%x00%ae%x00%s%x00%B%x1e"],
         timeout=120,
     )
     identities: dict[str, tuple[frozenset[str], frozenset[str]]] = {}
@@ -710,11 +869,14 @@ def _git_commit_identities() -> dict[str, tuple[frozenset[str], frozenset[str]]]
         record = record.strip("\n")
         if not record:
             continue
-        parts = record.split("\x00", 3)
-        if len(parts) != 4:
+        parts = record.split("\x00", 4)
+        if len(parts) != 5:
             continue
-        sha, name, email, body = parts
+        sha, name, email, subject, body = parts
         agents, humans = _parse_commit_identities(name, email, body)
+        campaign = _campaign_agent(subject, body)
+        if campaign:
+            agents.add(campaign)
         identities[sha] = (frozenset(agents), frozenset(humans))
     return identities
 
@@ -731,7 +893,7 @@ def _git_first_add_paths() -> dict[str, str]:
             "--",
             "datasets",
         ],
-        timeout=120,
+        timeout=180,
     )
     first: dict[str, str] = {}
     sha = None
@@ -743,6 +905,31 @@ def _git_first_add_paths() -> dict[str, str]:
         if sha and path.endswith(".sdrf.tsv") and path not in first:
             first[path] = sha
     return first
+
+
+def _git_pr_file_map(*, diff_filter: str) -> dict[int, set[str]]:
+    """Map GitHub PR number → datasets/ SDRF paths from squash/merge commits."""
+    raw = _git_output(
+        [
+            "log",
+            f"--diff-filter={diff_filter}",
+            "--name-only",
+            "--pretty=format:COMMIT %s",
+            "--",
+            "datasets",
+        ],
+        timeout=180,
+    )
+    mapping: dict[int, set[str]] = defaultdict(set)
+    pr_number = None
+    for line in raw.splitlines():
+        if line.startswith("COMMIT "):
+            pr_number = _pr_number_from_subject(line[len("COMMIT ") :])
+            continue
+        path = line.strip()
+        if pr_number and path.endswith(".sdrf.tsv"):
+            mapping[pr_number].add(path)
+    return mapping
 
 
 def _git_first_add_for_path(rel: str) -> tuple[str, str, str] | None:
@@ -767,40 +954,267 @@ def _git_first_add_for_path(rel: str) -> tuple[str, str, str] | None:
     return name, email, rest
 
 
+def _github_token() -> str:
+    for key in ("GITHUB_TOKEN", "GH_TOKEN"):
+        value = (os.environ.get(key) or "").strip()
+        if value:
+            return value
+    try:
+        return subprocess.check_output(
+            ["gh", "auth", "token"],
+            text=True,
+            errors="replace",
+            timeout=10,
+        ).strip()
+    except (OSError, subprocess.SubprocessError):
+        return ""
+
+
+def _origin_repo() -> tuple[str, str]:
+    url = _git_output(["remote", "get-url", "origin"], timeout=10).strip()
+    url = re.sub(r"\.git$", "", url)
+    match = re.search(r"github\.com[:/](?P<owner>[^/]+)/(?P<repo>[^/]+)$", url)
+    if match:
+        return match.group("owner"), match.group("repo")
+    return "bigbio", "sdrf-annotated-datasets"
+
+
+def _github_graphql(query: str, variables: dict, token: str) -> dict:
+    payload = json.dumps({"query": query, "variables": variables}).encode("utf-8")
+    request = urllib.request.Request(
+        "https://api.github.com/graphql",
+        data=payload,
+        headers={
+            "Authorization": f"Bearer {token}",
+            "User-Agent": HTTP_UA,
+            "Content-Type": "application/json",
+            "Accept": "application/json",
+        },
+        method="POST",
+    )
+    with urllib.request.urlopen(request, timeout=60) as response:
+        parsed = json.loads(response.read().decode("utf-8"))
+    if parsed.get("errors"):
+        message = parsed["errors"][0].get("message", "GraphQL error")
+        raise RuntimeError(message)
+    return parsed.get("data") or {}
+
+
+def _fetch_merged_pull_requests() -> tuple[list[dict], str]:
+    """Merged PRs with title/body/commits/comments for agent evidence."""
+    token = _github_token()
+    if not token:
+        print("  warning: no GitHub token; PR comment/body scan skipped")
+        return [], "skipped"
+
+    owner, repo = _origin_repo()
+    query = """
+    query($owner: String!, $name: String!, $cursor: String) {
+      repository(owner: $owner, name: $name) {
+        pullRequests(
+          states: MERGED
+          first: 25
+          after: $cursor
+          orderBy: {field: CREATED_AT, direction: ASC}
+        ) {
+          pageInfo { hasNextPage endCursor }
+          nodes {
+            number
+            title
+            body
+            headRefName
+            author { login }
+            commits(first: 40) {
+              nodes {
+                commit {
+                  message
+                  authors(first: 8) {
+                    nodes { name email user { login } }
+                  }
+                }
+              }
+            }
+            comments(first: 40) {
+              nodes { author { login } body }
+            }
+            reviews(first: 20) {
+              nodes {
+                author { login }
+                body
+                comments(first: 15) {
+                  nodes { author { login } body }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+    """
+    nodes: list[dict] = []
+    cursor = None
+    try:
+        while True:
+            data = _github_graphql(
+                query,
+                {"owner": owner, "name": repo, "cursor": cursor},
+                token,
+            )
+            pull_requests = (
+                ((data.get("repository") or {}).get("pullRequests")) or {}
+            )
+            nodes.extend(pull_requests.get("nodes") or [])
+            page = pull_requests.get("pageInfo") or {}
+            if not page.get("hasNextPage"):
+                break
+            cursor = page.get("endCursor")
+    except (OSError, urllib.error.URLError, RuntimeError, TimeoutError, ValueError) as exc:
+        print(f"  warning: GitHub PR fetch failed ({exc})")
+        return nodes, "failed"
+    print(f"  scanned {len(nodes)} merged PRs for agent evidence")
+    return nodes, "ok"
+
+
+def _walk_pr_comment_nodes(pr: dict):
+    for comment in (pr.get("comments") or {}).get("nodes") or []:
+        yield comment
+    for review in (pr.get("reviews") or {}).get("nodes") or []:
+        yield review
+        for comment in (review.get("comments") or {}).get("nodes") or []:
+            yield comment
+
+
+def _classify_pull_request_agents(pr: dict) -> set[str]:
+    title = pr.get("title") or ""
+    if _MIGRATION_TITLE_RE.search(title):
+        return set()
+
+    labels: set[str] = set()
+    author_login = ((pr.get("author") or {}) or {}).get("login") or ""
+    login_agent = _agent_from_login(author_login)
+    if login_agent:
+        labels.add(login_agent)
+
+    head = pr.get("headRefName") or ""
+    if head.lower().startswith("cursor/"):
+        labels.add("Cursor")
+
+    body = _strip_bot_boilerplate(f"{title}\n{pr.get('body') or ''}")
+    labels.update(_parse_agent_text(body))
+    campaign = _campaign_agent(title, pr.get("body") or "")
+    if campaign:
+        labels.add(campaign)
+
+    for node in (pr.get("commits") or {}).get("nodes") or []:
+        commit = node.get("commit") or {}
+        message = commit.get("message") or ""
+        labels.update(_parse_agent_text(message))
+        subject = message.splitlines()[0] if message else ""
+        campaign = _campaign_agent(subject, message)
+        if campaign:
+            labels.add(campaign)
+        for actor in (commit.get("authors") or {}).get("nodes") or []:
+            user_login = ((actor.get("user") or {}) or {}).get("login") or ""
+            ident = _agent_from_login(user_login)
+            if ident:
+                labels.add(ident)
+            agents: set[str] = set()
+            humans: set[str] = set()
+            _add_identity(
+                actor.get("name") or "",
+                actor.get("email") or "",
+                agents,
+                humans,
+            )
+            labels.update(agents)
+
+    for comment in _walk_pr_comment_nodes(pr):
+        login = ((comment.get("author") or {}) or {}).get("login") or ""
+        if _normalize_github_login(login) in _REVIEW_BOT_LOGINS:
+            continue
+        ident = _agent_from_login(login)
+        if ident:
+            labels.add(ident)
+        labels.update(_parse_agent_text(_strip_bot_boilerplate(comment.get("body") or "")))
+    return labels
+
+
 def collect_contributions(current_files: list[Path]) -> dict:
-    """Attribute each current datasets/ SDRF to the commit that first added it."""
+    """Attribute current datasets/ SDRFs using first-add git history and PRs.
+
+    A file is agent-assisted if the commit that first added it, or a merged
+    annotation PR (title, description, commits, or comments), shows an AI
+    agent. Review bots and corpus-wide mechanical cleanups are ignored.
+    PRIDE easy-target and automated E. coli campaigns count as Cursor when
+    later squash-merges dropped Co-authored-by trailers. Migration-only PRs
+    are not treated as annotation evidence.
+    """
     current = {p.resolve().relative_to(REPO_ROOT).as_posix() for p in current_files}
-    first: dict[str, tuple[frozenset[str], frozenset[str]]] = {}
+    file_agents: dict[str, set[str]] = defaultdict(set)
+    file_humans: dict[str, set[str]] = defaultdict(set)
 
     identities = _git_commit_identities()
     added = _git_first_add_paths()
+
     for path in current:
         sha = added.get(path)
         if sha and sha in identities:
-            first[path] = identities[sha]
+            agents, humans = identities[sha]
+            file_agents[path].update(agents)
+            file_humans[path].update(humans)
 
-    for path in sorted(current - set(first)):
+    for path in sorted(current):
+        if path in file_agents or path in file_humans:
+            continue
         ident = _git_first_add_for_path(path)
         if not ident:
             continue
         name, email, body = ident
         agents, humans = _parse_commit_identities(name, email, body)
-        first[path] = (frozenset(agents), frozenset(humans))
+        file_agents[path].update(agents)
+        file_humans[path].update(humans)
+
+    pr_added = _git_pr_file_map(diff_filter="A")
+    pr_modified = _git_pr_file_map(diff_filter="M")
+    pull_requests, pr_fetch = _fetch_merged_pull_requests()
+    prs_with_agent = 0
+    for pr in pull_requests:
+        labels = _classify_pull_request_agents(pr)
+        if not labels:
+            continue
+        number = int(pr.get("number") or 0)
+        title = pr.get("title") or ""
+        if _MECHANICAL_PR_RE.search(title) or _MIGRATION_TITLE_RE.search(title):
+            continue
+        prs_with_agent += 1
+        for path in pr_added.get(number, ()):
+            if path in current:
+                file_agents[path].update(labels)
+        if _is_annotation_pr(title):
+            for path in pr_modified.get(number, ()):
+                if path in current:
+                    file_agents[path].update(labels)
 
     acc_agents: dict[str, set[str]] = defaultdict(set)
-    file_agents: Counter = Counter()
+    file_agent_counts: Counter = Counter()
     file_origin = Counter()
     acc_origin: dict[str, str] = {}
     all_humans: set[str] = set()
+    attributed = 0
 
-    for path, (agents, humans) in first.items():
+    for path in current:
+        agents = file_agents.get(path, set())
+        humans = file_humans.get(path, set())
+        if not agents and not humans:
+            continue
+        attributed += 1
         accession = Path(path).parent.name
         all_humans.update(humans)
         if agents:
             file_origin["Agent-assisted"] += 1
             acc_origin[accession] = "Agent-assisted"
             for agent in agents:
-                file_agents[agent] += 1
+                file_agent_counts[agent] += 1
                 acc_agents[accession].add(agent)
         elif humans:
             file_origin["Human-only"] += 1
@@ -811,12 +1225,21 @@ def collect_contributions(current_files: list[Path]) -> dict:
     for agents in acc_agents.values():
         agent_acc.update(agents)
 
-    unattributed = len(current) - len(first)
+    print(
+        "  contributions: "
+        f"{int(origin_acc.get('Agent-assisted', 0)):,} agent-assisted / "
+        f"{int(origin_acc.get('Human-only', 0)):,} human-only accessions "
+        f"({pr_fetch} PR scan, {prs_with_agent} PRs with agent evidence)"
+    )
+
     return {
-        "attributed_files": len(first),
-        "unattributed_files": unattributed,
+        "attributed_files": attributed,
+        "unattributed_files": len(current) - attributed,
         "human_contributors": len(all_humans),
         "ai_agents": len(agent_acc),
+        "github_prs_scanned": len(pull_requests),
+        "github_prs_with_agent": prs_with_agent,
+        "github_pr_fetch": pr_fetch,
         "origin": [
             {
                 "name": "Human-only",
@@ -830,7 +1253,11 @@ def collect_contributions(current_files: list[Path]) -> dict:
             },
         ],
         "agents": [
-            {"name": name, "accessions": count, "files": int(file_agents[name])}
+            {
+                "name": name,
+                "accessions": count,
+                "files": int(file_agent_counts[name]),
+            }
             for name, count in agent_acc.most_common()
         ],
     }
@@ -2447,9 +2874,10 @@ def render_contributions_figure(path: Path, contributions: dict) -> None:
         figsize=(10.4, 4.8),
         title="Human and AI annotation",
         subtitle=(
-            "Each current datasets/ SDRF is attributed to the git commit that "
-            "first added it. Agent-assisted means an AI identity in the author "
-            f"or Co-authored-by trailer. {extra}"
+            "First-add git commit plus merged annotation PRs (title, body, "
+            "commits, comments). Review bots and corpus-wide cleanups are "
+            "ignored. PRIDE easy-target and automated E. coli campaigns count "
+            f"as Cursor when squash-merges dropped the trailer. {extra}"
         ),
         width_ratios=[1.15, 1.0, 1.55],
         wspace=0.18,

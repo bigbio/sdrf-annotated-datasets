@@ -14,7 +14,7 @@ The SDRF specification lives in [`bigbio/proteomics-sample-metadata`](https://gi
 <!-- STATS:START -->
 ## Resource at a glance
 
-_Auto-generated from curated `datasets/` on 2026-08-29T10:15:32Z. Sandbox drafts are excluded._
+_Auto-generated from curated `datasets/` on 2026-08-29T10:22:02Z. Sandbox drafts are excluded._
 
 | Metric | Count |
 | --- | ---: |
@@ -28,14 +28,19 @@ _Auto-generated from curated `datasets/` on 2026-08-29T10:15:32Z. Sandbox drafts
 | AI agents | 3 |
 | Human-only accessions | 4,869 |
 | Agent-assisted accessions | 1,325 |
+| Distinct instruments | 85 |
+| Median runs per accession | 12 |
+| Accessions with modification parameters | 1,080 |
 
-**Highlights:** most common organism is **Homo sapiens**; **40,809** DIA assay rows; **61,687** TMT and **192,524** LFQ assay rows; **67** single-cell, **187** cell-line, and **117** metaproteomics accessions; sample-field completeness (applicable samples): disease 37%, age 13%; **1,325** accessions are agent-assisted (mostly **Cursor**).
+**Highlights:** most common organism is **Homo sapiens**; **40,809** DIA assay rows; **61,687** TMT and **192,524** LFQ assay rows; **67** single-cell, **187** cell-line, and **117** metaproteomics accessions; sample-field completeness (applicable samples): disease 37%, age 13%; **1,325** accessions are agent-assisted (mostly **Cursor**); most common instrument is **Q Exactive**; most common modification is **Oxidation**.
 
 ![Organisms in curated annotations](docs/stats/plots/organisms.png)
 
 ![Disease annotations](docs/stats/plots/diseases.png)
 
 ![Quantification and acquisition methods](docs/stats/plots/methods.png)
+
+![Instruments, runs, and modifications](docs/stats/plots/analytical.png)
 
 ![Annotation completeness](docs/stats/plots/completeness.png)
 

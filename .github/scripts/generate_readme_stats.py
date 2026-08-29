@@ -3,7 +3,7 @@
 
 Scans datasets/**/*.sdrf.tsv (sandbox excluded), writes:
   docs/stats/summary.json
-  docs/stats/plots/{organisms,diseases,methods,completeness,templates,contributions}.png
+  docs/stats/plots/{organisms,diseases,methods,analytical,completeness,templates,contributions}.png
   and replaces the README markers <!-- STATS:START --> ... <!-- STATS:END -->.
 
 Pass --plots-only to redraw figures from an existing summary.json.
@@ -155,6 +155,105 @@ HEALTHY_DISEASE_TOKENS = {
 
 _AC_RE = re.compile(r"(?:^|;)\s*AC=[^;]+;?", flags=re.IGNORECASE)
 _NT_RE = re.compile(r"(?:^|;)\s*NT=([^;]+)", flags=re.IGNORECASE)
+_MT_RE = re.compile(r"(?:^|;)\s*MT=([^;]+)", flags=re.IGNORECASE)
+
+RUN_BINS = [
+    (1, 1, "1"),
+    (2, 2, "2"),
+    (3, 4, "3–4"),
+    (5, 9, "5–9"),
+    (10, 19, "10–19"),
+    (20, 49, "20–49"),
+    (50, 99, "50–99"),
+    (100, 199, "100–199"),
+    (200, None, "≥200"),
+]
+
+INSTRUMENT_CANON = {
+    name.lower(): name
+    for name in (
+        "Q Exactive",
+        "Q Exactive HF",
+        "Q Exactive HF-X",
+        "Q Exactive Plus",
+        "Orbitrap Fusion Lumos",
+        "Orbitrap Fusion",
+        "Orbitrap Exploris 480",
+        "Orbitrap Exploris 240",
+        "Orbitrap Astral",
+        "Orbitrap Eclipse",
+        "Orbitrap Ascend",
+        "LTQ Orbitrap",
+        "LTQ Orbitrap Velos",
+        "LTQ Orbitrap Elite",
+        "LTQ Orbitrap XL",
+        "timsTOF Pro",
+        "timsTOF Pro 2",
+        "timsTOF HT",
+        "TripleTOF 5600",
+        "TripleTOF 5600+",
+        "TripleTOF 6600",
+        "Orbitrap Tribrid",
+        "TSQ Altis",
+        "TSQ Vantage",
+        "impact II",
+        "maXis",
+    )
+}
+INSTRUMENT_CANON.update(
+    {
+        "q exactive hfx": "Q Exactive HF-X",
+        "q-exactive": "Q Exactive",
+        "q-exactive hf": "Q Exactive HF",
+        "q-exactive hf-x": "Q Exactive HF-X",
+        "q-exactive hfx": "Q Exactive HF-X",
+        "orbitrap fusion lumos tribrid": "Orbitrap Fusion Lumos",
+    }
+)
+
+MOD_CANON = {
+    "oxidation": "Oxidation",
+    "carbamidomethyl": "Carbamidomethyl",
+    "acetyl": "Acetyl",
+    "phospho": "Phospho",
+    "deamidated": "Deamidated",
+    "tmt6plex": "TMT6plex",
+    "tmt10plex": "TMT10plex",
+    "tmt11plex": "TMT11plex",
+    "tmtpro": "TMTpro",
+    "itraq4plex": "iTRAQ4plex",
+    "itraq8plex": "iTRAQ8plex",
+    "glygly": "GlyGly",
+    "methyl": "Methyl",
+    "dimethyl": "Dimethyl",
+    "gg": "GlyGly",
+    "gln->pyro-glu": "Gln→pyro-Glu",
+    "glu->pyro-glu": "Glu→pyro-Glu",
+    "gln->pyro glu": "Gln→pyro-Glu",
+    "glu->pyro glu": "Glu→pyro-Glu",
+    "pyro-glu": "Pyro-Glu",
+    "carbamyl": "Carbamyl",
+    "cam": "Carbamidomethyl",
+}
+
+ENZYME_CANON = {
+    "trypsin": "Trypsin",
+    "trypsin/p": "Trypsin/P",
+    "lys-c": "Lys-C",
+    "lys-c/p": "Lys-C/P",
+    "lys/c": "Lys-C",
+    "chymotrypsin": "Chymotrypsin",
+    "glutamyl endopeptidase": "Glu-C",
+    "glu-c": "Glu-C",
+    "asp-n": "Asp-N",
+    "arg-c": "Arg-C",
+    "pepsin": "Pepsin",
+    "thermolysin": "Thermolysin",
+    "proteinase k": "Proteinase K",
+    "unspecific cleavage": "Unspecific",
+    "no cleavage": "None",
+}
+
 _LABEL_FREE_RE = re.compile(r"label[\s-]?free|labelfree", flags=re.IGNORECASE)
 
 
@@ -187,6 +286,84 @@ def canonicalize_organism(name: str) -> str:
         species = " ".join(p.lower() for p in parts[1:])
         return f"{genus} {species}"
     return cleaned
+
+
+def canonicalize_instrument(name: str) -> str:
+    cleaned = re.sub(r"\s+", " ", name).strip()
+    if not cleaned:
+        return cleaned
+    mapped = INSTRUMENT_CANON.get(cleaned.lower())
+    if mapped:
+        return mapped
+    parts = []
+    for tok in cleaned.split(" "):
+        low = tok.lower()
+        if low in {"ltq", "q", "xl", "ht"}:
+            parts.append(low.upper())
+        elif low in {"hf", "hf-x"}:
+            parts.append("HF-X" if "x" in low else "HF")
+        elif low == "orbitrap":
+            parts.append("Orbitrap")
+        elif low == "exactive":
+            parts.append("Exactive")
+        elif low == "timstof":
+            parts.append("timsTOF")
+        elif low.startswith("tripletof"):
+            parts.append("TripleTOF" + tok[len("tripletof") :])
+        else:
+            parts.append(tok[:1].upper() + tok[1:] if tok else tok)
+    return " ".join(parts)
+
+
+def canonicalize_mod(name: str) -> str:
+    cleaned = re.sub(r"\s+", " ", name).strip()
+    return MOD_CANON.get(cleaned.lower(), cleaned)
+
+
+def canonicalize_enzyme(name: str) -> str:
+    cleaned = re.sub(r"\s+", " ", name).strip()
+    return ENZYME_CANON.get(cleaned.lower(), cleaned)
+
+
+def parse_modification(raw: str | None) -> tuple[str | None, str | None]:
+    """Return (modification name, Fixed|Variable|None) from an SDRF cell."""
+    if raw is None:
+        return None, None
+    text = str(raw).strip()
+    if not text or text.lower() in NA_TOKENS:
+        return None, None
+    keys: dict[str, str] = {}
+    for part in text.split(";"):
+        part = part.strip()
+        if "=" not in part:
+            continue
+        key, value = part.split("=", 1)
+        keys[key.strip().upper()] = value.strip()
+    name = keys.get("NT") or normalize_term(text)
+    if not name or name.lower() in NA_TOKENS:
+        return None, None
+    mtype = None
+    mt = keys.get("MT", "")
+    if not mt:
+        match = _MT_RE.search(text)
+        mt = match.group(1).strip() if match else ""
+    if mt:
+        low = mt.lower()
+        if low.startswith("fix"):
+            mtype = "Fixed"
+        elif low.startswith("var"):
+            mtype = "Variable"
+    return canonicalize_mod(name), mtype
+
+
+def bin_run_count(n: int) -> str:
+    for low, high, label in RUN_BINS:
+        if high is None:
+            if n >= low:
+                return label
+        elif low <= n <= high:
+            return label
+    return RUN_BINS[-1][2]
 
 
 def classify_label(raw: str | None) -> str | None:
@@ -319,6 +496,12 @@ def find_column(headers: list[str], kind: str) -> str | None:
             hs, lambda h: "developmental stage" in h
         ),
         "ancestry": lambda hs: find_header(hs, lambda h: "ancestry" in h),
+        "instrument": lambda hs: find_header(
+            hs, lambda h: h == "comment[instrument]"
+        ),
+        "fraction": lambda hs: find_header(
+            hs, lambda h: "fraction identifier" in h
+        ),
     }
     if kind not in lookup:
         raise ValueError(f"unknown column kind: {kind}")
@@ -577,6 +760,21 @@ class AggregateState:
     specialty_accessions: dict[str, set[str]] = field(
         default_factory=lambda: defaultdict(set)
     )
+    accession_instruments: dict[str, set[str]] = field(
+        default_factory=lambda: defaultdict(set)
+    )
+    accession_mods: dict[str, dict[str, set[str]]] = field(
+        default_factory=lambda: defaultdict(lambda: defaultdict(set))
+    )
+    accession_enzymes: dict[str, set[str]] = field(
+        default_factory=lambda: defaultdict(set)
+    )
+    accession_run_files: dict[str, set[str]] = field(
+        default_factory=lambda: defaultdict(set)
+    )
+    accession_fractions: dict[str, set[str]] = field(
+        default_factory=lambda: defaultdict(set)
+    )
 
 
 FIELD_KIND = {
@@ -639,12 +837,24 @@ def process_sdrf_file(path: Path, state: AggregateState) -> None:
                 "acquisition",
                 "source",
                 "data_file",
+                "instrument",
+                "fraction",
             )
         }
         tmpl_idxs = [
             i
             for i, header in enumerate(headers)
             if header.lower() == "comment[sdrf template]"
+        ]
+        mod_idxs = [
+            i
+            for i, header in enumerate(headers)
+            if "modification parameter" in header.lower()
+        ]
+        cleav_idxs = [
+            i
+            for i, header in enumerate(headers)
+            if "cleavage agent" in header.lower()
         ]
 
         sample_org: dict[str, str] = {}
@@ -674,6 +884,28 @@ def process_sdrf_file(path: Path, state: AggregateState) -> None:
                 state.acquisitions[acq] += 1
             if data_file:
                 state.run_seen.add((path_key, data_file))
+                state.accession_run_files[accession].add(data_file)
+
+            inst = normalize_term(_cell(row, idx["instrument"]) or None)
+            if inst:
+                state.accession_instruments[accession].add(
+                    canonicalize_instrument(inst)
+                )
+            frac = _cell(row, idx["fraction"]).strip()
+            if frac and completeness_status(frac) == "filled":
+                state.accession_fractions[accession].add(frac.lower())
+            for mi in mod_idxs:
+                mod_name, mtype = parse_modification(_cell(row, mi) or None)
+                if mod_name:
+                    state.accession_mods[accession][mod_name].add(
+                        mtype or "Unspecified"
+                    )
+            for ci in cleav_idxs:
+                enzyme = normalize_term(_cell(row, ci) or None)
+                if enzyme:
+                    state.accession_enzymes[accession].add(
+                        canonicalize_enzyme(enzyme)
+                    )
 
             if not source or source in sample_seen_local:
                 continue
@@ -811,6 +1043,49 @@ def aggregate() -> dict:
         )
 
     n_accessions = len({p.parent.name for p in files})
+
+    instruments: Counter = Counter()
+    for insts in state.accession_instruments.values():
+        instruments.update(insts)
+
+    modifications: Counter = Counter()
+    mod_types: Counter = Counter()
+    for mods in state.accession_mods.values():
+        for name, types in mods.items():
+            modifications[name] += 1
+            if "Variable" in types:
+                mod_types["Variable"] += 1
+            elif "Fixed" in types:
+                mod_types["Fixed"] += 1
+            else:
+                mod_types["Unspecified"] += 1
+
+    enzymes: Counter = Counter()
+    for enz in state.accession_enzymes.values():
+        enzymes.update(enz)
+
+    run_counts = [len(files_) for files_ in state.accession_run_files.values()]
+    run_bins: Counter = Counter()
+    for n in run_counts:
+        run_bins[bin_run_count(n)] += 1
+    run_bin_rows = [
+        {"name": label, "count": int(run_bins.get(label, 0))}
+        for _lo, _hi, label in RUN_BINS
+    ]
+    run_sorted = sorted(run_counts)
+    median_runs = 0
+    if run_sorted:
+        mid = len(run_sorted) // 2
+        if len(run_sorted) % 2:
+            median_runs = run_sorted[mid]
+        else:
+            median_runs = int(
+                round((run_sorted[mid - 1] + run_sorted[mid]) / 2)
+            )
+    n_fractionated = sum(
+        1 for fracs in state.accession_fractions.values() if len(fracs) > 1
+    )
+
     generated_at = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
     return {
         "generated_at": generated_at,
@@ -822,6 +1097,11 @@ def aggregate() -> dict:
             "assay_rows": state.total_rows,
             "files_with_template": state.files_with_template,
             "accessions_with_template": len(state.accessions_with_template),
+            "instruments": len(instruments),
+            "median_runs": median_runs,
+            "max_runs": max(run_counts) if run_counts else 0,
+            "accessions_with_mods": len(state.accession_mods),
+            "fractionated_accessions": n_fractionated,
         },
         "organisms": organisms.most_common(),
         "samples_by_organism": state.samples_by_organism.most_common(),
@@ -833,6 +1113,11 @@ def aggregate() -> dict:
         "templates": templates,
         "specialties": specialties,
         "contributions": collect_contributions(files),
+        "instruments": instruments.most_common(),
+        "modifications": modifications.most_common(),
+        "modification_types": mod_types.most_common(),
+        "enzymes": enzymes.most_common(),
+        "run_bins": run_bin_rows,
     }
 
 
@@ -1115,6 +1400,59 @@ def _draw_hbar(
         xmax=xmax,
         show_percent=show_percent,
     )
+
+
+def _draw_vbar(
+    ax,
+    items: list[tuple[str, int]],
+    *,
+    color: str = "#1F4E79",
+    xlabel: str = "",
+    ylabel: str = "Accessions",
+) -> None:
+    if not items:
+        ax.set_axis_off()
+        ax.text(0.5, 0.5, "No data", ha="center", va="center", color=MUTED)
+        return
+    names = [k for k, _ in items]
+    values = [v for _, v in items]
+    x = list(range(len(names)))
+    bars = ax.bar(
+        x,
+        values,
+        color=color,
+        edgecolor=FACE,
+        linewidth=0.6,
+        width=0.78,
+        zorder=3,
+    )
+    ax.set_xticks(x)
+    ax.set_xticklabels(names, fontsize=8.5)
+    ymax = max(values) if values else 1
+    ax.set_ylim(0, ymax * 1.22)
+    ax.set_axisbelow(True)
+    ax.grid(axis="y", color=GRID, linewidth=0.7, linestyle="-")
+    ax.tick_params(axis="x", length=0, pad=4)
+    ax.tick_params(axis="y", length=3, width=0.6, color=AXIS)
+    ax.spines["top"].set_visible(False)
+    ax.spines["right"].set_visible(False)
+    ax.spines["left"].set_color(AXIS)
+    ax.yaxis.set_major_formatter(FuncFormatter(_count_tick))
+    if xlabel:
+        ax.set_xlabel(xlabel, fontsize=9, color=MUTED, labelpad=6)
+    if ylabel:
+        ax.set_ylabel(ylabel, fontsize=9, color=MUTED, labelpad=6)
+    for bar, value in zip(bars, values, strict=True):
+        ax.text(
+            bar.get_x() + bar.get_width() / 2,
+            bar.get_height() + ymax * 0.03,
+            f"{value:,}",
+            ha="center",
+            va="bottom",
+            fontsize=7.5,
+            color=INK,
+            clip_on=False,
+        )
 
 
 def _draw_donut(
@@ -1526,6 +1864,36 @@ ORIGIN_COLORS = {
     "Agent-assisted": "#D36B2F",
 }
 
+MOD_TYPE_COLORS = {
+    "Fixed": "#1F4E79",
+    "Variable": "#D36B2F",
+    "Unspecified": OTHER_COLOR,
+}
+
+PTM_COLORS = {
+    "Carbamidomethyl": "#1F4E79",
+    "Oxidation": "#D36B2F",
+    "Acetyl": "#1A7F7A",
+    "Phospho": "#8E4A73",
+    "Deamidated": "#2E86AB",
+    "TMT6plex": "#C4922A",
+    "TMT10plex": "#C4922A",
+    "TMTpro": "#C44536",
+    "GlyGly": "#3D8B5C",
+    "Methyl": "#5C6B8A",
+}
+
+ENZYME_COLORS = {
+    "Trypsin": "#1F4E79",
+    "Trypsin/P": "#2E86AB",
+    "Lys-C": "#1A7F7A",
+    "Lys-C/P": "#3D8B5C",
+    "Chymotrypsin": "#D36B2F",
+    "Glu-C": "#8E4A73",
+    "Asp-N": "#C4922A",
+    "Arg-C": "#5C6B8A",
+}
+
 AGENT_COLORS = {
     "Cursor": "#F54E00",
     "Claude": "#D97757",
@@ -1768,6 +2136,93 @@ def render_templates_figure(
     _save(fig, path)
 
 
+def render_analytical_figure(
+    path: Path,
+    instruments: list[tuple[str, int]],
+    run_bins: list[dict],
+    modifications: list[tuple[str, int]],
+    enzymes: list[tuple[str, int]],
+    totals: dict,
+) -> None:
+    if not instruments and not run_bins and not modifications:
+        _empty_figure(path, "Mass spectrometry setup")
+        return
+
+    n_inst = int(totals.get("instruments", 0))
+    median_runs = int(totals.get("median_runs", 0))
+    n_frac = int(totals.get("fractionated_accessions", 0))
+    n_mod_acc = int(totals.get("accessions_with_mods", 0))
+    n_acc = int(totals.get("accessions", 0))
+    top_enzyme = enzymes[0][0] if enzymes else None
+    n_enzyme = enzymes[0][1] if enzymes else 0
+    enzyme_note = (
+        f"{top_enzyme} in {n_enzyme:,} accessions."
+        if top_enzyme
+        else "enzyme rarely declared."
+    )
+    fig, axes = _make_figure(
+        nrows=2,
+        ncols=2,
+        figsize=(10.4, 8.8),
+        title="Instruments, runs, and modifications",
+        subtitle=(
+            f"{n_inst:,} distinct instruments; median {median_runs:,} runs per "
+            f"accession; {n_frac:,} fractionated. "
+            f"{n_mod_acc:,} of {n_acc:,} accessions declare modification "
+            f"parameters; {enzyme_note}"
+        ),
+        hspace=0.42,
+        wspace=0.30,
+        left=0.18,
+        right=0.97,
+        bottom=0.08,
+        header_ratio=0.16,
+    )
+
+    _panel_title(axes[0][0], "A", "Mass spectrometer")
+    inst_items = top_with_other(instruments, 10)
+    inst_map = _organism_colors([k for k, _ in inst_items])
+    inst_colors = [inst_map.get(n, OTHER_COLOR) for n, _ in inst_items]
+    _draw_hbar(
+        axes[0][0],
+        inst_items,
+        colors=inst_colors,
+        xlabel="Accessions",
+    )
+
+    _panel_title(axes[0][1], "B", "Runs per accession")
+    bin_items = [(row["name"], int(row["count"])) for row in run_bins]
+    _draw_vbar(
+        axes[0][1],
+        bin_items,
+        color="#1A7F7A",
+        xlabel="Unique comment[data file] values",
+        ylabel="Accessions",
+    )
+
+    _panel_title(axes[1][0], "C", "Modifications (PTMs)")
+    mod_items = top_with_other(modifications, 10)
+    mod_colors = [PTM_COLORS.get(name, "#5C6B8A") for name, _ in mod_items]
+    _draw_hbar(
+        axes[1][0],
+        mod_items,
+        colors=mod_colors,
+        xlabel="Accessions",
+    )
+
+    _panel_title(axes[1][1], "D", "Digestion enzyme")
+    enz_items = top_with_other(enzymes, 8)
+    enz_colors = [ENZYME_COLORS.get(name, OTHER_COLOR) for name, _ in enz_items]
+    _draw_hbar(
+        axes[1][1],
+        enz_items,
+        colors=enz_colors,
+        xlabel="Accessions",
+    )
+
+    _save(fig, path)
+
+
 def render_contributions_figure(path: Path, contributions: dict) -> None:
     origin = contributions.get("origin") or []
     agents = contributions.get("agents") or []
@@ -1859,6 +2314,7 @@ def render_plots(stats: dict) -> dict[str, str]:
         "organisms": "plots/organisms.png",
         "diseases": "plots/diseases.png",
         "methods": "plots/methods.png",
+        "analytical": "plots/analytical.png",
         "completeness": "plots/completeness.png",
         "templates": "plots/templates.png",
         "contributions": "plots/contributions.png",
@@ -1874,6 +2330,14 @@ def render_plots(stats: dict) -> dict[str, str]:
         STATS_DIR / paths["methods"],
         stats["labels"],
         stats["acquisitions"],
+    )
+    render_analytical_figure(
+        STATS_DIR / paths["analytical"],
+        stats.get("instruments") or [],
+        stats.get("run_bins") or [],
+        stats.get("modifications") or [],
+        stats.get("enzymes") or [],
+        stats.get("totals") or {},
     )
     render_completeness_figure(
         STATS_DIR / paths["completeness"],
@@ -1935,6 +2399,13 @@ def build_readme_section(stats: dict, plot_paths: dict[str, str]) -> str:
     top_agent = (
         contrib.get("agents", [{}])[0].get("name") if contrib.get("agents") else None
     )
+    n_instruments = int(totals.get("instruments", 0))
+    median_runs = int(totals.get("median_runs", 0))
+    n_mod_acc = int(totals.get("accessions_with_mods", 0))
+    top_inst = stats["instruments"][0][0] if stats.get("instruments") else None
+    top_mod = (
+        stats["modifications"][0][0] if stats.get("modifications") else None
+    )
 
     completeness_bits = []
     if disease_pct is not None:
@@ -1959,6 +2430,10 @@ def build_readme_section(stats: dict, plot_paths: dict[str, str]) -> str:
         if top_agent:
             agent_bit += f" (mostly **{top_agent}**)"
         highlight_parts.append(agent_bit)
+    if top_inst:
+        highlight_parts.append(f"most common instrument is **{top_inst}**")
+    if top_mod:
+        highlight_parts.append(f"most common modification is **{top_mod}**")
 
     lines = [
         STATS_START,
@@ -1981,6 +2456,9 @@ def build_readme_section(stats: dict, plot_paths: dict[str, str]) -> str:
         f"| AI agents | {fmt_int(n_ai_agents)} |",
         f"| Human-only accessions | {fmt_int(n_human)} |",
         f"| Agent-assisted accessions | {fmt_int(n_agent)} |",
+        f"| Distinct instruments | {fmt_int(n_instruments)} |",
+        f"| Median runs per accession | {fmt_int(median_runs)} |",
+        f"| Accessions with modification parameters | {fmt_int(n_mod_acc)} |",
         "",
         "**Highlights:** " + "; ".join(highlight_parts) + ".",
         "",
@@ -1992,6 +2470,9 @@ def build_readme_section(stats: dict, plot_paths: dict[str, str]) -> str:
         "",
         f"![Quantification and acquisition methods]"
         f"(docs/stats/{plot_paths['methods']})",
+        "",
+        f"![Instruments, runs, and modifications]"
+        f"(docs/stats/{plot_paths['analytical']})",
         "",
         f"![Annotation completeness]"
         f"(docs/stats/{plot_paths['completeness']})",
@@ -2048,6 +2529,15 @@ def load_summary() -> dict:
         "templates": payload.get("templates", []),
         "specialties": payload.get("specialties", []),
         "contributions": payload.get("contributions") or {},
+        "instruments": pairs("instruments") if "instruments" in payload else [],
+        "modifications": pairs("modifications")
+        if "modifications" in payload
+        else [],
+        "modification_types": pairs("modification_types")
+        if "modification_types" in payload
+        else [],
+        "enzymes": pairs("enzymes") if "enzymes" in payload else [],
+        "run_bins": payload.get("run_bins") or [],
     }
 
 
@@ -2077,6 +2567,21 @@ def write_summary(stats: dict) -> None:
         "templates": stats.get("templates", []),
         "specialties": stats.get("specialties", []),
         "contributions": stats.get("contributions") or {},
+        "instruments": [
+            {"name": k, "count": v} for k, v in stats.get("instruments") or []
+        ],
+        "modifications": [
+            {"name": k, "count": v}
+            for k, v in stats.get("modifications") or []
+        ],
+        "modification_types": [
+            {"name": k, "count": v}
+            for k, v in stats.get("modification_types") or []
+        ],
+        "enzymes": [
+            {"name": k, "count": v} for k, v in stats.get("enzymes") or []
+        ],
+        "run_bins": stats.get("run_bins") or [],
     }
     (STATS_DIR / "summary.json").write_text(
         json.dumps(payload, indent=2) + "\n", encoding="utf-8"

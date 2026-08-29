@@ -3,7 +3,7 @@
 
 Scans datasets/**/*.sdrf.tsv (sandbox excluded), writes:
   docs/stats/summary.json
-  docs/stats/plots/{organisms,diseases,methods}.png
+  docs/stats/plots/{organisms,diseases,methods,completeness,templates}.png
   and replaces the README markers <!-- STATS:START --> ... <!-- STATS:END -->.
 
 Pass --plots-only to redraw figures from an existing summary.json.
@@ -25,6 +25,7 @@ import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt  # noqa: E402
 from matplotlib.ticker import FuncFormatter  # noqa: E402
+from matplotlib.colors import LinearSegmentedColormap  # noqa: E402
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 DATASETS_DIR = REPO_ROOT / "datasets"
@@ -49,6 +50,67 @@ NA_TOKENS = {
     "not applicable.",
     "unknown",
     ".",
+}
+
+NOT_APPLICABLE_TOKENS = {
+    "not applicable",
+    "not applicable.",
+}
+
+COMPLETENESS_FIELDS = [
+    "organism",
+    "organism part",
+    "disease",
+    "cell type",
+    "age",
+    "sex",
+    "developmental stage",
+    "ancestry category",
+    "cell line",
+]
+
+BY_ORGANISM_FIELDS = [
+    "organism part",
+    "disease",
+    "age",
+    "sex",
+    "cell type",
+]
+
+TEMPLATE_LAYER = {
+    "ms-proteomics": "Technology",
+    "affinity-proteomics": "Technology",
+    "ms-metabolomics": "Technology",
+    "human": "Sample",
+    "vertebrates": "Sample",
+    "invertebrates": "Sample",
+    "plants": "Sample",
+    "metaproteomics": "Sample",
+    "human-gut": "Sample",
+    "soil": "Sample",
+    "water": "Sample",
+    "clinical-metadata": "Sample",
+    "oncology-metadata": "Sample",
+    "dia-acquisition": "Experiment",
+    "single-cell": "Experiment",
+    "crosslinking": "Experiment",
+    "immunopeptidomics": "Experiment",
+    "cell-lines": "Experiment",
+    "lc-ms-metabolomics": "Experiment",
+    "gc-ms-metabolomics": "Experiment",
+}
+
+METAPROTEOMICS_TEMPLATES = {
+    "metaproteomics",
+    "human-gut",
+    "soil",
+    "water",
+}
+
+TECHNOLOGY_TEMPLATES = {
+    "ms-proteomics",
+    "affinity-proteomics",
+    "ms-metabolomics",
 }
 
 HEALTHY_DISEASE_TOKENS = {
@@ -133,6 +195,55 @@ def classify_acquisition(raw: str | None) -> str | None:
     return "Other"
 
 
+def parse_template_name(raw: str | None) -> str | None:
+    """Return the leaf template name from comment[sdrf template]."""
+    if raw is None:
+        return None
+    text = str(raw).strip()
+    if not text or text.lower() in NA_TOKENS:
+        return None
+    if "NT=" in text.upper():
+        for part in text.split(";"):
+            if part.strip().upper().startswith("NT="):
+                name = part.split("=", 1)[1].strip()
+                return name or None
+        return None
+    split = re.split(r"\s+v", text, maxsplit=1, flags=re.IGNORECASE)
+    return split[0].strip() or None
+
+
+def completeness_status(raw: str | None) -> str:
+    """Classify a cell as filled, incomplete, or not_applicable."""
+    if raw is None:
+        return "incomplete"
+    text = str(raw).strip()
+    if not text:
+        return "incomplete"
+    lower = text.lower()
+    if lower in NOT_APPLICABLE_TOKENS:
+        return "not_applicable"
+    if lower in NA_TOKENS:
+        return "incomplete"
+    if normalize_term(text) is None:
+        return "incomplete"
+    return "filled"
+
+
+def _header_index(headers: list[str], name: str | None) -> int | None:
+    if not name:
+        return None
+    try:
+        return headers.index(name)
+    except ValueError:
+        return None
+
+
+def _cell(row: list[str], idx: int | None) -> str:
+    if idx is None or idx < 0 or idx >= len(row):
+        return ""
+    return row[idx]
+
+
 def find_header(headers: list[str], *predicates) -> str | None:
     for header in headers:
         hl = header.lower()
@@ -163,6 +274,23 @@ def find_column(headers: list[str], kind: str) -> str | None:
         "data_file": lambda hs: find_header(
             hs, lambda h: h == "comment[data file]"
         ),
+        "organism_part": lambda hs: find_header(
+            hs, lambda h: "organism part" in h
+        ),
+        "age": lambda hs: find_header(
+            hs,
+            lambda h: h.endswith("[age]") or h == "characteristics[age]",
+        ),
+        "sex": lambda hs: find_header(
+            hs,
+            lambda h: h.endswith("[sex]") or h == "characteristics[sex]",
+        ),
+        "cell_type": lambda hs: find_header(hs, lambda h: "cell type" in h),
+        "cell_line": lambda hs: find_header(hs, lambda h: "cell line" in h),
+        "developmental_stage": lambda hs: find_header(
+            hs, lambda h: "developmental stage" in h
+        ),
+        "ancestry": lambda hs: find_header(hs, lambda h: "ancestry" in h),
     }
     if kind not in lookup:
         raise ValueError(f"unknown column kind: {kind}")
@@ -187,100 +315,189 @@ class AggregateState:
         default_factory=lambda: defaultdict(set)
     )
     total_rows: int = 0
-
-
-def _record_sample(
-    state: AggregateState,
-    path_key: str,
-    source: str,
-    row: dict,
-    org_col: str | None,
-    dis_col: str | None,
-    sample_org: dict[str, str],
-    sample_dis: dict[str, str],
-) -> None:
-    key = (path_key, source)
-    state.sample_seen.add(key)
-
-    if source not in sample_org and org_col:
-        org = normalize_term(row.get(org_col))
-        if org:
-            sample_org[source] = canonicalize_organism(org)
-
-    if source not in sample_dis and dis_col:
-        dis = normalize_term(row.get(dis_col))
-        if dis and dis.lower() not in HEALTHY_DISEASE_TOKENS:
-            sample_dis[source] = dis
-
-
-def _process_row(
-    state: AggregateState,
-    path_key: str,
-    row: dict,
-    cols: dict[str, str | None],
-    sample_org: dict[str, str],
-    sample_dis: dict[str, str],
-) -> None:
-    state.total_rows += 1
-    src_col = cols["source"]
-    file_col = cols["data_file"]
-    source = (row.get(src_col) or "").strip() if src_col else ""
-    data_file = (row.get(file_col) or "").strip() if file_col else ""
-
-    if source:
-        _record_sample(
-            state,
-            path_key,
-            source,
-            row,
-            cols["organism"],
-            cols["disease"],
-            sample_org,
-            sample_dis,
-        )
-
-    if data_file:
-        state.run_seen.add((path_key, data_file))
-
-    lab = classify_label(row.get(cols["label"]) if cols["label"] else None)
-    if lab:
-        state.labels[lab] += 1
-
-    acq = classify_acquisition(
-        row.get(cols["acquisition"]) if cols["acquisition"] else None
+    completeness: dict[str, Counter] = field(
+        default_factory=lambda: defaultdict(Counter)
     )
-    if acq:
-        state.acquisitions[acq] += 1
+    completeness_by_org: dict[str, dict[str, Counter]] = field(
+        default_factory=lambda: defaultdict(lambda: defaultdict(Counter))
+    )
+    templates_files: Counter = field(default_factory=Counter)
+    templates_accessions: dict[str, set[str]] = field(
+        default_factory=lambda: defaultdict(set)
+    )
+    files_with_template: int = 0
+    accessions_with_template: set[str] = field(default_factory=set)
+    specialty_files: dict[str, set[str]] = field(
+        default_factory=lambda: defaultdict(set)
+    )
+    specialty_accessions: dict[str, set[str]] = field(
+        default_factory=lambda: defaultdict(set)
+    )
+
+
+FIELD_KIND = {
+    "organism": "organism",
+    "organism part": "organism_part",
+    "disease": "disease",
+    "age": "age",
+    "sex": "sex",
+    "cell type": "cell_type",
+    "cell line": "cell_line",
+    "developmental stage": "developmental_stage",
+    "ancestry category": "ancestry",
+}
+
+SPECIALTY_FROM_TEMPLATE = {
+    "single-cell": "Single-cell",
+    "cell-lines": "Cell lines",
+    "crosslinking": "Crosslinking",
+    "immunopeptidomics": "Immunopeptidomics",
+    "dia-acquisition": "DIA",
+    "affinity-proteomics": "Affinity proteomics",
+    "clinical-metadata": "Clinical",
+    "oncology-metadata": "Oncology",
+}
+
+
+def _mark_specialty(
+    state: AggregateState, name: str, accession: str, path_key: str
+) -> None:
+    state.specialty_accessions[name].add(accession)
+    state.specialty_files[name].add(path_key)
 
 
 def process_sdrf_file(path: Path, state: AggregateState) -> None:
     accession = path.parent.name
     path_key = path.as_posix()
     with path.open(newline="", encoding="utf-8", errors="replace") as handle:
-        reader = csv.DictReader(handle, delimiter="\t")
-        headers = list(reader.fieldnames or [])
+        reader = csv.reader(handle, delimiter="\t")
+        try:
+            headers = next(reader)
+        except StopIteration:
+            return
+        headers = [h.strip() for h in headers]
         if not headers:
             return
 
-        cols = {
-            "organism": find_column(headers, "organism"),
-            "disease": find_column(headers, "disease"),
-            "label": find_column(headers, "label"),
-            "acquisition": find_column(headers, "acquisition"),
-            "source": find_column(headers, "source"),
-            "data_file": find_column(headers, "data_file"),
+        idx = {
+            kind: _header_index(headers, find_column(headers, kind))
+            for kind in (
+                "organism",
+                "organism_part",
+                "disease",
+                "age",
+                "sex",
+                "cell_type",
+                "cell_line",
+                "developmental_stage",
+                "ancestry",
+                "label",
+                "acquisition",
+                "source",
+                "data_file",
+            )
         }
+        tmpl_idxs = [
+            i
+            for i, header in enumerate(headers)
+            if header.lower() == "comment[sdrf template]"
+        ]
+
         sample_org: dict[str, str] = {}
         sample_dis: dict[str, str] = {}
+        sample_seen_local: set[str] = set()
+        file_templates: set[str] = set()
+        has_filled_cell_line = False
+        has_metagenome = False
 
         for row in reader:
-            _process_row(state, path_key, row, cols, sample_org, sample_dis)
+            if not row or not any(cell.strip() for cell in row):
+                continue
+            state.total_rows += 1
+            source = _cell(row, idx["source"]).strip()
+            data_file = _cell(row, idx["data_file"]).strip()
+
+            for tmpl_i in tmpl_idxs:
+                name = parse_template_name(_cell(row, tmpl_i))
+                if name:
+                    file_templates.add(name)
+
+            lab = classify_label(_cell(row, idx["label"]) or None)
+            if lab:
+                state.labels[lab] += 1
+            acq = classify_acquisition(_cell(row, idx["acquisition"]) or None)
+            if acq:
+                state.acquisitions[acq] += 1
+            if data_file:
+                state.run_seen.add((path_key, data_file))
+
+            if not source or source in sample_seen_local:
+                continue
+            sample_seen_local.add(source)
+            state.sample_seen.add((path_key, source))
+
+            org_raw = _cell(row, idx["organism"])
+            org = normalize_term(org_raw)
+            if org:
+                org = canonicalize_organism(org)
+                sample_org[source] = org
+                if "metagenome" in org.lower() or "microbiome" in org.lower():
+                    has_metagenome = True
+
+            dis = normalize_term(_cell(row, idx["disease"]))
+            if dis and dis.lower() not in HEALTHY_DISEASE_TOKENS:
+                sample_dis[source] = dis
+
+            statuses: dict[str, str] = {}
+            for field, kind in FIELD_KIND.items():
+                if idx[kind] is None:
+                    statuses[field] = "incomplete"
+                else:
+                    statuses[field] = completeness_status(_cell(row, idx[kind]))
+                state.completeness[field][statuses[field]] += 1
+            if statuses.get("cell line") == "filled":
+                has_filled_cell_line = True
+            if org:
+                for field in BY_ORGANISM_FIELDS:
+                    state.completeness_by_org[org][field][statuses[field]] += 1
 
         for org in sample_org.values():
             state.samples_by_organism[org] += 1
             state.accession_organisms[accession].add(org)
         for dis in sample_dis.values():
             state.diseases[dis] += 1
+
+        if file_templates:
+            state.files_with_template += 1
+            state.accessions_with_template.add(accession)
+            for name in file_templates:
+                state.templates_files[name] += 1
+                state.templates_accessions[name].add(accession)
+                if name in METAPROTEOMICS_TEMPLATES:
+                    _mark_specialty(state, "Metaproteomics", accession, path_key)
+                specialty = SPECIALTY_FROM_TEMPLATE.get(name)
+                if specialty:
+                    _mark_specialty(state, specialty, accession, path_key)
+
+        if has_filled_cell_line:
+            _mark_specialty(state, "Cell lines", accession, path_key)
+        if has_metagenome:
+            _mark_specialty(state, "Metaproteomics", accession, path_key)
+
+
+def _completeness_entry(name: str, counts: Counter) -> dict:
+    filled = int(counts.get("filled", 0))
+    incomplete = int(counts.get("incomplete", 0))
+    not_applicable = int(counts.get("not_applicable", 0))
+    applicable = filled + incomplete
+    pct = round(100.0 * filled / applicable, 1) if applicable else 0.0
+    return {
+        "name": name,
+        "filled": filled,
+        "applicable": applicable,
+        "not_applicable": not_applicable,
+        "pct": pct,
+    }
 
 
 def aggregate() -> dict:
@@ -293,21 +510,84 @@ def aggregate() -> dict:
     for orgs in state.accession_organisms.values():
         organisms.update(orgs)
 
+    completeness = [
+        _completeness_entry(field, state.completeness[field])
+        for field in COMPLETENESS_FIELDS
+    ]
+
+    top_orgs = [name for name, _ in state.samples_by_organism.most_common(8)]
+    completeness_by_organism = []
+    for org in top_orgs:
+        field_rows = [
+            _completeness_entry(field, state.completeness_by_org[org][field])
+            for field in BY_ORGANISM_FIELDS
+        ]
+        completeness_by_organism.append({"name": org, "fields": field_rows})
+
+    templates = []
+    for name, accessions in sorted(
+        state.templates_accessions.items(),
+        key=lambda kv: (-len(kv[1]), kv[0]),
+    ):
+        templates.append(
+            {
+                "name": name,
+                "accessions": len(accessions),
+                "files": int(state.templates_files[name]),
+                "layer": TEMPLATE_LAYER.get(name, "Other"),
+            }
+        )
+
+    specialty_order = [
+        "Single-cell",
+        "Cell lines",
+        "Metaproteomics",
+        "Crosslinking",
+        "Immunopeptidomics",
+        "DIA",
+        "Affinity proteomics",
+        "Clinical",
+        "Oncology",
+    ]
+    specialties = []
+    for name in specialty_order:
+        acc = state.specialty_accessions.get(name, set())
+        files_for = state.specialty_files.get(name, set())
+        if not acc and not files_for:
+            specialties.append(
+                {"name": name, "accessions": 0, "files": 0}
+            )
+            continue
+        specialties.append(
+            {
+                "name": name,
+                "accessions": len(acc),
+                "files": len(files_for),
+            }
+        )
+
+    n_accessions = len({p.parent.name for p in files})
     generated_at = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
     return {
         "generated_at": generated_at,
         "totals": {
-            "accessions": len({p.parent.name for p in files}),
+            "accessions": n_accessions,
             "sdrf_files": len(files),
             "samples": len(state.sample_seen),
             "runs": len(state.run_seen),
             "assay_rows": state.total_rows,
+            "files_with_template": state.files_with_template,
+            "accessions_with_template": len(state.accessions_with_template),
         },
         "organisms": organisms.most_common(),
         "samples_by_organism": state.samples_by_organism.most_common(),
         "diseases": state.diseases.most_common(),
         "labels": state.labels.most_common(),
         "acquisitions": state.acquisitions.most_common(),
+        "completeness": completeness,
+        "completeness_by_organism": completeness_by_organism,
+        "templates": templates,
+        "specialties": specialties,
     }
 
 
@@ -543,13 +823,14 @@ def _draw_hbar(
     show_percent: bool = False,
     italic_binomials: bool = False,
     xlabel: str = "Count",
+    preserve_order: bool = False,
 ) -> None:
     if not items:
         ax.set_axis_off()
         ax.text(0.5, 0.5, "No data", ha="center", va="center", color=MUTED)
         return
 
-    ordered = _order_hbar_items(items)
+    ordered = items if preserve_order else _order_hbar_items(items)
     names = [k for k, _ in ordered]
     labels = [_shorten_label(k) for k in names]
     values = [v for _, v in ordered]
@@ -974,6 +1255,257 @@ def render_methods_figure(
     _save(fig, path)
 
 
+LAYER_COLORS = {
+    "Technology": "#1F4E79",
+    "Sample": "#1A7F7A",
+    "Experiment": "#D36B2F",
+    "Other": OTHER_COLOR,
+}
+
+SPECIALTY_COLORS = {
+    "Single-cell": "#8E4A73",
+    "Cell lines": "#2E86AB",
+    "Metaproteomics": "#3D8B5C",
+    "Crosslinking": "#C4922A",
+    "Immunopeptidomics": "#C44536",
+    "DIA": "#1A7F7A",
+    "Affinity proteomics": "#5C6B8A",
+    "Clinical": "#6B1D4A",
+    "Oncology": "#A63D70",
+}
+
+COMPLETE_CMAP = LinearSegmentedColormap.from_list(
+    "sdrf_complete", ["#F2F4F7", "#7FB8B2", "#1A7F7A", "#1F4E79"]
+)
+COMPLETE_CMAP.set_bad("#EEF1F4")
+
+
+def _draw_pct_hbar(ax, rows: list[dict], *, color: str = "#1A7F7A") -> None:
+    if not rows:
+        ax.set_axis_off()
+        ax.text(0.5, 0.5, "No data", ha="center", va="center", color=MUTED)
+        return
+    labels = [row["name"] for row in rows]
+    values = [float(row["pct"]) for row in rows]
+    n = len(values)
+    y = list(range(n))
+    bars = ax.barh(
+        y,
+        values,
+        color=color,
+        edgecolor=FACE,
+        linewidth=0.6,
+        height=0.72,
+        zorder=3,
+    )
+    ax.set_yticks(y)
+    ax.set_yticklabels(labels)
+    ax.invert_yaxis()
+    ax.set_xlim(0, 112)
+    _style_axes(ax, xlabel="% of applicable samples")
+    ax.xaxis.set_major_formatter(FuncFormatter(lambda v, _p: f"{int(v)}%"))
+    for bar, row in zip(bars, rows, strict=True):
+        filled = int(row.get("filled", 0))
+        applicable = int(row.get("applicable", 0))
+        label = f"{row['pct']:.0f}%   ({filled:,} / {applicable:,})"
+        inside = bar.get_width() >= 38
+        ax.text(
+            bar.get_width() - 1.2 if inside else bar.get_width() + 1.4,
+            bar.get_y() + bar.get_height() / 2,
+            label,
+            va="center",
+            ha="right" if inside else "left",
+            fontsize=8,
+            color=_contrasting_text(bar.get_facecolor()) if inside else INK,
+            fontweight="bold" if inside else "normal",
+            clip_on=False,
+        )
+
+
+def render_completeness_figure(
+    path: Path,
+    completeness: list[dict],
+    by_organism: list[dict],
+) -> None:
+    if not completeness:
+        _empty_figure(path, "Annotation completeness")
+        return
+
+    fig, axes = _make_figure(
+        nrows=2,
+        ncols=1,
+        figsize=(8.8, 9.4),
+        title="Annotation completeness",
+        subtitle=(
+            "Share of samples with a real value. Missing columns and "
+            "'not available' count as incomplete; 'not applicable' is excluded."
+        ),
+        hspace=0.38,
+        left=0.22,
+        right=0.97,
+        bottom=0.08,
+        header_ratio=0.12,
+    )
+
+    _panel_title(axes[0], "A", "By metadata field")
+    labeled = [
+        {**row, "name": row["name"][:1].upper() + row["name"][1:]}
+        for row in completeness
+    ]
+    _draw_pct_hbar(axes[0], labeled, color="#1A7F7A")
+
+    _panel_title(axes[1], "B", "By organism (top taxa by sample count)")
+    ax = axes[1]
+    if not by_organism:
+        ax.set_axis_off()
+        ax.text(0.5, 0.5, "No data", ha="center", va="center", color=MUTED)
+        _save(fig, path)
+        return
+
+    fields = BY_ORGANISM_FIELDS
+    field_labels = [name[:1].upper() + name[1:] for name in fields]
+    organisms = [row["name"] for row in by_organism]
+    matrix: list[list[float]] = []
+    for org_row in by_organism:
+        lookup = {item["name"]: item for item in org_row.get("fields", [])}
+        line: list[float] = []
+        for field in fields:
+            item = lookup.get(field, {"pct": 0.0, "applicable": 0})
+            if item.get("applicable"):
+                line.append(float(item["pct"]))
+            else:
+                line.append(float("nan"))
+        matrix.append(line)
+
+    im = ax.imshow(
+        matrix,
+        cmap=COMPLETE_CMAP,
+        vmin=0,
+        vmax=100,
+        aspect="auto",
+        interpolation="nearest",
+    )
+    ax.set_xticks(range(len(field_labels)))
+    ax.set_xticklabels(field_labels, fontsize=9)
+    ax.set_yticks(range(len(organisms)))
+    ax.set_yticklabels([_shorten_label(name, 28) for name in organisms], fontsize=9)
+    _italicize_binomial_ticks(ax, organisms)
+    ax.tick_params(axis="both", length=0)
+    ax.spines["left"].set_visible(False)
+    ax.spines["bottom"].set_visible(False)
+    for i, line in enumerate(matrix):
+        for j, value in enumerate(line):
+            if value != value:  # NaN
+                text, color = "—", MUTED
+            else:
+                text = f"{value:.0f}"
+                color = FACE if value >= 55 else INK
+            ax.text(j, i, text, ha="center", va="center", fontsize=8, color=color)
+    cbar = fig.colorbar(im, ax=ax, fraction=0.046, pad=0.03)
+    cbar.ax.tick_params(labelsize=8, length=2)
+    cbar.set_label("% complete", fontsize=8, color=MUTED)
+
+    _save(fig, path)
+
+
+def render_templates_figure(
+    path: Path,
+    templates: list[dict],
+    specialties: list[dict],
+    totals: dict,
+) -> None:
+    tech_counts: dict[str, int] = {
+        "MS proteomics": 0,
+        "Affinity proteomics": 0,
+        "Metabolomics": 0,
+        "Undeclared": 0,
+    }
+    tech_map = {
+        "ms-proteomics": "MS proteomics",
+        "affinity-proteomics": "Affinity proteomics",
+        "ms-metabolomics": "Metabolomics",
+    }
+    for row in templates:
+        label = tech_map.get(row["name"])
+        if label:
+            tech_counts[label] = int(row["accessions"])
+    n_acc = int(totals.get("accessions", 0))
+    n_with = int(totals.get("accessions_with_template", 0))
+    undeclared = max(0, n_acc - n_with)
+    tech_counts["Undeclared"] = undeclared
+    tech_bits = [
+        f"{count:,} {label.lower()}"
+        for label, count in tech_counts.items()
+        if label != "Undeclared" and count
+    ]
+    tech_note = "; ".join(tech_bits) if tech_bits else "none declared"
+
+    extra_templates = [
+        (row["name"], int(row["accessions"]))
+        for row in templates
+        if row["name"] not in TECHNOLOGY_TEMPLATES
+    ]
+    extra_colors = [
+        LAYER_COLORS.get(row["layer"], OTHER_COLOR)
+        for row in templates
+        if row["name"] not in TECHNOLOGY_TEMPLATES
+    ]
+
+    fig, axes = _make_figure(
+        nrows=1,
+        ncols=2,
+        figsize=(10.2, 7.2),
+        title="Templates and specialized collections",
+        subtitle=(
+            f"{n_with:,} of {n_acc:,} accessions declare a template "
+            f"({tech_note}). Cell lines and metaproteomics also count "
+            "filled cell-line or metagenome evidence."
+        ),
+        width_ratios=[1.15, 1.0],
+        wspace=0.28,
+        left=0.22,
+        right=0.97,
+        bottom=0.10,
+        header_ratio=0.20,
+    )
+
+    _panel_title(axes[0], "A", "Sample and experiment templates")
+    if extra_templates:
+        _draw_hbar(
+            axes[0],
+            extra_templates,
+            colors=extra_colors,
+            xlabel="Accessions",
+        )
+    else:
+        axes[0].set_axis_off()
+        axes[0].text(0.5, 0.5, "No data", ha="center", va="center", color=MUTED)
+
+    _panel_title(axes[1], "B", "Single-cell, cell lines, metaproteomics")
+    specialty_items = [
+        (row["name"], int(row["accessions"]))
+        for row in specialties
+        if int(row["accessions"]) > 0
+        or row["name"] in {"Single-cell", "Cell lines", "Metaproteomics"}
+    ]
+    if not specialty_items:
+        specialty_items = [
+            (row["name"], int(row["accessions"])) for row in specialties
+        ]
+    specialty_colors = [
+        SPECIALTY_COLORS.get(name, OTHER_COLOR) for name, _ in specialty_items
+    ]
+    _draw_hbar(
+        axes[1],
+        specialty_items,
+        colors=specialty_colors,
+        xlabel="Accessions",
+        preserve_order=True,
+    )
+
+    _save(fig, path)
+
+
 def _cleanup_stale_plots(keep: set[str]) -> None:
     if not PLOTS_DIR.exists():
         return
@@ -989,6 +1521,8 @@ def render_plots(stats: dict) -> dict[str, str]:
         "organisms": "plots/organisms.png",
         "diseases": "plots/diseases.png",
         "methods": "plots/methods.png",
+        "completeness": "plots/completeness.png",
+        "templates": "plots/templates.png",
     }
 
     render_organism_figure(
@@ -1002,6 +1536,17 @@ def render_plots(stats: dict) -> dict[str, str]:
         stats["labels"],
         stats["acquisitions"],
     )
+    render_completeness_figure(
+        STATS_DIR / paths["completeness"],
+        stats.get("completeness", []),
+        stats.get("completeness_by_organism", []),
+    )
+    render_templates_figure(
+        STATS_DIR / paths["templates"],
+        stats.get("templates", []),
+        stats.get("specialties", []),
+        stats.get("totals", {}),
+    )
     _cleanup_stale_plots({Path(p).name for p in paths.values()})
     return paths
 
@@ -1010,12 +1555,45 @@ def fmt_int(n: int) -> str:
     return f"{n:,}"
 
 
+def _lookup_pct(rows: list[dict], name: str) -> float | None:
+    for row in rows:
+        if row.get("name") == name:
+            return float(row.get("pct", 0))
+    return None
+
+
+def _lookup_specialty(rows: list[dict], name: str) -> int:
+    for row in rows:
+        if row.get("name") == name:
+            return int(row.get("accessions", 0))
+    return 0
+
+
 def build_readme_section(stats: dict, plot_paths: dict[str, str]) -> str:
     totals = stats["totals"]
     top_org = stats["organisms"][0][0] if stats["organisms"] else "n/a"
     dia = dict(stats["acquisitions"]).get("DIA", 0)
     tmt = dict(stats["labels"]).get("TMT", 0)
     lfq = dict(stats["labels"]).get("LFQ", 0)
+    age_pct = _lookup_pct(stats.get("completeness", []), "age")
+    disease_pct = _lookup_pct(stats.get("completeness", []), "disease")
+    n_single = _lookup_specialty(stats.get("specialties", []), "Single-cell")
+    n_cell = _lookup_specialty(stats.get("specialties", []), "Cell lines")
+    n_meta = _lookup_specialty(stats.get("specialties", []), "Metaproteomics")
+    n_tmpl = int(totals.get("accessions_with_template", 0))
+
+    completeness_bits = []
+    if disease_pct is not None:
+        completeness_bits.append(f"disease {disease_pct:.0f}%")
+    if age_pct is not None:
+        completeness_bits.append(f"age {age_pct:.0f}%")
+    completeness_note = (
+        "; sample-field completeness (applicable samples): "
+        + ", ".join(completeness_bits)
+        + "."
+        if completeness_bits
+        else "."
+    )
 
     lines = [
         STATS_START,
@@ -1028,6 +1606,7 @@ def build_readme_section(stats: dict, plot_paths: dict[str, str]) -> str:
         "| --- | ---: |",
         f"| Accessions | {fmt_int(totals['accessions'])} |",
         f"| SDRF files | {fmt_int(totals['sdrf_files'])} |",
+        f"| Accessions with a declared template | {fmt_int(n_tmpl)} |",
         f"| Samples (unique `source name` per file) | "
         f"{fmt_int(totals['samples'])} |",
         f"| Runs (unique `comment[data file]` per file) | "
@@ -1036,7 +1615,10 @@ def build_readme_section(stats: dict, plot_paths: dict[str, str]) -> str:
         "",
         f"**Highlights:** most common organism is **{top_org}**; "
         f"**{fmt_int(dia)}** DIA assay rows; "
-        f"**{fmt_int(tmt)}** TMT and **{fmt_int(lfq)}** LFQ assay rows.",
+        f"**{fmt_int(tmt)}** TMT and **{fmt_int(lfq)}** LFQ assay rows; "
+        f"**{fmt_int(n_single)}** single-cell, **{fmt_int(n_cell)}** cell-line, "
+        f"and **{fmt_int(n_meta)}** metaproteomics accessions"
+        f"{completeness_note}",
         "",
         f"![Organisms in curated annotations]"
         f"(docs/stats/{plot_paths['organisms']})",
@@ -1046,6 +1628,12 @@ def build_readme_section(stats: dict, plot_paths: dict[str, str]) -> str:
         "",
         f"![Quantification and acquisition methods]"
         f"(docs/stats/{plot_paths['methods']})",
+        "",
+        f"![Annotation completeness]"
+        f"(docs/stats/{plot_paths['completeness']})",
+        "",
+        f"![Templates and specialized collections]"
+        f"(docs/stats/{plot_paths['templates']})",
         "",
         STATS_END,
     ]
@@ -1086,6 +1674,12 @@ def load_summary() -> dict:
         "diseases": pairs("diseases"),
         "labels": pairs("labels"),
         "acquisitions": pairs("acquisitions"),
+        "completeness": payload.get("completeness", []),
+        "completeness_by_organism": payload.get(
+            "completeness_by_organism", []
+        ),
+        "templates": payload.get("templates", []),
+        "specialties": payload.get("specialties", []),
     }
 
 
@@ -1108,6 +1702,12 @@ def write_summary(stats: dict) -> None:
         "acquisitions": [
             {"name": k, "count": v} for k, v in stats["acquisitions"]
         ],
+        "completeness": stats.get("completeness", []),
+        "completeness_by_organism": stats.get(
+            "completeness_by_organism", []
+        ),
+        "templates": stats.get("templates", []),
+        "specialties": stats.get("specialties", []),
     }
     (STATS_DIR / "summary.json").write_text(
         json.dumps(payload, indent=2) + "\n", encoding="utf-8"
@@ -1134,6 +1734,10 @@ def main(argv: list[str] | None = None) -> int:
     print(f"  samples:    {totals['samples']}")
     print(f"  runs:       {totals['runs']}")
     print(f"  assay_rows: {totals['assay_rows']}")
+    print(
+        f"  templates:  {totals.get('accessions_with_template', 0)} "
+        "accessions declare a template"
+    )
     print(f"  wrote: {STATS_DIR.relative_to(REPO_ROOT)} and README.md")
     return 0
 

@@ -14,7 +14,7 @@ The SDRF specification lives in [`bigbio/proteomics-sample-metadata`](https://gi
 <!-- STATS:START -->
 ## Resource at a glance
 
-_Auto-generated from curated `datasets/` on 2026-08-29T11:16:01Z. Sandbox drafts are excluded._
+_Auto-generated from curated `datasets/` on 2026-08-29T11:29:52Z. Sandbox drafts are excluded._
 
 | Metric | Count |
 | --- | ---: |
@@ -26,15 +26,15 @@ _Auto-generated from curated `datasets/` on 2026-08-29T11:16:01Z. Sandbox drafts
 | Assay rows | 281,230 |
 | Human contributors | 16 |
 | AI agents | 3 |
-| Human-only accessions | 4,869 |
-| Agent-assisted accessions | 1,358 |
+| Human-only accessions | 511 |
+| Agent-assisted accessions | 5,716 |
 | Distinct instruments | 85 |
 | Median runs per accession | 12 |
 | Accessions with modification parameters | 1,082 |
 | ProteomeXchange coverage | 6,196 / 55,561 (11.2%) |
 | PRIDE coverage | 6,125 / 40,960 (15.0%) |
 
-**Highlights:** most common organism is **Homo sapiens**; **42,678** DIA assay rows; **61,687** TMT and **194,556** LFQ assay rows; **67** single-cell, **188** cell-line, and **117** metaproteomics accessions; sample-field completeness (applicable samples): disease 37%, age 13%; **1,358** accessions are agent-assisted (mostly **Cursor**); most common instrument is **Q Exactive**; most common modification is **Oxidation**; **11.2%** of public ProteomeXchange datasets have a curated SDRF here; **15.0%** of PRIDE projects are annotated.
+**Highlights:** most common organism is **Homo sapiens**; **42,678** DIA assay rows; **61,687** TMT and **194,556** LFQ assay rows; **67** single-cell, **188** cell-line, and **117** metaproteomics accessions; sample-field completeness (applicable samples): disease 37%, age 13%; **5,716** accessions are agent-assisted (mostly **Cursor**); most common instrument is **Q Exactive**; most common modification is **Oxidation**; **11.2%** of public ProteomeXchange datasets have a curated SDRF here; **15.0%** of PRIDE projects are annotated.
 
 ![How much of public proteomics is annotated](docs/stats/plots/coverage.png)
 

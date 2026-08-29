@@ -3,7 +3,7 @@
 
 Scans datasets/**/*.sdrf.tsv (sandbox excluded), writes:
   docs/stats/summary.json
-  docs/stats/plots/{organisms,diseases,methods,analytical,completeness,templates,contributions}.png
+  docs/stats/plots/{coverage,organisms,diseases,methods,analytical,completeness,templates,contributions}.png
   and replaces the README markers <!-- STATS:START --> ... <!-- STATS:END -->.
 
 Pass --plots-only to redraw figures from an existing summary.json.
@@ -16,6 +16,8 @@ import json
 import re
 import subprocess
 import sys
+import urllib.error
+import urllib.request
 from collections import Counter, defaultdict
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
@@ -36,6 +38,16 @@ README_PATH = REPO_ROOT / "README.md"
 
 STATS_START = "<!-- STATS:START -->"
 STATS_END = "<!-- STATS:END -->"
+
+PROXI_DATASETS_URL = (
+    "https://proteomecentral.proteomexchange.org/api/proxi/v0.1/datasets"
+)
+PRIDE_COUNT_URL = "https://www.ebi.ac.uk/pride/ws/archive/v3/projects/count"
+HTTP_UA = (
+    "sdrf-annotated-datasets-stats/1.0 "
+    "(+https://github.com/bigbio/sdrf-annotated-datasets)"
+)
+PX_ACCESSION_PREFIXES = ("PXD", "MSV", "JPST", "IPX", "PASS")
 
 # MS ontology accession used widely for label-free sample
 LABEL_FREE_AC = "MS:1002038"
@@ -512,6 +524,100 @@ def iter_sdrf_files() -> list[Path]:
     if not DATASETS_DIR.exists():
         return []
     return sorted(DATASETS_DIR.rglob("*.sdrf.tsv"))
+
+
+def _http_get(url: str, *, timeout: int) -> bytes:
+    req = urllib.request.Request(
+        url,
+        headers={"User-Agent": HTTP_UA, "Accept": "application/json, text/plain"},
+    )
+    with urllib.request.urlopen(req, timeout=timeout) as response:
+        return response.read()
+
+
+def _load_previous_coverage() -> dict:
+    path = STATS_DIR / "summary.json"
+    if not path.exists():
+        return {}
+    try:
+        payload = json.loads(path.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError):
+        return {}
+    cov = payload.get("coverage")
+    return cov if isinstance(cov, dict) else {}
+
+
+def fetch_repository_coverage(accessions: set[str]) -> dict:
+    """Compare curated accessions to live ProteomeXchange and PRIDE catalogues."""
+    local = {name.upper() for name in accessions}
+    px_like = {
+        name
+        for name in local
+        if name.startswith(PX_ACCESSION_PREFIXES)
+    }
+    pad = {name for name in local if name.startswith("PAD")}
+    previous = _load_previous_coverage()
+    fetched_at = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+    coverage = {
+        "proteomexchange_public": int(previous.get("proteomexchange_public") or 0),
+        "proteomexchange_annotated": len(px_like),
+        "pride_public": int(previous.get("pride_public") or 0),
+        "pride_annotated": int(previous.get("pride_annotated") or 0),
+        "pride_match": previous.get("pride_match") or "prefix",
+        "fetched_at": previous.get("fetched_at") or "",
+        "source_px": PROXI_DATASETS_URL,
+        "source_pride": PRIDE_COUNT_URL,
+    }
+
+    try:
+        payload = json.loads(_http_get(f"{PROXI_DATASETS_URL}?pageSize=1", timeout=60))
+        px_total = int(payload["result_set"]["n_available_rows"])
+        if px_total > 0:
+            coverage["proteomexchange_public"] = px_total
+            coverage["fetched_at"] = fetched_at
+        print(f"  ProteomeXchange public datasets: {px_total:,}")
+    except (OSError, urllib.error.URLError, json.JSONDecodeError, KeyError, TypeError, ValueError) as exc:
+        print(f"  warning: could not fetch ProteomeXchange catalogue ({exc})")
+
+    pride_ids: set[str] = set()
+    try:
+        payload = json.loads(
+            _http_get(
+                f"{PROXI_DATASETS_URL}?repository=PRIDE&pageSize=100000",
+                timeout=180,
+            )
+        )
+        pride_ids = {
+            str(row[0]).upper()
+            for row in payload.get("datasets") or []
+            if row
+        }
+        print(f"  ProteomeCentral PRIDE datasets: {len(pride_ids):,}")
+    except (OSError, urllib.error.URLError, json.JSONDecodeError, KeyError, TypeError, ValueError) as exc:
+        print(f"  warning: could not fetch PRIDE accessions from ProteomeCentral ({exc})")
+
+    pride_public = 0
+    try:
+        pride_public = int(_http_get(PRIDE_COUNT_URL, timeout=45).decode("utf-8").strip())
+        if pride_public > 0:
+            coverage["pride_public"] = pride_public
+            coverage["fetched_at"] = fetched_at
+        print(f"  PRIDE Archive projects: {pride_public:,}")
+    except (OSError, urllib.error.URLError, TypeError, ValueError) as exc:
+        print(f"  warning: could not fetch PRIDE project count ({exc})")
+        if not coverage["pride_public"] and pride_ids:
+            coverage["pride_public"] = len(pride_ids)
+
+    if pride_ids:
+        coverage["pride_annotated"] = len((local & pride_ids) | pad)
+        coverage["pride_match"] = "proteomecentral"
+    else:
+        coverage["pride_annotated"] = len(
+            {name for name in local if name.startswith(("PXD", "PAD"))}
+        )
+        coverage["pride_match"] = "prefix"
+
+    return coverage
 
 
 def classify_contributor(name: str, email: str) -> str | None:
@@ -1118,6 +1224,7 @@ def aggregate() -> dict:
         "modification_types": mod_types.most_common(),
         "enzymes": enzymes.most_common(),
         "run_bins": run_bin_rows,
+        "coverage": fetch_repository_coverage({p.parent.name for p in files}),
     }
 
 
@@ -1683,6 +1790,102 @@ def _empty_figure(path: Path, title: str) -> None:
     ax.set_axis_off()
     ax.text(0.5, 0.5, "No data", ha="center", va="center", fontsize=12, color=MUTED)
     ax.set_title(title, fontsize=13, pad=10, fontweight="bold")
+    _save(fig, path)
+
+
+def _draw_coverage_bar(
+    ax,
+    *,
+    letter: str,
+    title: str,
+    annotated: int,
+    total: int,
+    color: str,
+) -> None:
+    _panel_title(ax, letter, title)
+    if total <= 0:
+        ax.set_axis_off()
+        ax.text(0.5, 0.35, "Catalogue total unavailable", ha="center", va="center", color=MUTED)
+        return
+    pct = 100.0 * annotated / total
+    ax.barh([0], [100], color="#EEF1F4", height=0.42, zorder=1, linewidth=0)
+    ax.barh([0], [pct], color=color, height=0.42, zorder=2, linewidth=0)
+    ax.set_xlim(0, 100)
+    ax.set_ylim(-0.95, 0.72)
+    ax.set_yticks([])
+    ax.tick_params(axis="x", length=3, width=0.6, color=AXIS, labelsize=8.5)
+    ax.spines["top"].set_visible(False)
+    ax.spines["right"].set_visible(False)
+    ax.spines["left"].set_visible(False)
+    ax.spines["bottom"].set_color(AXIS)
+    ax.xaxis.set_major_formatter(FuncFormatter(lambda v, _p: f"{int(v)}%"))
+    ax.set_xlabel("% of public datasets", fontsize=9, color=MUTED, labelpad=4)
+    label_x = pct + 1.8 if pct < 82 else max(pct - 2.0, 1)
+    ax.text(
+        label_x,
+        0,
+        f"{pct:.1f}%",
+        ha="left" if pct < 82 else "right",
+        va="center",
+        fontsize=13,
+        fontweight="bold",
+        color=INK if pct < 82 else FACE,
+        zorder=3,
+    )
+    ax.text(
+        0,
+        -0.72,
+        f"{annotated:,} curated SDRFs  ·  {total:,} public datasets",
+        ha="left",
+        va="center",
+        fontsize=8.5,
+        color=MUTED,
+        clip_on=False,
+    )
+
+
+def render_coverage_figure(path: Path, coverage: dict) -> None:
+    px_ann = int(coverage.get("proteomexchange_annotated") or 0)
+    px_tot = int(coverage.get("proteomexchange_public") or 0)
+    pride_ann = int(coverage.get("pride_annotated") or 0)
+    pride_tot = int(coverage.get("pride_public") or 0)
+    if not px_tot and not pride_tot:
+        _empty_figure(path, "Annotation coverage")
+        return
+
+    fetched = str(coverage.get("fetched_at") or "")
+    when = f" Catalogue totals fetched {fetched[:10]}." if fetched else ""
+    fig, axes = _make_figure(
+        nrows=2,
+        ncols=1,
+        figsize=(10.4, 5.4),
+        title="How much of public proteomics is annotated?",
+        subtitle=(
+            "Share of public ProteomeXchange and PRIDE datasets with a curated "
+            f"SDRF in this repository. Open a PR to move the bar.{when}"
+        ),
+        hspace=0.55,
+        left=0.06,
+        right=0.97,
+        bottom=0.10,
+        header_ratio=0.28,
+    )
+    _draw_coverage_bar(
+        axes[0],
+        letter="A",
+        title="ProteomeXchange",
+        annotated=px_ann,
+        total=px_tot,
+        color="#1F4E79",
+    )
+    _draw_coverage_bar(
+        axes[1],
+        letter="B",
+        title="PRIDE",
+        annotated=pride_ann,
+        total=pride_tot,
+        color="#1A7F7A",
+    )
     _save(fig, path)
 
 
@@ -2311,6 +2514,7 @@ def render_plots(stats: dict) -> dict[str, str]:
     _apply_style()
     PLOTS_DIR.mkdir(parents=True, exist_ok=True)
     paths = {
+        "coverage": "plots/coverage.png",
         "organisms": "plots/organisms.png",
         "diseases": "plots/diseases.png",
         "methods": "plots/methods.png",
@@ -2320,6 +2524,10 @@ def render_plots(stats: dict) -> dict[str, str]:
         "contributions": "plots/contributions.png",
     }
 
+    render_coverage_figure(
+        STATS_DIR / paths["coverage"],
+        stats.get("coverage") or {},
+    )
     render_organism_figure(
         STATS_DIR / paths["organisms"],
         stats["organisms"],
@@ -2406,6 +2614,13 @@ def build_readme_section(stats: dict, plot_paths: dict[str, str]) -> str:
     top_mod = (
         stats["modifications"][0][0] if stats.get("modifications") else None
     )
+    coverage = stats.get("coverage") or {}
+    px_ann = int(coverage.get("proteomexchange_annotated") or 0)
+    px_tot = int(coverage.get("proteomexchange_public") or 0)
+    pride_ann = int(coverage.get("pride_annotated") or 0)
+    pride_tot = int(coverage.get("pride_public") or 0)
+    px_pct = 100.0 * px_ann / px_tot if px_tot else 0.0
+    pride_pct = 100.0 * pride_ann / pride_tot if pride_tot else 0.0
 
     completeness_bits = []
     if disease_pct is not None:
@@ -2434,6 +2649,15 @@ def build_readme_section(stats: dict, plot_paths: dict[str, str]) -> str:
         highlight_parts.append(f"most common instrument is **{top_inst}**")
     if top_mod:
         highlight_parts.append(f"most common modification is **{top_mod}**")
+    if px_tot:
+        highlight_parts.append(
+            f"**{px_pct:.1f}%** of public ProteomeXchange datasets have a "
+            "curated SDRF here"
+        )
+    if pride_tot:
+        highlight_parts.append(
+            f"**{pride_pct:.1f}%** of PRIDE projects are annotated"
+        )
 
     lines = [
         STATS_START,
@@ -2459,8 +2683,23 @@ def build_readme_section(stats: dict, plot_paths: dict[str, str]) -> str:
         f"| Distinct instruments | {fmt_int(n_instruments)} |",
         f"| Median runs per accession | {fmt_int(median_runs)} |",
         f"| Accessions with modification parameters | {fmt_int(n_mod_acc)} |",
+        (
+            f"| ProteomeXchange coverage | {fmt_int(px_ann)} / {fmt_int(px_tot)} "
+            f"({px_pct:.1f}%) |"
+            if px_tot
+            else f"| ProteomeXchange datasets annotated | {fmt_int(px_ann)} |"
+        ),
+        (
+            f"| PRIDE coverage | {fmt_int(pride_ann)} / {fmt_int(pride_tot)} "
+            f"({pride_pct:.1f}%) |"
+            if pride_tot
+            else f"| PRIDE datasets annotated | {fmt_int(pride_ann)} |"
+        ),
         "",
         "**Highlights:** " + "; ".join(highlight_parts) + ".",
+        "",
+        f"![How much of public proteomics is annotated]"
+        f"(docs/stats/{plot_paths['coverage']})",
         "",
         f"![Organisms in curated annotations]"
         f"(docs/stats/{plot_paths['organisms']})",
@@ -2538,6 +2777,7 @@ def load_summary() -> dict:
         else [],
         "enzymes": pairs("enzymes") if "enzymes" in payload else [],
         "run_bins": payload.get("run_bins") or [],
+        "coverage": payload.get("coverage") or {},
     }
 
 
@@ -2582,6 +2822,7 @@ def write_summary(stats: dict) -> None:
             {"name": k, "count": v} for k, v in stats.get("enzymes") or []
         ],
         "run_bins": stats.get("run_bins") or [],
+        "coverage": stats.get("coverage") or {},
     }
     (STATS_DIR / "summary.json").write_text(
         json.dumps(payload, indent=2) + "\n", encoding="utf-8"
@@ -2612,6 +2853,19 @@ def main(argv: list[str] | None = None) -> int:
         f"  templates:  {totals.get('accessions_with_template', 0)} "
         "accessions declare a template"
     )
+    cov = stats.get("coverage") or {}
+    if cov.get("proteomexchange_public"):
+        print(
+            "  PX coverage: "
+            f"{int(cov['proteomexchange_annotated']):,} / "
+            f"{int(cov['proteomexchange_public']):,}"
+        )
+    if cov.get("pride_public"):
+        print(
+            "  PRIDE coverage: "
+            f"{int(cov['pride_annotated']):,} / "
+            f"{int(cov['pride_public']):,}"
+        )
     print(f"  wrote: {STATS_DIR.relative_to(REPO_ROOT)} and README.md")
     return 0
 

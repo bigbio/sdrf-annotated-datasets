@@ -130,6 +130,7 @@ TECHNOLOGY_TEMPLATES = {
 AGENT_EMAILS = {
     "cursoragent@cursor.com": "Cursor",
     "noreply@anthropic.com": "Claude",
+    "noreply@openai.com": "Codex",
     "198982749+copilot@users.noreply.github.com": "Copilot",
     "175728472+copilot@users.noreply.github.com": "Copilot",
     "annotator@sdrf-skills.local": "SDRF Annotator",
@@ -140,8 +141,8 @@ AGENT_NAME_PATTERNS = (
     (re.compile(r"claude", re.I), "Claude"),
     (re.compile(r"copilot", re.I), "Copilot"),
     (re.compile(r"sdrf annotator", re.I), "SDRF Annotator"),
-    (re.compile(r"chatgpt|openai", re.I), "ChatGPT"),
     (re.compile(r"\bcodex\b", re.I), "Codex"),
+    (re.compile(r"chatgpt", re.I), "ChatGPT"),
     (re.compile(r"gemini", re.I), "Gemini"),
 )
 
@@ -194,7 +195,11 @@ _AGENT_TEXT_PATTERNS = (
         "ChatGPT",
     ),
     (
-        re.compile(r"generated with (?:openai )?codex|made with (?:openai )?codex", re.I),
+        re.compile(
+            r"generated with (?:openai )?codex|made with (?:openai )?codex|"
+            r"co-authored-by:\s*codex\b",
+            re.I,
+        ),
         "Codex",
     ),
 )
@@ -219,7 +224,7 @@ _MIGRATION_TITLE_RE = re.compile(
 _ANNOTATION_PR_RE = re.compile(
     r"sdrf annotation|easy targets|automated e\.?\s*coli sdrf|"
     r"community sdrf|escalated pride easy-target|"
-    r"bulk lfq|tissue-expression sdrf",
+    r"bulk lfq|tissue-expression sdrf|techsdrf",
     re.I,
 )
 _MECHANICAL_PR_RE = re.compile(
@@ -229,7 +234,9 @@ _MECHANICAL_PR_RE = re.compile(
     re.I,
 )
 _PR_NUMBER_SUBJECT_RE = re.compile(r"\(#(\d+)\)\s*$")
-_PR_MERGE_SUBJECT_RE = re.compile(r"Merge pull request #(\d+)\b", re.I)
+_PR_MERGE_SUBJECT_RE = re.compile(
+    r"Merge pull request #(\d+) from (\S+)", flags=re.I
+)
 _CODERABBIT_BLOCK_RE = re.compile(
     r"<!-- This is an auto-generated comment:.*?"
     r"<!-- end of auto-generated comment.*?-->",
@@ -241,7 +248,14 @@ _AGENT_LOGINS = {
     "cursoragent": "Cursor",
     "cursor": "Cursor",
     "copilot-swe-agent": "Copilot",
+    "chatgpt-codex": "Codex",
+    "chatgpt-codex-connector": "Codex",
 }
+_BRANCH_PREFIX_AGENTS = (
+    ("codex/", "Codex"),
+    ("cursor/", "Cursor"),
+    ("copilot/", "Copilot"),
+)
 _REVIEW_BOT_LOGINS = {
     "copilot-pull-request-reviewer",
     "coderabbitai",
@@ -810,6 +824,21 @@ def _agent_from_login(login: str) -> str | None:
     return _AGENT_LOGINS.get(_normalize_github_login(login))
 
 
+def _agent_from_branch(ref: str) -> str | None:
+    """OpenAI Codex / Cursor / Copilot PR branches (codex/..., cursor/..., copilot/...)."""
+    name = (ref or "").strip().lower()
+    name = name.split(":")[-1]
+    if name.startswith("origin/"):
+        name = name[len("origin/") :]
+    parts = [p for p in name.split("/") if p]
+    if len(parts) >= 2 and parts[0] not in {"codex", "cursor", "copilot"}:
+        name = "/".join(parts[1:])
+    for prefix, label in _BRANCH_PREFIX_AGENTS:
+        if name.startswith(prefix):
+            return label
+    return None
+
+
 def _pr_number_from_subject(subject: str) -> int | None:
     text = (subject or "").strip()
     match = _PR_NUMBER_SUBJECT_RE.search(text)
@@ -930,6 +959,49 @@ def _git_pr_file_map(*, diff_filter: str) -> dict[int, set[str]]:
         if pr_number and path.endswith(".sdrf.tsv"):
             mapping[pr_number].add(path)
     return mapping
+
+
+def _git_merge_pr_maps() -> tuple[
+    dict[int, set[str]], dict[int, set[str]], dict[int, set[str]]
+]:
+    """Files added/modified by merge commits, plus agent labels from the source branch.
+
+    Squash merges are handled separately; `git log --name-only` skips merge diffs.
+    """
+    raw = _git_output(
+        ["log", "--merges", "--first-parent", "--pretty=format:%H%x00%s"],
+        timeout=120,
+    )
+    added: dict[int, set[str]] = defaultdict(set)
+    modified: dict[int, set[str]] = defaultdict(set)
+    branch_agents: dict[int, set[str]] = defaultdict(set)
+    for line in raw.splitlines():
+        if "\x00" not in line:
+            continue
+        sha, subject = line.split("\x00", 1)
+        match = _PR_MERGE_SUBJECT_RE.search(subject)
+        if not match:
+            continue
+        number = int(match.group(1))
+        agent = _agent_from_branch(match.group(2))
+        if agent:
+            branch_agents[number].add(agent)
+        status = _git_output(
+            ["diff", "--name-status", f"{sha}^1", sha, "--", "datasets"],
+            timeout=30,
+        )
+        for row in status.splitlines():
+            parts = row.split("\t")
+            if len(parts) < 2:
+                continue
+            flag, path = parts[0], parts[-1]
+            if not path.endswith(".sdrf.tsv"):
+                continue
+            if flag.startswith("A"):
+                added[number].add(path)
+            elif flag[0] in {"M", "R", "C"}:
+                modified[number].add(path)
+    return added, modified, branch_agents
 
 
 def _git_first_add_for_path(rel: str) -> tuple[str, str, str] | None:
@@ -1096,8 +1168,9 @@ def _classify_pull_request_agents(pr: dict) -> set[str]:
         labels.add(login_agent)
 
     head = pr.get("headRefName") or ""
-    if head.lower().startswith("cursor/"):
-        labels.add("Cursor")
+    branch_agent = _agent_from_branch(head)
+    if branch_agent:
+        labels.add(branch_agent)
 
     body = _strip_bot_boilerplate(f"{title}\n{pr.get('body') or ''}")
     labels.update(_parse_agent_text(body))
@@ -1139,18 +1212,30 @@ def _classify_pull_request_agents(pr: dict) -> set[str]:
     return labels
 
 
+def _union_pr_paths(
+    squash: dict[int, set[str]], merges: dict[int, set[str]]
+) -> dict[int, set[str]]:
+    combined: dict[int, set[str]] = defaultdict(set)
+    for number, paths in squash.items():
+        combined[number].update(paths)
+    for number, paths in merges.items():
+        combined[number].update(paths)
+    return combined
+
+
 def collect_contributions(current_files: list[Path]) -> dict:
     """Attribute current datasets/ SDRFs using first-add git history and PRs.
 
     A file is agent-assisted if the commit that first added it, or a merged
-    annotation PR (title, description, commits, or comments), shows an AI
-    agent. Review bots and corpus-wide mechanical cleanups are ignored.
-    PRIDE easy-target and automated E. coli campaigns count as Cursor when
-    later squash-merges dropped Co-authored-by trailers. Migration-only PRs
-    are not treated as annotation evidence.
+    annotation PR (title, description, commits, comments, or agent branch
+    prefix such as codex/), shows an AI agent. Review bots and corpus-wide
+    mechanical cleanups are ignored. First-add is the originating agent;
+    later annotation PRs are refinements (one agent, then another).
     """
     current = {p.resolve().relative_to(REPO_ROOT).as_posix() for p in current_files}
     file_agents: dict[str, set[str]] = defaultdict(set)
+    file_origin_agents: dict[str, set[str]] = defaultdict(set)
+    file_refine_agents: dict[str, set[str]] = defaultdict(set)
     file_humans: dict[str, set[str]] = defaultdict(set)
 
     identities = _git_commit_identities()
@@ -1160,6 +1245,7 @@ def collect_contributions(current_files: list[Path]) -> dict:
         sha = added.get(path)
         if sha and sha in identities:
             agents, humans = identities[sha]
+            file_origin_agents[path].update(agents)
             file_agents[path].update(agents)
             file_humans[path].update(humans)
 
@@ -1171,31 +1257,63 @@ def collect_contributions(current_files: list[Path]) -> dict:
             continue
         name, email, body = ident
         agents, humans = _parse_commit_identities(name, email, body)
+        file_origin_agents[path].update(agents)
         file_agents[path].update(agents)
         file_humans[path].update(humans)
 
     pr_added = _git_pr_file_map(diff_filter="A")
     pr_modified = _git_pr_file_map(diff_filter="M")
+    merge_added, merge_modified, merge_branch_agents = _git_merge_pr_maps()
+    pr_added = _union_pr_paths(pr_added, merge_added)
+    pr_modified = _union_pr_paths(pr_modified, merge_modified)
+
     pull_requests, pr_fetch = _fetch_merged_pull_requests()
     prs_with_agent = 0
     for pr in pull_requests:
-        labels = _classify_pull_request_agents(pr)
-        if not labels:
-            continue
         number = int(pr.get("number") or 0)
         title = pr.get("title") or ""
+        labels = _classify_pull_request_agents(pr)
+        labels.update(merge_branch_agents.get(number, ()))
+        if not labels:
+            continue
         if _MECHANICAL_PR_RE.search(title) or _MIGRATION_TITLE_RE.search(title):
+            continue
+        prs_with_agent += 1
+        head_agent = _agent_from_branch(pr.get("headRefName") or "")
+        overlay_modified = _is_annotation_pr(title) or bool(head_agent)
+        for path in pr_added.get(number, ()):
+            if path not in current:
+                continue
+            file_origin_agents[path].update(labels)
+            file_agents[path].update(labels)
+        if overlay_modified:
+            for path in pr_modified.get(number, ()):
+                if path not in current:
+                    continue
+                new = labels - file_origin_agents[path]
+                file_refine_agents[path].update(new)
+                file_agents[path].update(labels)
+
+    # Merge-only PRs (no GitHub payload) still carry branch-prefix agents.
+    seen_prs = {int(pr.get("number") or 0) for pr in pull_requests}
+    for number, labels in merge_branch_agents.items():
+        if number in seen_prs or not labels:
             continue
         prs_with_agent += 1
         for path in pr_added.get(number, ()):
             if path in current:
+                file_origin_agents[path].update(labels)
                 file_agents[path].update(labels)
-        if _is_annotation_pr(title):
-            for path in pr_modified.get(number, ()):
-                if path in current:
-                    file_agents[path].update(labels)
+        for path in pr_modified.get(number, ()):
+            if path not in current:
+                continue
+            new = labels - file_origin_agents[path]
+            file_refine_agents[path].update(new)
+            file_agents[path].update(labels)
 
     acc_agents: dict[str, set[str]] = defaultdict(set)
+    acc_origin_agents: dict[str, set[str]] = defaultdict(set)
+    acc_refine_agents: dict[str, set[str]] = defaultdict(set)
     file_agent_counts: Counter = Counter()
     file_origin = Counter()
     acc_origin: dict[str, str] = {}
@@ -1210,6 +1328,8 @@ def collect_contributions(current_files: list[Path]) -> dict:
         attributed += 1
         accession = Path(path).parent.name
         all_humans.update(humans)
+        acc_origin_agents[accession].update(file_origin_agents.get(path, ()))
+        acc_refine_agents[accession].update(file_refine_agents.get(path, ()))
         if agents:
             file_origin["Agent-assisted"] += 1
             acc_origin[accession] = "Agent-assisted"
@@ -1225,11 +1345,28 @@ def collect_contributions(current_files: list[Path]) -> dict:
     for agents in acc_agents.values():
         agent_acc.update(agents)
 
+    first_acc: Counter = Counter()
+    refine_acc: Counter = Counter()
+    handoff: Counter = Counter()
+    multi_agent = 0
+    for accession, agents in acc_agents.items():
+        if len(agents) >= 2:
+            multi_agent += 1
+        first = acc_origin_agents.get(accession) or set()
+        later = acc_refine_agents.get(accession) or set()
+        first_acc.update(first)
+        refine_acc.update(later)
+        for source in first or ():
+            for dest in later:
+                if source != dest:
+                    handoff[f"{source} → {dest}"] += 1
+
     print(
         "  contributions: "
         f"{int(origin_acc.get('Agent-assisted', 0)):,} agent-assisted / "
         f"{int(origin_acc.get('Human-only', 0)):,} human-only accessions "
-        f"({pr_fetch} PR scan, {prs_with_agent} PRs with agent evidence)"
+        f"({pr_fetch} PR scan, {prs_with_agent} PRs with agent evidence, "
+        f"{multi_agent} multi-agent)"
     )
 
     return {
@@ -1237,6 +1374,7 @@ def collect_contributions(current_files: list[Path]) -> dict:
         "unattributed_files": len(current) - attributed,
         "human_contributors": len(all_humans),
         "ai_agents": len(agent_acc),
+        "multi_agent_accessions": multi_agent,
         "github_prs_scanned": len(pull_requests),
         "github_prs_with_agent": prs_with_agent,
         "github_pr_fetch": pr_fetch,
@@ -1259,6 +1397,18 @@ def collect_contributions(current_files: list[Path]) -> dict:
                 "files": int(file_agent_counts[name]),
             }
             for name, count in agent_acc.most_common()
+        ],
+        "first_agents": [
+            {"name": name, "accessions": count}
+            for name, count in first_acc.most_common()
+        ],
+        "refine_agents": [
+            {"name": name, "accessions": count}
+            for name, count in refine_acc.most_common()
+        ],
+        "handoffs": [
+            {"name": name, "accessions": count}
+            for name, count in handoff.most_common()
         ],
     }
 
@@ -2867,24 +3017,25 @@ def render_contributions_figure(path: Path, contributions: dict) -> None:
         if unattr
         else f"{attributed:,} current SDRF files attributed from git history."
     )
+    n_multi = int(contributions.get("multi_agent_accessions") or 0)
 
     fig, axes = _make_figure(
-        nrows=1,
-        ncols=3,
-        figsize=(10.4, 4.8),
+        nrows=2,
+        ncols=2,
+        figsize=(10.4, 7.4),
         title="Human and AI annotation",
         subtitle=(
-            "First-add git commit plus merged annotation PRs (title, body, "
-            "commits, comments). Review bots and corpus-wide cleanups are "
-            "ignored. PRIDE easy-target and automated E. coli campaigns count "
-            f"as Cursor when squash-merges dropped the trailer. {extra}"
+            "First-add is the originating agent. Later annotation PRs are "
+            "refinements. Codex is the `codex/` PR branch prefix (OpenAI Codex); "
+            "Cursor/Copilot use `cursor/` and `copilot/`. Review bots and "
+            f"corpus-wide cleanups are ignored. {extra}"
         ),
-        width_ratios=[1.15, 1.0, 1.55],
-        wspace=0.18,
-        left=0.04,
+        wspace=0.28,
+        hspace=0.42,
+        left=0.10,
         right=0.97,
-        bottom=0.12,
-        header_ratio=0.28,
+        bottom=0.08,
+        header_ratio=0.22,
     )
 
     origin_rename = {
@@ -2899,18 +3050,18 @@ def render_contributions_figure(path: Path, contributions: dict) -> None:
         for row in origin
         if int(row["accessions"])
     ]
-    _panel_title(axes[0], "A", "Human vs AI")
+    _panel_title(axes[0][0], "A", "Human vs AI")
     _draw_donut(
-        axes[0],
+        axes[0][0],
         origin_items,
         color_map=ORIGIN_COLORS,
         center_caption="accessions",
         legend="none",
     )
-    axes[1].set_title(" ", pad=8)
-    _draw_color_key(axes[1], origin_items, ORIGIN_COLORS)
+    _draw_color_key(axes[0][1], origin_items, ORIGIN_COLORS)
+    axes[0][1].set_title(" ", pad=8)
 
-    _panel_title(axes[2], "B", "AI agent")
+    _panel_title(axes[1][0], "B", "AI agent")
     agent_items = [
         (row["name"], int(row["accessions"]))
         for row in agents
@@ -2920,12 +3071,43 @@ def render_contributions_figure(path: Path, contributions: dict) -> None:
         AGENT_COLORS.get(name, OTHER_COLOR) for name, _ in agent_items
     ]
     _draw_hbar(
-        axes[2],
+        axes[1][0],
         agent_items,
         colors=agent_colors,
         xlabel="Accessions",
         preserve_order=True,
     )
+
+    handoffs = contributions.get("handoffs") or []
+    handoff_items = [
+        (row["name"], int(row["accessions"]))
+        for row in handoffs
+        if int(row["accessions"])
+    ]
+    _panel_title(
+        axes[1][1],
+        "C",
+        f"Later agent ({n_multi:,} multi-agent)",
+    )
+    if handoff_items:
+        _draw_hbar(
+            axes[1][1],
+            handoff_items[:8],
+            colors=["#5C6B8A"] * min(8, len(handoff_items)),
+            xlabel="Accessions",
+            preserve_order=True,
+        )
+    else:
+        axes[1][1].set_axis_off()
+        axes[1][1].text(
+            0.5,
+            0.5,
+            "No accession was annotated by one\nagent and later refined by another.",
+            ha="center",
+            va="center",
+            color=MUTED,
+            fontsize=9,
+        )
 
     _save(fig, path)
 
@@ -3035,6 +3217,17 @@ def build_readme_section(stats: dict, plot_paths: dict[str, str]) -> str:
     top_agent = (
         contrib.get("agents", [{}])[0].get("name") if contrib.get("agents") else None
     )
+    n_multi = int(contrib.get("multi_agent_accessions") or 0)
+    n_codex = 0
+    for row in contrib.get("agents") or []:
+        if row.get("name") == "Codex":
+            n_codex = int(row.get("accessions") or 0)
+            break
+    top_handoff = (
+        contrib.get("handoffs", [{}])[0].get("name")
+        if contrib.get("handoffs")
+        else None
+    )
     n_instruments = int(totals.get("instruments", 0))
     median_runs = int(totals.get("median_runs", 0))
     n_mod_acc = int(totals.get("accessions_with_mods", 0))
@@ -3073,6 +3266,18 @@ def build_readme_section(stats: dict, plot_paths: dict[str, str]) -> str:
         if top_agent:
             agent_bit += f" (mostly **{top_agent}**)"
         highlight_parts.append(agent_bit)
+    if n_codex:
+        highlight_parts.append(
+            f"**{fmt_int(n_codex)}** accessions have Codex evidence "
+            "(`codex/` PR branches)"
+        )
+    if n_multi:
+        handoff_bit = (
+            f"**{fmt_int(n_multi)}** accessions were touched by more than one agent"
+        )
+        if top_handoff:
+            handoff_bit += f" (most common handoff **{top_handoff}**)"
+        highlight_parts.append(handoff_bit)
     if top_inst:
         highlight_parts.append(f"most common instrument is **{top_inst}**")
     if top_mod:
@@ -3108,6 +3313,7 @@ def build_readme_section(stats: dict, plot_paths: dict[str, str]) -> str:
         f"| AI agents | {fmt_int(n_ai_agents)} |",
         f"| Human-only accessions | {fmt_int(n_human)} |",
         f"| Agent-assisted accessions | {fmt_int(n_agent)} |",
+        f"| Multi-agent accessions | {fmt_int(n_multi)} |",
         f"| Distinct instruments | {fmt_int(n_instruments)} |",
         f"| Median runs per accession | {fmt_int(median_runs)} |",
         f"| Accessions with modification parameters | {fmt_int(n_mod_acc)} |",

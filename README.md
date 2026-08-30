@@ -14,28 +14,28 @@ The SDRF specification lives in [`bigbio/proteomics-sample-metadata`](https://gi
 <!-- STATS:START -->
 ## Resource at a glance
 
-_Auto-generated from curated `datasets/` on 2026-08-30T09:10:45Z. Sandbox drafts are excluded._
+_Auto-generated from curated `datasets/` on 2026-08-30T17:17:47Z. Sandbox drafts are excluded._
 
 | Metric | Count |
 | --- | ---: |
-| Accessions | 6,618 |
-| SDRF files | 6,766 |
-| Accessions with a declared template | 6,563 |
-| Samples (unique `source name` per file) | 176,408 |
-| Runs (unique `comment[data file]` per file) | 226,484 |
-| Assay rows | 299,226 |
+| Accessions | 6,749 |
+| SDRF files | 6,897 |
+| Accessions with a declared template | 6,694 |
+| Samples (unique `source name` per file) | 184,604 |
+| Runs (unique `comment[data file]` per file) | 234,680 |
+| Assay rows | 307,422 |
 | Human contributors | 16 |
 | AI agents | 5 |
-| Human-only accessions | 501 |
+| Human-only accessions | 632 |
 | Agent-assisted accessions | 6,117 |
 | Multi-agent accessions | 8 |
-| Distinct instruments | 91 |
+| Distinct instruments | 93 |
 | Median runs per accession | 12 |
-| Accessions with modification parameters | 1,398 |
-| ProteomeXchange coverage | 6,587 / 55,568 (11.9%) |
-| PRIDE coverage | 6,491 / 40,967 (15.8%) |
+| Accessions with modification parameters | 1,505 |
+| ProteomeXchange coverage | 6,718 / 55,569 (12.1%) |
+| PRIDE coverage | 6,622 / 40,968 (16.2%) |
 
-**Highlights:** most common organism is **Homo sapiens**; **49,156** DIA assay rows; **61,687** TMT and **212,552** LFQ assay rows; **67** single-cell, **192** cell-line, and **117** metaproteomics accessions; sample-field completeness (applicable samples): disease 34%, age 12%; **6,117** accessions are agent-assisted (mostly **Cursor**); **8** accessions have Codex evidence (`codex/` PR branches); **8** accessions were touched by more than one agent (most common handoff **Cursor → Claude**); most common instrument is **Q Exactive**; most common modification is **Carbamidomethyl**; **11.9%** of public ProteomeXchange datasets have a curated SDRF here; **15.8%** of PRIDE projects are annotated.
+**Highlights:** most common organism is **Homo sapiens**; **51,395** DIA assay rows; **61,687** TMT and **220,748** LFQ assay rows; **67** single-cell, **192** cell-line, and **117** metaproteomics accessions; sample-field completeness (applicable samples): disease 33%, age 11%; **6,117** accessions are agent-assisted (mostly **Cursor**); **8** accessions have Codex evidence (`codex/` PR branches); **8** accessions were touched by more than one agent (most common handoff **Cursor → Claude**); most common instrument is **Q Exactive**; most common modification is **Carbamidomethyl**; **12.1%** of public ProteomeXchange datasets have a curated SDRF here; **16.2%** of PRIDE projects are annotated.
 
 ![How much of public proteomics is annotated](docs/stats/plots/coverage.png)
 

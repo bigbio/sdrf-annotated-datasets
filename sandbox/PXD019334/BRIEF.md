@@ -1,0 +1,14 @@
+# PXD019334  (package A)
+
+**Title:** Quantitative Proteomics by SWATH-MS reveals molecular differences among malignant and benign breast tumors in Mexican woman
+
+- Organisms: Homo sapiens (human)
+- Organism parts declared: Breast cancer cell
+- Diseases declared: none recorded in PRIDE
+- Runs: 16 (raw)
+
+## Publication
+- Moreno-Ulloa A, Zárate-Córdova VL, Ramírez-Sánchez I, Cruz-López JC, Perez-Ortiz A, Villarreal-Garza C, Díaz-Chávez J, Estrada-Mena B, Antonio-Aguirre B, López-Almanza PX, Lira-Romero E, Estrada-Mena FJ. Evaluation of a Proteomics-Guided Protein Signature for Breast Cancer Detection in Breast Tissue. J Proteome Res. 2024 (PMID 39412830)
+
+## Sample processing protocol
+Breast tissue samples were homogenized with a Polytron and lysed in a cold lysis buffer. Proteins were collected after centrifuging at 14,000 rpm and then stored at -80 C. The determination of the protein concentration was carried out by the Bradford method. Proteins were extracted, reduced, alkylated, and digested using the Pierce™ Mass Spec Sample Prep Kit for Cultured Cells as per the manufacturer’s instructions. Tryptic peptides were reconstituted in water/acetonitrile 95:5 v/v with 0.1% formic acid. Removal of the detergent from the peptides was achieved by adding water-saturated ethyl acetate extraction and removing the ethyl acetate layer three times (Yeung & Stanley, 2010). The peptide concentration was analyzed by the Pierce™ Quantitative Colorimetric Peptide Assay kit as per the manufacturer’s instructions.  LC-MS analysis was performed on an Eksigent NanoLC 400 (SCIEX, Framingham, MA) coupled to a TripleTOF5600+ mass spectrometer (SCIEX, Framingham, MA). The mobile phases A=0.1% formic acid in water and B=0.1% formic acid in acetonitrile were used. The flow rate was 5 μL/min, and the sample injection was 4 μL. Tryptic peptides from all samples (TBM and TMM) were pooled and subjected to LC for the purpose of creating the SWATH-MS spectral library using data-dependent acquisition (DDA). The selection criteria for parent ions included an intensity greater than 150 counts/s, a charge state from +2 to +4, a mass tolerance of 50 mDa with the top 20 precursor ions automatically selected for fragmentation. SWATH-MS spectral library was extended by integration with a human proteome library (10,316 proteins) from SwathAtlas repository using software workflow SwathXtend.  For data-independent acquisition (DIA), 56 precursor isolation variable windows were generated using the SWATH Variable Window Calculator (AB Sciex, Foster City, CA, USA) based on precursor m/z frequencies in the DDA samples, with a minimum window width of 5 m/z. The same LC-MS parameters used for the creation of the spectral library were utilized.

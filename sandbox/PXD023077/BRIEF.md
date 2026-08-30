@@ -1,0 +1,14 @@
+# PXD023077  (package A)
+
+**Title:** Biogenesis of Mitochondrial-Derived Vesicles (MDVs) – Novel Roles of GTPases MIRO1/2 and DRP1
+
+- Organisms: Cercopithecus aethiops (green monkey) (grivet)
+- Organism parts declared: Cell culture
+- Diseases declared: none recorded in PRIDE
+- Runs: 12 (raw)
+
+## Publication
+- none
+
+## Sample processing protocol
+Protein lysates from MDV and OMM enrichments were reduced (TCEP, 10 mM) and alkylated (CAA, 20 mM) for 60 min at 45°C and digested using the SP3 digestion technique (PMC4299378) using a one to one mixture of two different magnet beands (Sera-Mag(TM) Magnetic Carboxylate Modified Particles (Hydrophobic) # GE44152105050250,  Sera-Mag(TM) Magnetic Carboxylate Modified Particles (Hydrophylic) # GE24152105050250). 3 µL of washed bead mixture was added to the protein lysate and acetonitrile was added to a final concentration of 50%. The lysate was incubated for 8 min on an in-house constructed magnet and the supernatant was removed. Proteins bound to the beads, were washed twice with 200 µL acetonitrile. Beads were dried for 3 minutes and 5 µL of a digestion solution containing 0.1 µg Trypsin (Sigma Aldrich) and 0.1µg Lys-C (Wako) was added for overnight incubation. Peptides were cleaned-up by 2 wash steps using 200 µL acetonitrile. Beads were incubated in 2% freshly prepared DMSO (Sigma Aldrich) and dried to complete dryness in a speed vac concentrator (Eppendorf). Prior to LC-MS/MS measurements, peptides were re-suspended in 10 µL 2% acetonitrile and 2% formic acid.   Liquid chromatography and mass spectrometry  LC–MS/MS instrumentation consisted out of an Easy nLC-1200 (Thermo Fisher) coupled via a nanospray ionization source to a QExactive HF-x (Thermo Fisher) mass spectrometer. A binary buffer system consisting out of solvent A and B (buffer A: 0.1% formic acid and buffer B: 0.1% formic acid in 80% acetonitrile) was utilized for peptide separation. The in-house packed column length was 45 cm (ID = 75 µm). The column was filled with PoroShell C18 2.7-µm (Agilent Technologies) beads a column oven controlled temperate at 50 °C (PRSO-V2, Sonation). The buffer B percentage was linearly raised from 5% to 29% within 45 min and further increased to 55% within 10 min. The column was washed at 95% B for 5 min. All samples were measured in random order. The mass spectrometer operated in data independent acquisition mode. MS1 spectra were acquired using a resolution of 60,000 and an AGC target of 1 × 106. In total, 48 DIA windows were acquired at an isolation m/z range of 15 Th and the isolation windows overlapped by 1 Th, covering a mass range from 385 to 1,043 m/z. Resolution of MS2 spectra was set to 15,000 at 200 m/z using a maximal injection time of 22 ms and stepped normalized collision energies (NCE) of 24, 27, 30.

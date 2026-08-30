@@ -81,6 +81,60 @@ SENTINELS = {"not available", "not applicable"}
 RESERVED = SENTINELS | {"pooled", "normal"}
 PEAK_LIST = (".mgf", ".mzml", ".mzxml")
 
+# A vendor's acquisition software writes its own container format, so an instrument that
+# could not physically have produced the deposited files is a hard contradiction -- one that
+# needs no protocol text and admits no judgement. It catches an instrument copied from an
+# archive's metadata dropdown without checking it against the deposit.
+VENDOR_PATTERNS = (
+    (re.compile(r"orbitrap|q\s*exactive|ltq|exploris|astral|velos|lcq|fusion|lumos|ascend",
+                re.I), "thermo"),
+    (re.compile(r"timstof|maxis|impact|amazon|hct|ultraflex|autoflex", re.I), "bruker"),
+    (re.compile(r"triple\s*tof|qstar|q\s*trap|x500|zenotof", re.I), "sciex"),
+    (re.compile(r"synapt|xevo", re.I), "waters"),
+)
+VENDOR_EXT = {
+    "thermo": (".raw", ".raw.zip"),
+    "bruker": (".d", ".d.zip", ".d.7z", ".d.tar", ".baf", ".yep", ".tdf", ".fid"),
+    "sciex": (".wiff", ".wiff.zip"),
+    # Waters .raw is a directory, usually deposited as an archive
+    "waters": (".raw", ".raw.zip"),
+}
+# Converted formats are vendor-neutral and never contradict an instrument.
+NEUTRAL_EXT = (".mzml", ".mzxml", ".mgf")
+ALL_VENDOR_EXT = tuple(sorted({e for exts in VENDOR_EXT.values() for e in exts} | set(NEUTRAL_EXT),
+                              key=len, reverse=True))
+
+
+def _vendor_of(instrument):
+    """Manufacturer implied by an instrument model, or None if not recognised."""
+    for pattern, vendor in VENDOR_PATTERNS:
+        if pattern.search(instrument):
+            return vendor
+    return None
+
+
+def instrument_vendor_check(instruments, data_files):
+    """Count files whose format the declared instrument's vendor cannot write.
+
+    Silent whenever it cannot judge: an unrecognised model, no data files, or a file
+    extension outside the known set. Several declared instruments means a row may
+    legitimately match any of them, so a file only counts when NO declared instrument
+    could have written it.
+    """
+    vendors = {v for v in (_vendor_of(i) for i in instruments) if v}
+    if not vendors or not data_files:
+        return 0
+    allowed = set(NEUTRAL_EXT)
+    for v in vendors:
+        allowed |= set(VENDOR_EXT[v])
+    bad = 0
+    for f in data_files:
+        low = f.lower()
+        ext = next((e for e in ALL_VENDOR_EXT if low.endswith(e)), None)
+        if ext and ext not in allowed:
+            bad += 1
+    return bad
+
 
 def _baseline_path(baseline, f):
     """Map a reviewed file to its copy under <baseline>.
@@ -137,6 +191,17 @@ def content_check(path):
         if name == "comment[data file]":
             d["peak_list_data_file"] += sum(
                 1 for r in rows if cell(r, i).lower().endswith(PEAK_LIST))
+
+    # an instrument that cannot have written the deposited files
+    ii = [i for i, c in enumerate(H) if c == "comment[instrument]"]
+    fi_data = [i for i, c in enumerate(H) if c == "comment[data file]"]
+    if ii and fi_data:
+        instruments = {re.sub(r"^NT=|;.*$", "", cell(r, i)).strip()
+                       for i in ii for r in rows if cell(r, i)}
+        files = [cell(r, i) for i in fi_data for r in rows if cell(r, i)]
+        bad = instrument_vendor_check(instruments, files)
+        if bad:
+            d["instrument_cannot_write_data_file"] = bad
 
     # factor value: must exist and must encode an actual contrast
     fi = [i for i, c in enumerate(H) if c.startswith("factor value[")]

@@ -28,8 +28,8 @@ import matplotlib
 
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt  # noqa: E402
-from matplotlib.ticker import FuncFormatter  # noqa: E402
 from matplotlib.colors import LinearSegmentedColormap  # noqa: E402
+from matplotlib.ticker import FuncFormatter  # noqa: E402
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 DATASETS_DIR = REPO_ROOT / "datasets"
@@ -2272,6 +2272,46 @@ def _panel_title(ax, letter: str, title: str) -> None:
     )
 
 
+def _draw_stat_card(ax, label: str, value: int, color: str) -> None:
+    ax.set_xlim(0, 1)
+    ax.set_ylim(0, 1)
+    ax.set_aspect("auto")
+    ax.set_axis_off()
+    ax.add_patch(
+        plt.Rectangle(
+            (0.02, 0.04),
+            0.96,
+            0.92,
+            linewidth=3.5,
+            edgecolor=color,
+            facecolor="#F4F6F8",
+            transform=ax.transAxes,
+            clip_on=False,
+        )
+    )
+    ax.text(
+        0.5,
+        0.58,
+        f"{value:,}",
+        ha="center",
+        va="center",
+        fontsize=48,
+        fontweight="bold",
+        color=color,
+        transform=ax.transAxes,
+    )
+    ax.text(
+        0.5,
+        0.18,
+        label,
+        ha="center",
+        va="center",
+        fontsize=13,
+        color=MUTED,
+        transform=ax.transAxes,
+    )
+
+
 def _make_figure(
     *,
     nrows: int,
@@ -2287,6 +2327,7 @@ def _make_figure(
     top: float = 0.97,
     bottom: float = 0.08,
     header_ratio: float = 0.16,
+    height_ratios: list[float] | None = None,
 ):
     fig = plt.figure(figsize=figsize)
     outer = fig.add_gridspec(
@@ -2337,6 +2378,7 @@ def _make_figure(
         wspace=wspace,
         hspace=hspace,
         width_ratios=width_ratios,
+        height_ratios=height_ratios,
     )
     axes = [
         [fig.add_subplot(inner[r, c]) for c in range(ncols)] for r in range(nrows)
@@ -3034,40 +3076,64 @@ def render_contributions_figure(
         else ""
     )
 
-    fig, axes = _make_figure(
-        nrows=1,
-        ncols=2,
-        figsize=(11.2, 6.2),
-        title="AI-assisted annotation",
-        subtitle=(
+    fig = plt.figure(figsize=(11.4, 10.2))
+    outer = fig.add_gridspec(
+        3,
+        1,
+        height_ratios=[0.16, 0.38, 0.46],
+        hspace=0.12,
+        left=0.10,
+        right=0.97,
+        top=0.97,
+        bottom=0.07,
+    )
+    header = fig.add_subplot(outer[0, 0])
+    header.set_axis_off()
+    header.set_xlim(0, 1)
+    header.set_ylim(0, 1)
+    header.text(
+        0.0,
+        0.72,
+        "AI-assisted annotation",
+        fontsize=16,
+        fontweight="bold",
+        va="center",
+        ha="left",
+        color=INK,
+    )
+    header.text(
+        0.0,
+        0.18,
+        (
             f"All {n_acc:,} curated accessions are AI-assisted. "
             "Humans review and merge; agents draft the SDRF. "
             "Codex, Cursor, and Copilot are detected from PR branches "
             "(`codex/`, `cursor/`, `copilot/`). Review bots and corpus-wide "
             f"cleanups are ignored.{multi_bit} {extra}"
         ),
-        width_ratios=[0.40, 0.60],
-        wspace=0.34,
-        left=0.16,
-        right=0.97,
-        bottom=0.12,
-        header_ratio=0.28,
+        fontsize=9.5,
+        color=MUTED,
+        va="center",
+        ha="left",
+        wrap=True,
     )
 
-    _panel_title(axes[0], "A", "Contributors")
-    contributor_items = [
-        ("Human contributors", n_people),
-        ("AI agents", n_ai_agents),
-    ]
-    _draw_hbar(
-        axes[0],
-        contributor_items,
-        colors=["#1F4E79", "#D36B2F"],
-        xlabel="People / agents",
-        preserve_order=True,
+    cards = outer[1, 0].subgridspec(1, 3, wspace=0.04)
+    card_axes = [fig.add_subplot(cards[0, i]) for i in range(3)]
+    card_axes[0].set_title(
+        "A   Contributors",
+        loc="left",
+        fontsize=12,
+        fontweight="bold",
+        color=INK,
+        pad=10,
     )
+    _draw_stat_card(card_axes[0], "Human contributors", n_people, "#1F4E79")
+    _draw_stat_card(card_axes[1], "AI agents", n_ai_agents, "#D36B2F")
+    _draw_stat_card(card_axes[2], "AI-assisted accessions", n_acc, "#1A7F7A")
 
-    _panel_title(axes[1], "B", "AI agent")
+    ax_agents = fig.add_subplot(outer[2, 0])
+    _panel_title(ax_agents, "B", "AI agent")
     agent_items = [
         (row["name"], int(row["accessions"]))
         for row in agents
@@ -3077,7 +3143,7 @@ def render_contributions_figure(
         AGENT_COLORS.get(name, OTHER_COLOR) for name, _ in agent_items
     ]
     _draw_hbar(
-        axes[1],
+        ax_agents,
         agent_items,
         colors=agent_colors,
         xlabel="Accessions",

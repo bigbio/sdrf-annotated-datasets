@@ -1,0 +1,481 @@
+accession	field	why_no_value_can_be_written
+IPX0010296000	organism part	multi-tissue deposit (adrenal gland, blood plasma, pancreas, adipose tissue, liver, skin, lymph node, skeletal muscle, ...); already annotated per row
+IPX0010296000	sex	380 male / 136 female rows; mixed cohort
+IPX0010296000	age	many distinct per-donor ages (15Y-67Y+)
+PMID21183079	organism part	multi-tissue mouse deposit (spleen, brain, heart, kidney, lung, brown adipose tissue, liver, testis); already annotated per row
+PXD000561	sex	the panel includes both ovary and testis, and each sample is a pool of three donors; no per-run sex is recoverable
+PXD000561	age	adult autopsy donors and fetal tissues pooled three donors per sample; no ages given
+PXD000561	developmental stage	17 adult tissues vs 7 fetal tissues; already annotated per row as Adult/Fetus
+PXD000561	organism part	30 different tissues and cell types; already annotated per row
+PXD001020	disease	LPS-induced endotoxaemic sepsis arm (n=4) vs saline control arm (n=4); the 384 rows are 48 gel bands per sample and the bundle gives no run-to-animal key, so neither 'sepsis' nor 'normal' may be broadcast
+PXD001839	age	the sole design variable is age (young vs old rats in a cardiac aging study); the bundle gives no ages and no run-to-animal key
+PXD001839	developmental stage	same young vs old aging contrast; cannot be assigned per row
+PXD001842	age	cardiac aging study contrasting young and old rhesus monkeys; no ages and no run-to-animal key in the bundle
+PXD001842	developmental stage	same young vs old contrast; cannot be assigned per row
+PXD001888	disease	sunitinib-treated cohort vs vehicle (sterile water) control cohort; the 48 rows carry no run-to-animal key, so neither arm may be broadcast
+PXD001888	age	mice were 6-8 weeks at supply and dosed for 4 weeks, so the age at sacrifice is neither stated nor uniform enough to record exactly
+PXD001972	sex	one male and one female subject; already correctly annotated per row and encoded in the source names
+PXD001972	organism part	twelve organs across the two subjects; already annotated per row
+PXD002331	disease	Langendorff-perfused hearts split into control, no-flow ischemia and ischemia/reperfusion arms; the animals themselves were healthy Wistar rats, so no per-row disease diagnosis holds. The ex vivo insult is already carried by characteristics[treatment].
+PXD002331	sex	sex of the rats is never stated in title, description, protocol, and the publication is not open access
+PXD002403	sex	male and female embryos were dimethyl-labelled light/heavy and MIXED before injection, so every raw file contains both sexes; no per-row sex assignment is possible
+PXD002479	sex	male and female FVB/N mice were both used, with no run-to-animal key
+PXD002488	disease	aged wild-type vs MMP-9 null mice; neither arm is a disease and the genotype cannot be mapped to individual raw files
+PXD002488	sex	not stated anywhere in the bundle; publication is not open access
+PXD002488	age	only described as 'aged', no exact age given
+PXD002870	disease	682 of 1477 rows are isoproterenol-induced cardiac hypertrophy and 795 are untreated controls; the split is recoverable from the source names (CTRL vs ISO) but a single uniform disease value does not exist
+PXD003204	sex	never stated; publication is not open access
+PXD003204	age	no numeric age given, only 'juvenile'
+PXD004465	disease	a glycoproteomics comparison built around atrial fibrillation; the Circulation study contrasts AF with non-AF cardiac-surgery controls and the 168 rows carry only generic source names (PXD004465-Sample-N), so atrial fibrillation cannot be asserted on every row
+PXD004465	sex	no donor demographics available; publication is not open access
+PXD004465	age	no donor ages available; publication is not open access
+PXD004631	sex	the study explicitly used a mixture of male and female animals with no run-to-animal key
+PXD004631	age	stated only as a 7-20 week range 'unless otherwise noted', too loose and not tied to these two runs
+PXD004701	disease	76 different breast cancer cell lines with different histological diagnoses (plus non-tumorigenic lines such as 184A1/184B5); already annotated per cell line
+PXD004701	sex	donor sex differs between lines (292 female, 8 male rows)
+PXD004701	organism part	each line has its own derivation site (breast, pleural effusion, ascites, skin, brain, blood, pericardial effusion)
+PXD004916	age	three arms - young, old, and old + spermidine-treated mice - with no numeric ages and no run-to-group key (source names are PXD004916-Sample-N)
+PXD004916	developmental stage	young vs old animals are deliberately contrasted; a single stage value would erase the study design
+PXD004916	disease	cardiac aging / spermidine treatment arms; no diagnosis stated and the arms cannot be mapped to rows
+PXD004916	sex	not stated; publication is not open access
+PXD004916	strain or breed	not stated in title, description or protocol
+PXD005300	age	lifespan study; SDRF already carries 3M/5M/10M/18M/24M per row, no single value holds
+PXD005300	organism part	brain, heart, kidney and liver in one deposit; already resolved per row
+PXD005300	sex	no statement of sex anywhere in title, description or protocol
+PXD006120	genotype/disease	cardiac-restricted RNAi knockdown of Pericardin, Laminin A and Viking plus control genotypes; no run-to-genotype key in the bundle
+PXD006120	sex	no statement of fly sex in title, description or protocol
+PXD006646	treatment/exercise group	three arms (killed 0 h after exercise, 3 h after exercise, and unexercised controls); no run-to-group key in the bundle
+PXD006675	disease	healthy post-mortem donors, three AFib patients, and cultured cells from cardiovascular-surgery patients in one deposit
+PXD006675	sex	the three autopsy donors are male but the AFib/cell-donor patients are not all male (6 rows already annotated female)
+PXD006675	age	21-47 y autopsy donors vs 74-78 y AFib patients
+PXD006675	organism part	16 anatomical regions plus vessels plus isolated cell types; already resolved per row
+PXD006816	treatment	native-state vs high-salt-treated mitochondria are the study factor; not a characteristic of the animal
+PXD006888	strain or breed	both nude (nu/nu) and C57BL/6 mice were used; no run-to-strain key
+PXD006888	disease	vehicle, sunitinib, and sunitinib+macitentan arms, plus tumour-bearing nude mice vs non-tumorized C57BL/6
+PXD006911	disease (atrial fibrillation)	AF arm vs sinus-rhythm arm; both are rheumatic valve disease patients, but AF status varies and there is no run-to-patient key
+PXD006911	organism part (left vs right atrium)	RA and LA sampled in AF patients, RA only in SR patients
+PXD006911	sex	demographics are only in Supplementary Table 1, not in the retrievable text
+PXD006911	age	patient ages are only in Supplementary Table 1
+PXD007171	disease	TAC (pressure overload / heart failure), sham and unoperated baseline animals are all in the deposit
+PXD007171	organism part	left and right ventricle pools measured separately
+PXD007171	age	8 weeks at surgery but tissue taken 4-56 days later, so age at collection differs by time point
+PXD007839	cell type	the deposit contains both human cardiac fibroblast and human cardiac stem cell membrane proteome runs; no run-to-cell-type key in the bundle
+PXD007839	sex	no donor information available (publication not open access)
+PXD007839	disease	no donor health information available
+PXD008385	disease	Diet-induced-obese (HFD) and lean control-diet (CD) arms are both present, and the 12 raw files are basic-pH reversed-phase fractions of a single pooled TMT 10-plex, so every file contains both arms; no per-row disease value exists.
+PXD008385	age	HFD started at 16 weeks of age and ran 16 weeks; no single exact age is stated for the animals at sacrifice.
+PXD008736	organism part	Two distinct tissues (sinus node and adjacent right atrial muscle) were dissected, and the bundle gives no run-to-tissue key for the 144 rows; a fibroblast preparation from ventricle is also described in the paper and may or may not be in this deposit.
+PXD008934	disease	Six etiology groups (7 normal, 6 compensated hypertrophy, 4 HCMpEF, 5 HCMrEF, 6 DCM, 6 ICM) across the 34 hearts; already annotated per row from the deposit's sample details file.
+PXD008934	sex	23 male and 11 female donors.
+PXD008934	age	Per-donor ages spanning at least 40Y-65Y.
+PXD008998	disease	The deposit contains both heart-specific Sod2 knockout mice, which develop dilated cardiomyopathy, and their littermate controls; the bundle gives no run-to-genotype key for the 10 rows.
+PXD008998	sex	Both sexes were used in the Sod2 cohorts and the sex of the ten proteomics samples is not stated.
+PXD010154	organism part	29 different tissues in one deposit; heart is only one of them and per-row organism part is already annotated.
+PXD010154	sex	Male and female donors, and 468 rows have no donor sex recorded.
+PXD010154	age	Donor ages range from 20Y to 65Y, with 468 rows unknown.
+PXD010154	developmental stage	No cohort-level statement of donor age band appears in the open-access text; 468 rows have no age at all, so 'adult' cannot be evidenced for every row.
+PXD010876	organism part	Nine tissues (brain, eye, heart, intestine, liver, muscle, ovary, spleen, testis) in one spectral-library deposit; already annotated per row.
+PXD010876	sex	Tissues were taken from both male and female fish and the paper assigns sex only for the sex-specific organs and muscle; the 68 rows left as 'not available' are correctly left unset.
+PXD011349	sex	No sex information anywhere in the bundle; no publication text available.
+PXD011349	age	No age information anywhere in the bundle.
+PXD011627	disease	The deposit's own protocol describes exactly nine samples (three pools of whole hearts, three semi-decellularized, three fully decellularized) with no injury timepoint, but the paper also reports a second experiment comparing 7, 14 and 30 days post-amputation ventricles against sham; without a run key it cannot be established that all nine rows are uninjured, so 'normal' is not proposed.
+PXD011627	sex	Sex of the pooled fish is never stated.
+PXD011778	disease	Day 0 no-MI controls and days 1/3/7 post-MI fibroblasts, plus one pooled reference run; already annotated per row and the per-row assignment matches the paper's design.
+PXD011780	disease	D0 no-MI controls vs MI day-1 infarct macrophages; the deposit already splits these 4/4 via factor value[phenotype], so no single disease value holds for all rows
+PXD011791	sex	zebrafish of both sexes were used (3 males and 3 females per group in the single-cell arm); no sex is given for the proteomics pools
+PXD011791	strain or breed	uninjured wild-type AB fish and transgenic vmhc:mCherry-NTR ablation fish are both used and no run-to-line key is given
+PXD011791	disease	uninjured, 3 dpi and 7 dpi cardiomyocyte-ablation arms; injury state is not a disease and varies across the 18 runs
+PXD011791	age	adult regeneration studies used fish from 3 months to 2 years of age
+PXD011998	disease	hCSCs exposed to I/R-injured hiPSC-CM conditioned media vs hCSCs exposed to control conditioned media vs non-conditioned basal medium; the cells themselves are not diseased and the treatment arm varies per run
+PXD012467	disease	50 hypertrophic cardiomyopathy myectomy samples plus 8 non-failing donor controls; the bundle gives no run-to-sample key
+PXD012467	sex	mixed cohort (the 8 non-failing donors alone are 5 males and 3 females)
+PXD012467	age	donor mean age 45.9 years, HCM patients span a wide range including one 2-month-old transplant sample
+PXD012467	developmental stage	predominantly adult but at least one sample (HCM 83) is from a 2-month-old infant, so 'adult' does not hold for every row
+PXD012593	disease	rat file mixes wild-type animals with Ttn truncating-variant (A-band and Z-disk) animals; the human material and iPSC-cardiomyocytes are separate arms again
+PXD012593	developmental stage	human heart tissue, rat heart tissue and iPSC-derived cardiomyocytes are all in this deposit
+PXD012636	organism	six species (human, pig, horse, rat, mouse, zebrafish) in one deposit; already correctly split in the file
+PXD012636	disease	human biopsies come from mitral-valve-replacement patients, the animal hearts are normal
+PXD012636	sex	the 3 human donors are male, the animal cohorts differ; already split in the file
+PXD013375	organism part	the 130 sections span both ventricular free walls, septum, papillary muscles, atrial appendages, AV-valve vestibules, moderator band and pulmonary infundibulum; only the generic 'heart' holds for every row, the per-row region is not recoverable from the bundle
+PXD013375	sex	not stated anywhere; the paper explicitly says age, sex and breed of the single animal are unaccounted for
+PXD013543	disease	8 control-diet rats vs 8 Western-diet obese rats; the bundle gives no run-to-group key, so neither 'normal' nor 'obesity' holds for all 16 rows
+PXD013543	age	60 days old at the start plus 41 weeks of feeding, i.e. about 47 weeks at sacrifice, but no exact age at collection is stated
+PXD014016	sex	not stated anywhere in the deposit; the publication is not open access
+PXD014016	age	not stated anywhere in the deposit
+PXD014016	strain or breed	not stated in this deposit; the AOX line is on a C57BL/6J background in the companion study PXD014061 but that cannot be transferred here on the available evidence
+PXD014061	disease	the deposit contains SHAM-operated and ischaemia/reperfusion hearts, in both wild-type and AOX-transgenic littermates, at 3 and 9 weeks after reperfusion; no run-to-group key is given, so neither 'normal' nor a myocardial-ischaemia term holds for all 40 rows
+PXD014061	sex	never stated in the description or in the open-access publication
+PXD014061	age	never stated; only the 3- and 9-week post-reperfusion time points are given
+PXD014826	disease	Three arms in one deposit: ischemic cardiomyopathy (ICM), dilated cardiomyopathy (DCM) and histopathologically-normal donor controls; 89 SDRF rows, 51 LV samples from 44 hearts, and no published run-to-sample key.
+PXD014826	sex	Study explicitly analysed both sexes ('donor controls of both genders', 'sex-specific differences within each disease'); no per-file key.
+PXD014826	age	Only stated as 'age-matched'; no numeric ages given.
+PXD015497	sex	Mixed cohort; publication states iRR patients were 'mostly females', so both sexes are present and no run-to-sample key is given.
+PXD015497	age	No numeric ages in the bundle; age is only discussed as a correlate.
+PXD015498	sex	Mixed cohort; publication states iRR patients were 'mostly females', so both sexes are present and no run-to-sample key is given.
+PXD015498	age	No numeric ages in the bundle; age is only discussed as a correlate.
+PXD016761	disease	78 rows from a study that contrasts heart-failure patients who do and do not recover on LVAD support; the Circulation companion study also uses non-failing control hearts, the publication is not open access, and no run-to-sample key exists, so no single disease value can be asserted across all rows.
+PXD016761	sex	No sex information anywhere in the bundle; LVAD cohorts are mixed.
+PXD016761	age	No age information in the bundle.
+PXD017139	age	Two age groups compared in the same deposit, P1 and P7; the source names encode the group (JL_mouse_heart_P1_* vs JL_mouse_heart_P7B_*) but no single age holds for every row.
+PXD017294	disease	four exposure arms (DMSO vehicle, retene, pyrene, phenanthrene) at 7 or 14 days; no run-to-sample key in the bundle, and none of these is a disease anyway
+PXD017294	age	hearts harvested after 7 or 14 days of exposure, so post-hatch age differs between halves of the deposit
+PXD017294	sex	never stated; newly hatched trout larvae are not sexed
+PXD018545	age	three age groups (3, 18 and 24 months) plus a 4-PBA-fed subgroup; no run-to-sample key, so an exact age cannot be assigned per row
+PXD018545	sex	never stated
+PXD018678	disease	three arms - ischaemic cardiomyopathy (n=15), dilated cardiomyopathy (n=14) and histopathologically normal donor controls (n=15); no run-to-sample key in the deposit
+PXD018678	sex	both sexes deliberately included and the paper's central result is a male/female contrast
+PXD018678	age	group mean ages 53.2/54.2/55.3 years, individual ages not recoverable per raw file
+PXD019296	disease	three arms - MI rats (n=3), MI rats treated with Shexiang Baoxin Pill (n=3) and sham-operated rats (n=3), sampled at two timepoints; no run-to-sample key
+PXD019296	sex	never stated
+PXD019296	age	never stated; only days post-operation (Day 0 / Day 15) are given
+PXD019296	strain or breed	rat strain is never named in the bundle or the PRIDE record
+PXD019394	sex	never stated; the deposit includes testis rows, so the cohort cannot be all-female and no per-row sex is recoverable
+PXD019394	age	never stated
+PXD019394	strain or breed	never stated in the bundle or PRIDE record
+PXD019594	disease	aortic-stenosis biopsies are compared against non-failing samples, and the AS arm itself splits into four hemodynamic subtypes; no run-to-sample key
+PXD019594	sex	never stated
+PXD019594	age	only 'elderly patients' as a general epidemiological statement, no cohort ages
+PXD019643	disease	subjects are certified only as free of malignancy, not as healthy; tissue came from autopsies of people who died of other (undisclosed) causes, so 'normal' cannot be asserted for every heart sample
+PXD019643	sex	cohort of 21 subjects of mixed sex; per-subject sex exists only in supplemental table S1, which is not in the bundle
+PXD019643	age	per-subject ages exist only in supplemental table S1
+PXD019643	developmental stage	no ages given in the accessible text; the cohort also includes surgical thymus donors whose life stage is unstated
+PXD019808	disease	only four gel-derived runs and no description of the arms; the study compares oxidant/nitroxyl-donor-treated with untreated myocytes, and no run-to-sample key is given
+PXD019808	sex	never stated
+PXD019808	developmental stage	never stated; the text says only 'cardiac myocytes' without specifying adult or neonatal isolation
+PXD019811	disease	healthy and hypertrophic (phenylephrine-stimulated) cardiomyocytes are both present, plus non-crosslinked negative-control captures; no run-to-sample key
+PXD019811	sex	never stated; neonatal cardiomyocyte preparations pool litters of both sexes
+PXD019852	disease	a GHR-knockout study necessarily contrasts KO with wild-type littermate/control pigs; nothing in the bundle maps genotype to raw file, so no genotype-derived disease value can be placed on any row
+PXD019852	sex	never stated
+PXD019852	age	never stated
+PXD020192	organism part	46 different tissues/organs; heart is only one of many, per-row organism part is already tissue-specific in the SDRF
+PXD020192	sex	each analysed sample is a pool of several autopsy donors of unstated sex; no donor-to-run key
+PXD020192	age	pooled autopsy donors, no ages reported in any accessible file
+PXD020994	disease	run names split into CTRL and CytStormCombo1 arms (cytokine-storm treated vs untreated organoids); a treatment contrast, not a uniform diagnosis
+PXD020994	sex	hCOs were made from several hPSC lines of both sexes (female HES3, male RM3.5 iPSC, CW30382A male, CW30318C female) with no line-to-run key
+PXD021165	disease	hBAG3P209L-eGFP transgenic vs control mice in the same deposit; 48 rows with uninformative source names and no run-to-genotype key
+PXD021261	disease	three arms (non-failing control, dilated cardiomyopathy, ischemic cardiomyopathy); 150 rows with generic source names and no run-to-patient key
+PXD021261	age	only group means (63 +/- 4 and 63 +/- 3 years) are reported, no exact per-donor ages
+PXD021640	disease	four surgical groups (Sham, ischemia, I/R 1 h, I/R 24 h) plus SUMO1/SUMO2 and IgG-control IPs across 378 rows with generic source names; no run-to-group key
+PXD021990	sex	mixed cohort, 15/26 male (57.7%); no run-to-sample sex key in the bundle
+PXD021990	disease	three patient categories (normal, pediatric CAVS, aortic valve insufficiency); already split per row in the SDRF
+PXD021990	developmental stage	cohort spans neonate (2 weeks) to adolescent (18 years); per-row age is already in the SDRF but a single stage does not hold
+PXD022091	organism part	deposit mixes hiPSC-derived cardiac progenitors with transfected HEK293 cells; neither is heart tissue and there is no run-to-material key in the SDRF
+PXD022091	cell type	cardiac progenitors (WT, GATA4-KO, TBX5-KO) and HEK293 in the same 22 rows
+PXD022091	disease	WT vs GATA4-KO vs TBX5-KO genotypes; no run-to-genotype key
+PXD022557	sex	explicitly a sex-comparison study: male and female mice in every treatment group, 67 rows with generic source names and no run-to-animal key
+PXD022557	disease	euthyroid, hypothyroid and hyperthyroid arms (six groups = 2 sexes x 3 thyroid states) with no run-to-group key
+PXD022689	sex	no sex stated anywhere in the bundle; no publication text available
+PXD022689	age	no age stated anywhere in the bundle
+PXD022689	strain or breed	background strain of the cardiomyocyte-specific CPNS1 knockout and its wild-type comparator is not stated
+PXD022719	disease	The MS cohort is 3 control (CTL) and 3 tachycardia-induced-cardiomyopathy (TIC) sheep; the 18 SDRF rows carry no run-to-sample key, so neither 'tricuspid valve disease' nor 'normal' holds for every row.
+PXD022855	disease	Complexome profiling compares UQCRH-deficient mice against controls; the 120 rows are BNE gel fractions from more than one lane and the bundle gives no lane-to-genotype key, so neither a mitochondrial complex III deficiency nor 'normal' holds for every row.
+PXD023740	age	Two age groups, 3 months and 2 years, with no run-to-sample key in the bundle; the 24 rows cannot be assigned an age individually.
+PXD024500	disease	Two arms, control rats and high-fat-diet/streptozotocin type 2 diabetic rats. The source names do appear to encode the arm (leading C = control, D = diabetic, e.g. Ci1/Cs4 vs Di4/Di6), but that key is inferred from file naming rather than published, so I do not propose a per-row disease value.
+PXD024525	disease	Four arms: SHAM vehicle, SHAM treated, TAC vehicle, TAC treated. TAC animals have HFrEF, SHAM animals do not, and the 242 rows carry no run-to-sample key.
+PXD024633	disease	Three genotypes, wild-type Mrps12+/+, error-prone Mrps12ep/ep and hyper-accurate Mrps12ha/ha, crossed with normal-chow and high-fat diets. Only Mrps12ha/ha mice develop hypertrophic cardiomyopathy; the 10 rows carry no run-to-sample key, so neither a cardiomyopathy diagnosis nor 'normal' holds for every row.
+PXD024633	age	Feeding ran from 6 to 20 weeks of age; the bundle never states the age at tissue collection, so an exact uniform age cannot be asserted.
+PXD025002	sex	no sex information anywhere in the bundle
+PXD025002	age	no age information anywhere in the bundle
+PXD025096	disease	the SDRF splits 20 IMR vs 7 control rows, but the bundle describes only one arm (17 IMR patients); no evidence lets a control be assigned to specific raw files
+PXD026582	age	Mice entered the protocol at 5 weeks (main HFpEF cohort) or 6-7 weeks (a separate diet cohort) and were followed for 12 weeks; the age at tissue collection is not stated, so no exact uniform age can be given.
+PXD026608	disease	Design crosses healthy vs spontaneously hypertensive (SHR) rats; the 12 rows mix normotensive controls and hypertensive animals with no run-to-sample key.
+PXD026608	age	Young and aged animals in the same deposit; no ages given and no way to map a group to a raw file.
+PXD026608	developmental stage	Young vs aged rats are separate arms and no explicit stage/age is stated.
+PXD026608	strain or breed	SHR rats versus (unnamed) healthy control strain; strain differs between arms.
+PXD026608	sex	Sex never stated anywhere in the bundle.
+PXD027622	disease	TgSLC25A46-FLAG transgenic mice and their WT littermates are both in the deposit; genotype/health status differs by row with no run-to-sample key.
+PXD027622	sex	Sex of the mice is never stated.
+PXD027622	age	No age given.
+PXD027811	disease	Cardiac-myocyte-specific ERalpha knockout (ERHKO) mice versus control mice; the knockout arm has contractile/metabolic dysfunction, controls do not, and no run-to-sample key is given.
+PXD027811	age	No age stated.
+PXD027867	disease	Deposit contains naive (non-operated) hearts alongside days 1/3/7 post permanent coronary artery ligation hearts from vehicle- and DMB-treated mice; a myocardial infarction claim would be false on the naive rows.
+PXD027867	age	No age stated for the mice.
+PXD028516	disease	Cardiomyocyte-specific MTFP1 knockout mice develop dilated cardiomyopathy while control mice do not; both are in the deposit and rows also span pre-DCM and failing time points, with no run-to-sample key.
+PXD028516	sex	Sex never stated.
+PXD028516	age	Pre-symptomatic and adult-onset/failing time points are both analysed; no ages given.
+PXD029031	disease	Three arms: Normal, HFpEF (high-salt diet) and canagliflozin-treated HFpEF; a heart-failure diagnosis would be false on the Normal rows and a treatment arm is present too.
+PXD029031	age	Animals entered at 7-8 weeks and were sampled after weeks of diet/treatment; the exact age at sacrifice is not stated.
+PXD030304	disease	Pan-cancer panel of 949 cell lines spanning dozens of tumour types; already annotated per row.
+PXD030304	sex	Donor sex differs per cell line; already annotated per row.
+PXD030304	organism part	Sampling sites differ per cell line; already annotated per row.
+PXD030857	organism part	three different vessel segments were pooled/dissected - right carotid artery (unstable plaque), left carotid artery (healthy control) and aortic arch (stable plaque); no run-to-segment key in the bundle
+PXD030857	disease	unstable plaque / stable plaque / plaque-free healthy artery arms, plus a drug-treatment arm; no run-to-sample key
+PXD030938	sex	Both sexes were used in roughly equal numbers and no run-to-sample key is given.
+PXD030938	disease	Homozygous desmin knock-out (cardiomyopathy) mice and their wild-type siblings are both in the 10 rows; a cardiomyopathy value would be false on the wild-type rows.
+PXD030983	sex	Both sexes were used; already resolved per row in the existing SDRF (male x1280 / female x256 in the proteome file).
+PXD030983	organism part	41 different tissues; already resolved per row.
+PXD031223	sex	The study is explicitly a male-versus-female comparison of aging hearts; both sexes are in the 8 rows with no run-to-sample key.
+PXD031223	disease	Aicar-treated and untreated baseline animals are both present; treatment arm cannot be mapped to rows.
+PXD031223	age	No numeric age is given, only 'aging'.
+PXD031270	age	two age arms: 3-month young (Y) and 24-month old (O, Spm, Spd); 10 rows with source names ZYJ4-ZYJ10 give no run-to-group key
+PXD031270	disease	young controls vs aged rats with documented cardiac dysfunction vs spermine/spermidine-treated aged rats; no run-to-group key
+PXD031324	disease	four genotype arms (control/WT, FGF21 FL, DARS2 FL, DKO FL) plus separate CLPP KO / FGF21 KO / DKO WB cohorts across 74 runs with generic source names; no run-to-genotype key
+PXD031324	age	hearts harvested at 3 weeks and 6 weeks of age (plus 15-16 week metabolic cohorts); no run-to-age key
+PXD031324	developmental stage	3-week-old (weanling/juvenile) and 6-week-old animals are mixed in the same deposit
+PXD031324	sex	the paper only mentions male mice in one body-weight figure legend; the sex of the proteomed animals is not stated
+PXD031617	sex	explicitly a mixed-sex cohort; no run-to-animal sex key
+PXD031617	age	8-12 weeks is stated only for the ISO-minipump cohort; the age of the PO/SHAM animals whose raw files are deposited is not given
+PXD031797	disease	three arms visible in the raw file names (Con01-05, ISO01-05, PE01-05): vehicle control vs isoproterenol- vs phenylephrine-induced hypertrophy; the control rows are not diseased
+PXD032157	organism part	the 12 runs mix female reproductive atrium samples with male accessory gland (MAGs) samples; PRIDE also declares whole body
+PXD032157	sex	atrium runs are female, MAGs runs are male
+PXD032267	age	stated only as 'approximately 8-12 weeks' at the time of surgery, and the deposited hearts were harvested 4 weeks after TAC, so the age at harvest is neither exact nor uniform
+PXD032267	disease	the deposit is a 2x2 design (WT/Isg15-/- x sham-control/TAC); half the rows are non-pressure-overloaded controls
+PXD032667	disease	150 rows are 30 samples x 5 SCX fractions in two blocks (A1-A15, B1-B15), i.e. a stressed vs unstressed comparison across acute and late recovery phases; no published run-to-group key
+PXD032766	disease	four genotype arms of n=5 (WT, ErbB2 KI, ERRa KO, KI:KO); only the ErbB2 KI-containing arms develop dilated cardiomyopathy and the WT arm is healthy; generic source names give no run-to-genotype key
+PXD033027	sex	explicitly a mixed-sex cohort, and the paper reports sex-dependent responses, so both sexes are present in the proteomed animals
+PXD033027	age	10-12 weeks at randomisation in the 5-week study, 3-month-old males and 4-month-old females in the 9-week study
+PXD033027	disease	control (chow), HFpEF (HFD+L-NAME), diet-reversal, prophylactic NR and therapeutic NR arms across 103 runs; the control rows are healthy
+PXD033029	disease	an 11-plex TMT experiment (3 raw files = fractions/replicates of one plex) that necessarily mixes POLG mutant and wild-type channels; no per-run genotype is derivable
+PXD033194	disease	four arms (sham-irradiated 0.0 Gy plus 0.92, 6.9 and 27.6 Gy cumulative dose groups); the bundle gives no run-to-sample key for the 36 rows
+PXD033194	age	animals were 12-14 weeks old at the start of a 23-day irradiation course and hearts were taken 7 months after the end of exposure, so age at sampling is only approximate
+PXD033256	disease	streptozotocin-induced diabetes mellitus animals, dichloroacetate-treated animals and controls are all in the deposit; no run-to-sample key for the 94 rows
+PXD033773	developmental stage	the deposit mixes the interactome runs on neonatal (2-day-old) rat ventricular myocytes with the phosphoproteome runs on adult rat ventricular myocytes; no run-to-sample key for the 17 rows
+PXD033773	sex	adult myocytes came from both male and female Sprague-Dawley rats
+PXD033876	disease	16 HFpEF patients vs an 11-sample mixed control group (5 explanted donor hearts + 7 aortic stenosis patients); the control arm is itself heterogeneous and there is no run-to-sample key for the 162 rows
+PXD033876	sex	63% male in the HFpEF group and 27% male in the non-HFpEF group
+PXD033876	age	median 70 y (HFpEF) vs 58 y (non-HFpEF), range spanning 40-74 y
+PXD033908	disease	the description refers to human cardiac disease but never states whether the analysed ventricular tissue is from diseased hearts, donors, or both; no publication is linked
+PXD034477	disease	cardiomyocyte-specific Mtfp1 knockout and wild-type littermate arms are both present; the genotype is already carried in characteristics[phenotype]
+PXD034891	disease	no disease model is described, but the bundle never states that the donor rats were healthy/wild-type, so 'normal' cannot be asserted from the evidence
+PXD035622	disease	6 transverse aortic constriction animals vs 6 sham animals; the bundle contains no run-to-sample key that would let the split be independently verified
+PXD035712	disease	6 transverse aortic constriction animals vs 6 sham animals; the bundle contains no run-to-sample key that would let the split be independently verified
+PXD035734	disease	material is engineered hPSC lines (empty-vector control vs FLAG-ALPK3 bait, plus ALPK3-null lines); no donor disease state applies and the arms differ
+PXD035880	disease	five knockout strains (Twnk, Tfam, Polrmt, Lrpprc, Mterf4) plus age-matched control littermates across 99 runs, no run-to-genotype key
+PXD035880	age	Lrpprc time course at 2, 3, 5, 7 and 10 weeks plus control series from 3 to 24 weeks; age varies per run
+PXD035880	developmental stage	spans juvenile (3-week-old) to adult (24-week-old) mice
+PXD035880	strain or breed	five different conditional knockout strains plus controls
+PXD036011	disease	three arms (isoproterenol, phenylephrine, untreated control) at 1 h and 1 d timepoints; no single disease state holds
+PXD036259	sex	cohort contains both male and oophorectomized female rats and the submitters explicitly do not report sex per sample
+PXD036259	age	stated only approximately (about 20 weeks), so no exact value
+PXD036364	disease	three arms of 3 mice each (non-diabetic control, db/db type 2 diabetic, db/db plus spermine treatment)
+PXD036364	strain or breed	db/db background applies only to the T2D and T2D+SP arms, not to the control arm
+PXD036399	disease	wild-type and NDUFS4 heart-specific conditional knockout arms, n = 5 per group, with no run-to-genotype key in the raw file names
+PXD037524	disease	2x2 design of MPO-deficient vs wild-type littermates and doxorubicin vs saline injection; only part of the cohort develops anthracycline-induced cardiomyopathy and no run-to-arm key exists
+PXD038450	sex	no sex statement anywhere in the bundle
+PXD038450	age	only relative timepoints (Dediff, Intermediate at 2 weeks, Rediff at 4 weeks after ERBB2 shut-off) are given, not animal ages
+PXD038450	developmental stage	no age or stage statement; adult cannot be inferred safely
+PXD038450	strain or breed	wild-type and caERBB2-transgenic animals, background strain never named
+PXD038911	disease	source names show three genotype arms (WT_*, HET_*, HET_HIF_*); 5 of 14 rows are wild-type controls, so the PRIDE_DISEASES value hypertrophic cardiomyopathy must not be broadcast to all rows
+PXD038911	developmental stage	no age or stage statement in title, description or protocol
+PXD038911	sex	no sex statement in the bundle
+PXD038922	disease	three study groups of 5 (complicated lesions, atheromatous plaques, healthy vasculature); the healthy group is not atherosclerotic
+PXD038922	sex	no sex statement for the endarterectomy donors
+PXD038922	age	no donor age statement
+PXD039144	disease	Deposit contains a WT arm and a db/db arm; the split is encoded only in the raw file names ('WT-heart' vs 'dbdb-heart'), never in the PRIDE metadata or an accessible publication.
+PXD039174	sex	Sex of the 3 mice is not stated anywhere in the bundle or the publication.
+PXD039587	sex	NRCM isolations pool pups of both sexes; no sex is stated.
+PXD039613	disease	The 14-plex TMT pool mixes 7 WT and 7 MYH7 R403Q+/- cultures, so every raw file contains both arms and no per-row disease value exists.
+PXD039662	sex	Mixed cohort: the AR arm was 25/25 male while the AS arm had fewer males, and there is no run-to-patient key.
+PXD039662	disease	A more specific diagnosis is not uniform: 25 aortic regurgitation vs 13 aortic stenosis patients, with no run-to-patient key. The umbrella 'aortic valve disorder' currently used does hold for all 38 rows.
+PXD039662	age	Patient ages are reported as group medians (IQR) only, and vary.
+PXD040488	disease	Two arms: 7 end-stage LMNA cardiomyopathy and 7 ischaemic DCM patients; the sample protocol also mentions control samples from healthy donor hearts. No run-to-patient key in the bundle.
+PXD040488	organism part	Each heart was sampled at five sites (LA, LV, RA, RV, IVS); the 66 rows cannot be mapped to a chamber from the evidence, so the parent term 'heart' is the safe value.
+PXD040488	sex	Mixed: 4/7 males in the LMNA group and 6/7 in the ICM group.
+PXD040488	age	Reported as group medians (42 and 52 years, IQRs) and varying.
+PXD040785	disease	Four arms (sedentary/exercised control and sedentary/exercised supravalvar aortic stenosis), 10 rats each; no run-to-animal key, so neither 'normal' nor 'aortic stenosis' holds for every row.
+PXD040785	sex	Not stated anywhere in the bundle; no publication text available (PMID=0).
+PXD040785	age	Not stated; only the 16-week training period is given.
+PXD041056	disease	AF-induced goats (N=3) versus sham controls (N=3); no run-to-animal key in the bundle, so 'atrial fibrillation' cannot be asserted on all 24 rows.
+PXD041137	disease	three diet arms - control (chow), progression (high-fat) and regression/cessation; all animals are ApoE-/- so none is a wild-type healthy control
+PXD041174	sex	commercial human aortic SMC lot (ATCC PCS-100-012); donor sex not stated
+PXD041174	age	donor age not stated
+PXD041400	organism part	ten different organs in one deposit; already resolved per row by the source names (brain_1w_F_rep1 etc.)
+PXD041400	age	1-week, 4-week and 8-week cohorts; already resolved per row from the source names
+PXD041400	sex	F and M animals at every timepoint; already resolved per row from the source names
+PXD041660	sex	source/raw-file names carry both _F_ and _M_ animals (mouse_369_F_4mo, mouse_371_M_4mo) and four further files carry no sex label at all
+PXD041660	age	four files are labelled 4mo, the four 'Decellulized_Ms_Heart' files carry no age; the title also refers to old hearts
+PXD042155	disease	non-diseased donor hearts plus end-stage dilated cardiomyopathy and ischaemic cardiomyopathy arms; source names are generic PXD042155-Sample-N with no run-to-sample key
+PXD042155	organism part	left ventricle vs right ventricle is the central comparison of the study but no row-level key is available; 'heart' is the only safe value
+PXD043108	disease	wild-type vs dysferlin-knockout arms (plus a TAC keyword); raw-file names only encode DDA fraction / DIA batch letters, no genotype key
+PXD043108	age	two age cohorts, 16 weeks and 32 weeks, with no run-to-cohort key
+PXD043158	disease	a mouse-model proteomics study of primary carnitine deficiency necessarily contrasts model animals with controls; the 18 raw files split into two unlabelled animal-ID blocks (mouse_361a-372a and mouse_527a-532a) with no genotype key
+PXD043577	disease	Control vs myofibroblast-specific Smad7-knockout fibroblasts, each with and without TGF-beta1 stimulation; the in-vivo TAC model is not what was deposited
+PXD043588	sex	male and female offspring are the central comparison ('sex-dependent manner'); only 4 raw files, no sex key
+PXD043588	disease	iron-restricted vs iron-replete offspring; no run-to-group key
+PXD043588	age	postnatal days 4, 14 and 28 cohorts; no run-to-timepoint key
+PXD043601	sex	male and female mice were both analysed and sex is the study's central variable
+PXD043601	disease	Prdm16csp1/wt monoallelic mutants vs wild-type; raw files are only numbered batch_1_sample_NN with no genotype key
+PXD044060	sex	Tissues were pooled/collected from mixed male and female WT mice ('regardless of their sex'); only the testis samples are necessarily male. No run-to-sample sex key exists for the other organs.
+PXD044236	sex	Equal numbers of male and female mice were used and there is no run-to-animal sex key.
+PXD044236	age	Proteomics was on hearts collected 8 weeks post-injection (echocardiography at 17 weeks of age); the exact age at tissue collection is not stated for the deposited runs.
+PXD044253	disease	Three arms, one animal each: MI, TAC and sham. The submitter DOES give a key ('B11 represents the tissues of an aged MI mouse. B17 represents the tissues of an aged TAC mouse. B15 represents the tissues of an aged Sham mouse.') and the raw files are B11-A.raw / B15-A.raw / B17-A.raw, so a per-row assignment is possible: B11-A=myocardial infarction, B17-A=TAC/pressure-overload (sham-operated control for B15-A=normal). No single value holds for all three rows.
+PXD044253	age	Mice were 11 months old at purchase and hearts were collected ~5 weeks later (1 week acclimation + 4 weeks post-surgery); exact age at collection is not stated.
+PXD044254	disease	Three arms, one animal each: MI, TAC and sham. Submitter key 'B11 represents the tissues of an aged MI mouse. B17 represents the tissues of an aged TAC mouse. B15 represents the tissues of an aged Sham mouse.' maps onto the raw files B11A.raw / B15A.raw / B17A.raw, so no single value holds for all rows.
+PXD044254	age	11 months old at purchase, hearts collected ~5 weeks later; exact age at collection not stated.
+PXD044768	sex	The tissue panel contains both male-only (testis, epididymis, penis, semen) and female-only (ovary, uterus, uterine cervix, corpus luteum, follicular fluid) material, so sex varies across rows and no per-animal key is given.
+PXD044768	age	No ages are stated anywhere in the bundle.
+PXD044768	strain or breed	No breed of Bos taurus is stated; only 'University of Queensland School of Veterinary Sciences standard animal husbandry conditions'.
+PXD044773	disease	The deposit mixes glioblastoma material (raw files ..._GBM_1/2/3 and the 15 D/V/P samples) with non-tumour neural stem cell samples (..._NSC_1/2/3); no single disease value holds for all 21 rows.
+PXD044773	organism	PRIDE registers both Homo sapiens and Mus musculus for this deposit and the cell-specific MetRS L274G labelling design implies an animal host; without the (unpublished/unlinked) paper there is no way to assign organism per run.
+PXD044936	age	Two gestational ages are present - 3 hearts at 10 weeks and 3 at 18 weeks of gestation - and the deposited files are named Sample1..sample6 with no run-to-sample key, so neither '10W' nor '18W' can be assigned per row (the obvious 1-3/4-6 split is an assumption, not evidence).
+PXD044936	sex	Fetal sex is never reported for the six proteomics samples; the paper notes mRNA variation separated hearts by sex, so the cohort is not single-sex.
+PXD044957	disease	48 of the 96 BNE fractions are wild-type and 48 are BRAWNIN (BR) knockout heart mitochondria; the KO is a genetic model of a complex III assembly defect, not a diagnosed disease, so neither 'normal' nor a named disease can be asserted across all rows.
+PXD045079	sex	Nothing in the bundle states the sex of the cattle used to prepare the submitochondrial particles.
+PXD045079	age	No age given.
+PXD045079	strain or breed	No breed given; only 'bovine'.
+PXD045079	disease	Health status of the source animals is never stated; the hearts are a standard biochemical starting material.
+PXD045677	disease	HFpEF patients vs non-failing donor controls; both arms are deposited. The current SDRF already splits them per row, so no cohort-level value should be broadcast.
+PXD045677	sex	mixed cohort; the paper explicitly states sex did not differ between groups, i.e. both sexes present in both arms
+PXD045677	age	per-patient ages vary (SDRF already carries 53Y-76Y); no single cohort age
+PXD046631	disease	sham, MI 30 min, MI 6 h and I/R 6 h arms are all deposited (data files SHAM_1-3, KLa_SHAM_1-3, MI_30_*, KLa_MI30_*, KLa_MI_6h_*, IR_6h_*); 6 of 18 runs are sham
+PXD048078	disease	saline control (CTRL) and doxorubicin (DOX) arms are both deposited; data files are Con1..Con8 and DOX1.. , so ~half the runs are healthy saline-injected controls
+PXD048078	age	age at sacrifice is given only approximately ('~22 months old'), so no exact uniform age value
+PXD048363	disease	3 arms deposited: 6 Control, 6 HFpEF+vehicle, 6 HFpEF+TYA018 (encoded in the source names). Only 12 of 18 rows are HFpEF animals.
+PXD048804	disease	4 genotype arms deposited (data files 001-005 WT, 006-010 Cox10, 011-015 Cox10Opa1d4, 016-020 OPA1d4). WT and Opa1v1delta4 animals are explicitly healthy; only the Cox10-/- arms have mitochondrial cardiomyopathy.
+PXD048804	sex	the paper states groups contained animals of both sexes and gives no run-to-animal key
+PXD048877	developmental stage	two cohorts are deposited: adult mice after LAD ligation (Agrin/PBS runs) and neonatal P1/P5 hearts after apical resection (AR/Ctr runs). Adult vs neonate cannot be broadcast.
+PXD048877	disease	injured arms (Agrin-treated MI hearts, apical-resection hearts) vs controls (PBS-treated, uninjured P5 apex) are both deposited
+PXD050504	disease	rofecoxib-treated vs vehicle-treated arms with no run-to-sample key; and neither arm carries a diagnosis -- the study explicitly looks at changes present PRIOR to comorbidities
+PXD050610	sex	mixed cohort: nine males among the younger donors and six males among the older donors, no run-to-donor sex key in the bundle
+PXD050610	age	two cohorts, 14-25 y (n=12) and 51-65 y (n=13); no single uniform age
+PXD050610	developmental stage	younger cohort spans 14-25 y, so it mixes adolescent and adult donors
+PXD050994	disease	9 sham-operated control pigs vs 7 pigs with induced chronic kidney disease; no run-to-animal key in the bundle
+PXD050994	sex	pigs 'of either sex' -- mixed cohort
+PXD051011	sex	mixed cohort, 30.0% females among the 10 donors, no run-to-donor key
+PXD051011	age	mean age 33.3 +/- 14.3 years; individual ages not recoverable per raw file
+PXD051011	organism part	four different cardiac regions were sampled per heart (sinoatrial node, atrioventricular node, right atrial myocardium, right ventricular myocardium); the specific region varies row to row, so the generic 'heart' should stay unless a per-run key is found
+PXD051201	sex	the study design is a 25-men vs 25-women comparison; no run-to-patient sex key in the bundle
+PXD051582	disease	pulmonary-artery-banded (RV pressure overload) animals vs sham surgery, and four different cell-therapy arms (MSCs, nCPCs, cCPCs, ES-CPCs); no run-to-animal key
+PXD051715	age	two age groups, 3-month-old and 22-month-old mice, with no run-to-animal key
+PXD051715	disease	HFpEF is induced by 2-hit (metabolic + hypertensive) stress and the study compares aged vs young animals; the bundle does not let one tell which raw files are stressed versus unstressed controls
+PXD051845	organism	two species in the deposit: 2 rows Hipposideros armiger (bat) and 1 row Suncus murinus (shrew); already correctly split in the current SDRF
+PXD052071	sex	the study explicitly compares sex differences in the autopsy LAD samples, so both sexes are present with no run-to-sample key
+PXD052071	disease	atherosclerotic burden of the individual autopsy arteries is not reported; PMI, not disease, is the study variable
+PXD052878	disease	Five arms (ICM-DM, ICM-No DM, NICM-DM, NICM-No DM, healthy age-matched donors) plus pooled reference channels; disease varies by row and the existing per-row phenotype column is the only key.
+PXD052878	sex	No statement of donor sex anywhere in title, description or protocol.
+PXD052878	age	Only 'age-matched' is stated; no numeric age or range.
+PXD052932	organism part	Deliberately multi-tissue atlas (heart, brain, kidney, liver, pancreas, stomach, intestine, lung, adipose, plus plasma and urine); already resolved per row.
+PXD052932	sex	No sex stated for the donor Labradors.
+PXD052932	age	No age stated.
+PXD052932	developmental stage	No developmental stage stated; 'healthy aging' in the description is motivation, not a cohort description.
+PXD052976	disease	Conplastic rat strains differing in mitochondrial genome, challenged with high-fat diet; the design compares insulin-resistant/metabolic-syndrome-prone strains against each other, so neither 'normal' nor a named disease holds for every row, and no run-to-strain key is given.
+PXD052976	strain or breed	Several conplastic strains were used but none is named in the bundle and no run-to-strain key exists.
+PXD052976	sex	Not stated.
+PXD052976	age	Not stated.
+PXD053037	disease	Sham vs transverse aortic constriction arms at two timepoints (1 and 4 weeks); no run-to-sample key in the bundle.
+PXD053037	sex	Not stated.
+PXD053037	strain or breed	Not stated.
+PXD053037	age	Not stated.
+PXD053051	disease	Wild-type vs Dysferlin-knockout arms; the knockout develops dilated cardiomyopathy while the WT arm is normal, and no run-to-genotype key is given.
+PXD053051	sex	Not stated.
+PXD053051	strain or breed	Not stated.
+PXD053051	age	Not stated.
+PXD053395	disease	Glatiramer-acetate-treated vs untreated myocardial-infarction animals; treatment/injury status varies across the 9 rows with no key.
+PXD053395	sex	Not stated.
+PXD053395	strain or breed	Not stated.
+PXD053395	age	Not stated.
+PXD053395	developmental stage	Not stated.
+PXD053721	disease	Advanced heart failure patients plus nonfailing sex-matched controls; both arms are in the deposit with no run-to-arm key.
+PXD053721	sex	Controls are explicitly 'sex-matched', so the cohort contains both sexes.
+PXD053721	age	No numeric age or range given.
+PXD054079	disease	Samples span several post-feeding timepoints (fasted, hypertrophy, regression); this is physiological post-prandial remodeling in healthy pythons, not a disease state, and the timepoint is not keyed to the two deposited runs.
+PXD054079	sex	Not stated.
+PXD054079	age	Not stated.
+PXD056037	disease	TANGO2 knockout and wild-type/control arms are both present; the SDRF's own factor value column shows 32 of 63 rows are 'normal'.
+PXD056037	organism	53 mouse rows and 10 human Cal51 cell-line rows.
+PXD056037	organism part	Mouse heart, liver and brain plus human cell culture.
+PXD056037	sex	No sex is stated anywhere in the bundle for the mice, and the human cell line rows cannot share it.
+PXD056556	sex	NRVM isolations pool neonatal rat pups; no sex stated for any pool
+PXD056556	disease	all four arms are culture treatments (adenoviral ROR2 overexpression vs control, +/- MG132), not a disease state; 'normal' would also be arguable but no health statement is given
+PXD057325	sex	mice of both sexes; 51 runs with no published run-to-animal key
+PXD057325	age	two age groups, 4 months and 23 months, not mappable to individual raw files
+PXD057532	disease	three arms: Black6 SD healthy controls, Black6 HF (diet-induced cardiac dysfunction) and NZO SD (HFrEF-like); 38 runs with no run-to-group key
+PXD057532	strain or breed	C57BL/6JRj and NZO/HIBomDife mice in the same deposit
+PXD058012	disease	three arms pooled into one 16-plex TMT set: sham-operated controls, ACi failing hearts and ACi+SB203580; sham rows are not heart failure
+PXD058090	disease	3 WT, 3 AAV-treated Ant1-/- and 3 untreated Ant1-/- mitochondrial-cardiomyopathy hearts
+PXD058090	strain or breed	C57BL/6J stated only for the WT samples; background of the Ant1-/- and Ant1-/-+ND6P25L animals is not stated
+PXD058185	disease	SMIM20-/- knockout hearts with cardiac pathology versus wild-type controls; no run-to-genotype key for the 24 runs
+PXD058436	sex	eight autopsy donors (DN02-DN17), no sex reported in the publication
+PXD058436	age	no donor ages reported anywhere in the paper
+PXD059000	sex	not stated
+PXD059000	strain or breed	only 'transgenic mice' is stated, no background strain
+PXD060084	disease	NOS1, NOS2, NOS3, triple-NOS and sGCalpha1 null genotypes plus wild-type comparators; no run-to-genotype key for the 62 runs
+PXD060109	organism part	multi-organ atlas (brain, heart, lung, liver, kidney, spleen); only 1 of 16 rows is heart, per-row values already differ and must stay per-row
+PXD060109	sex	neither the protocol nor the publication states the sex of the mice
+PXD060109	strain or breed	only the vendor (Charles River) is named in the paper; no strain given
+PXD060259	sex	explicitly a sex-mixed cohort ('Adult sex-mixed WT and dysferlin-KO ... mice'); no run-to-animal sex key
+PXD060259	disease	study design is MI vs sham (and WT vs dysferlin-KO); the 30 deposited runs are co-immunoprecipitation/IgG-control samples whose infarct status is not resolvable per run
+PXD060307	sex	male- and female-derived OPC cultures are both present (that is the study's factor); already correctly split per row in the current SDRF
+PXD060417	sex	sex of the three AAA patients is not reported
+PXD060417	age	patient ages are not reported
+PXD060431	disease	HFpEF patients vs non-failing donor controls; a case/control design
+PXD060431	sex	mixed-sex cohort reported only as a group-level p-value; no per-run key is published
+PXD060431	age	reported only as a group comparison (P=0.54), no per-sample ages published
+PXD060431	ancestry category	race reported only as group percentages (60% vs 0% Black); no per-sample assignment published
+PXD061501	sex	32 female and 32 male mice; both sexes are a study factor and no run-to-animal key is given
+PXD061501	disease	normal-chow vs 60% high-fat diet-induced obesity arms, each with and without Linagliptin
+PXD061501	organism part	atria and ventricles were processed separately but the bundle gives no mapping of raw files to heart region
+PXD061589	disease	cryoinjured wound sites at 4 time points vs sham-operated geckos; no run-to-arm key in the bundle
+PXD061589	sex	not stated anywhere
+PXD061589	developmental stage	not stated anywhere
+PXD061609	organism part	ten-tissue atlas; per-row values already differ and must stay per-row
+PXD061609	sex	male and female animals are both present (and are the basis of the ovary/testis samples); the per-row split is derivable only from the raw file names, not from any statement in the bundle
+PXD061882	treatment	four vehicle-control vs four SFN-treated hearts; no run-to-animal key in the bundle
+PXD061882	disease	the deposit's own hearts are the target-identification arm; the JMML/Noonan disease models described in the abstract belong to other (non-deposited) experiments
+PXD062798	disease	source names split 3 CTRL vs 3 RHD, i.e. a control vs disease-model design within the six runs
+PXD064045	disease	Title names four genotypes (WT, Chchd10 S55L, Oma1 E324A, Chchd10 S55L/Oma1 E324A); only the Chchd10 S55L-carrying arms are the cardiomyopathy model and the bundle gives no run-to-sample key.
+PXD064045	sex	The abstract states cardiac dysfunction is sex-dependent, implying both sexes were studied; no per-run sex key is available.
+PXD064045	genotype	Four genotypes in the deposit but no file-to-genotype mapping in the bundle.
+PXD064045	age	No age stated anywhere in the bundle.
+PXD064057	disease	Title states the deposit contains CHCHD10 S55L and control mice; 15 rows are wild-type littermates, so no single disease value holds.
+PXD064057	sex	The abstract states cardiac dysfunction is affected by biological sex, implying both sexes; no per-run sex key.
+PXD064057	age	No age stated anywhere in the bundle.
+PXD064499	sex	No sex is stated in the title, description, protocol or PRIDE fields; no publication is linked (PMID=0).
+PXD064583	organism part	Multi-tissue atlas (32 tissues); the SDRF already carries a correct per-row organism part derived from the source names.
+PXD064583	sex	No sex stated anywhere in the bundle.
+PXD064583	age	No age stated; the study explicitly includes developmental samples alongside adults.
+PXD065331	disease	Three arms - wild-type controls, diabetic (INS C94Y), and diabetic + CKD - with proteomics on WT N=5, DM N=5, DM_CKD N=4 and no run-to-sample key in the bundle.
+PXD065331	sex	Animals of either sex entered the study and data from both sexes were pooled.
+PXD066108	age	Cohort spans 3 to 27 years; the SDRF already maps age per individual via the source names.
+PXD066108	developmental stage	3-year-old macaques are juvenile while the rest are adult; varies by individual.
+PXD066108	organism part	30-tissue atlas; organism part is correctly per-row.
+PXD066926	age	Three age groups (3, 12 and 20 months); the per-row assignment is recoverable from characteristics[phenotype] but is not a single uniform value.
+PXD066926	sex	No sex stated anywhere in the bundle; no publication linked (PMID=0).
+PXD067090	disease	Four arms - WT+vehicle, alpha-MHC 719/+ +vehicle, +pioglitazone and +R-pioglitazone - so 11 of the profiled animals are wild-type controls; no run-to-sample key in the bundle.
+PXD067090	age	Cyclosporine A dosing started between 6 and 8 weeks of age and the phenotype is read out by 12 weeks; the exact harvest age per animal is not stated.
+PXD067097	sex	donors are explicitly 'mixed sex'; no run-to-animal key in the deposit
+PXD067097	disease	all animals are healthy Yorkshire pigs subjected to a DCD procurement protocol; no disease arm, but no explicit healthy/normal statement either
+PXD067097	organism part	lysates come from both left and right ventricle myocardium and the 45 rows carry no LV/RV key, so 'heart' is the most specific safe value
+PXD068671	disease	case/control design (donors with and without type 2 diabetes); the 46 rows carry no donor key
+PXD068671	sex	no sex information in the open-access text (donor table is supplementary)
+PXD068671	age	donor ages not stated in the available text
+PXD068793	organism part	multi-tissue survey of 15 tissues plus plasma; already annotated per row
+PXD068793	sex	both male and female animals, and pooled male+female library samples
+PXD069110	disease	three arms - normal control, ischemic heart failure (5 weeks post-LAD ligation) and HF+resveratrol; a heart failure or MI diagnosis must not be broadcast to all 9 rows
+PXD069685	disease	cardiomyocyte-selective Rhot1/2 knockout (cardiomyopathy) versus littermate controls; no run-to-genotype key for the 47 rows
+PXD069685	age	proteome/phosphoproteome material was taken at 1 day and at 4 weeks of age
+PXD069685	developmental stage	same deposit spans 1-day-old (neonate) and 4-week-old mice
+PXD069685	sex	male mice at most time points but both sexes at the 1-day time point
+PXD069823	developmental stage	the atlas mixes adult circadian time-course tissue with a separate set of developmental samples; nothing identifies these 72 brain/heart/lung/liver runs as embryonic
+PXD069823	sex	not stated anywhere in the deposit
+PXD069823	strain or breed	not stated in the deposit (the study also uses hPER2-S662G mutant mice)
+PXD070758	disease	two arms - 10 severe calcific aortic stenosis valves and 9 non-stenotic comparator valves from aortic regurgitation patients
+PXD070758	sex	not reported per patient
+PXD070758	age	only group means are given (62 to 68.6 years)
+PXD072759	sex	the study deliberately used both female and male mice and the single deposited run is not attributed to either
+PXD072759	disease	the single run cannot be assigned to the saline or the doxorubicin-cardiomyopathy arm, nor to WT vs MARCH2 knockout
+PXD073246	disease	two arms - 10 severe calcific aortic stenosis valves and 9 non-stenotic comparator valves from aortic regurgitation patients
+PXD073246	sex	not reported per patient
+PXD073246	age	only group means are given (62 to 68.6 years)
+PXD073863	disease	no disease arm at all - the design contrasts fasted/post-prandial and normal vs frequent feeding intervals, which are physiological states; the 76 rows carry no group key
+PXD074496	disease	the run names show at least an Ang II arm and an Ang II + NVP-2 arm (and the study includes saline controls); a hypertensive-remodeling diagnosis must not be broadcast to all 12 rows
+PXD074496	developmental stage	only body weight (18-22 g) is given, never an age, so 'adult' cannot be quoted
+PXD075583	disease	deposit mixes wild-type and Lrpprc-knockout mouse hearts (BN-PAGE lanes in triplicate, 24 bands each = 144 rows) and the bundle gives no run-to-genotype key
+PXD075583	sex	sex of the mice is never stated in title, description or protocol
+PXD075583	age	no age given
+PXD075583	strain or breed	no strain stated; Lrpprc KO background not given
+PXD076291	disease	the 6 rows are the ISO-treated MHF arm vs untreated control H9c2 cultures (3 per group in the paper); no run-to-arm key in the bundle
+PXD077277	disease	study contrasts doxorubicin-induced cardiotoxicity, TOP2B transgenic, ASO-pretreated and untreated/control mice; no run-to-arm key, and DOID:1287 'cardiovascular system disease' in PRIDE is a registry bucket, not a diagnosis
+PXD077277	sex	sex of the mice is never stated
+PXD077277	age	no age stated; tamoxifen-inducible transgene implies adult induction but nothing explicit
+PXD078502	disease	the mouse arm compares Adamts5-catalytic-domain-deficient ApoE-/- mice against controls; no run-to-genotype key in the bundle
+PXD078502	sex	sex of the mice is not stated anywhere in the bundle
+PXD078502	strain or breed	only the engineered genotypes (ApoE-/-, Adamts5 delta-cat) are given, not a background strain
+PXD078686	disease	17 CAVD patients (each split into calcified and non-calcified regions) versus 29 heart transplant donor valves; no run-to-sample key in the bundle
+PXD078686	sex	not reported
+PXD078686	age	not reported
+PXD079292	sex	surgical HCM myectomy cohort; no sex information anywhere in the bundle and no run-to-patient key
+PXD079292	age	no ages given
+PXD082534	sex	no sex information for the 24 LVAD patients
+PXD082534	age	no ages given
+PXD082534	sampling time point	38 rows = 14 BTT patients sampled pre- and post-LVAD plus 10 BTR patients sampled only pre-LVAD; the bundle gives no run-to-patient/timepoint key beyond the 'B'/'C' naming convention, which is not exposed in the SDRF

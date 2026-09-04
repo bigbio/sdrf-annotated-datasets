@@ -17,6 +17,7 @@ import os
 import re
 import subprocess
 import sys
+import textwrap
 import urllib.error
 import urllib.request
 from collections import Counter, defaultdict
@@ -202,6 +203,17 @@ _AGENT_TEXT_PATTERNS = (
         ),
         "Codex",
     ),
+)
+
+# LLM-drafted annotation prose that does not name a vendor. Use only as an
+# AI-assisted signal; never map these to Claude vs Cursor vs Codex.
+_AI_PROSE_RE = re.compile(
+    r"adversarial(?:ly)? review|"
+    r"hash-bound to the committed bytes|"
+    r"final PASS bound to the committed bytes|"
+    r"independently reviewed over \d+ rounds|"
+    r"sdrf-skills",
+    re.I,
 )
 
 # Same automated annotation pipeline as batches that declared Cursor, but
@@ -800,6 +812,11 @@ def _parse_agent_text(text: str) -> set[str]:
     return labels
 
 
+def _looks_like_ai_prose(text: str) -> bool:
+    """True when review-loop prose suggests an LLM draft, without naming one."""
+    return bool(text and _AI_PROSE_RE.search(text))
+
+
 def _campaign_agent(title: str, body: str = "") -> str | None:
     """Cursor campaigns that later dropped explicit trailers on squash."""
     if _MIGRATION_TITLE_RE.search(title or ""):
@@ -1226,11 +1243,14 @@ def _union_pr_paths(
 def collect_contributions(current_files: list[Path]) -> dict:
     """Attribute current datasets/ SDRFs using first-add git history and PRs.
 
-    A file is agent-assisted if the commit that first added it, or a merged
+    A file has a *named* agent if the commit that first added it, or a merged
     annotation PR (title, description, commits, comments, or agent branch
-    prefix such as codex/), shows an AI agent. Review bots and corpus-wide
-    mechanical cleanups are ignored. First-add is the originating agent;
-    later annotation PRs are refinements (one agent, then another).
+    prefix such as codex/), shows Cursor, Claude, Codex, Copilot, or similar.
+    Review-loop prose (adversarial review, hash-bound PASS, sdrf-skills) can
+    corroborate that a human-authored commit is still AI-assisted, but is never
+    used to pick which vendor. Review bots and corpus-wide mechanical cleanups
+    are ignored. First-add is the originating agent; later annotation PRs are
+    refinements (one agent, then another).
     """
     current = {p.resolve().relative_to(REPO_ROOT).as_posix() for p in current_files}
     file_agents: dict[str, set[str]] = defaultdict(set)
@@ -1269,12 +1289,15 @@ def collect_contributions(current_files: list[Path]) -> dict:
 
     pull_requests, pr_fetch = _fetch_merged_pull_requests()
     prs_with_agent = 0
+    prs_ai_prose_only = 0
     for pr in pull_requests:
         number = int(pr.get("number") or 0)
         title = pr.get("title") or ""
         labels = _classify_pull_request_agents(pr)
         labels.update(merge_branch_agents.get(number, ()))
         if not labels:
+            if _looks_like_ai_prose(f"{title}\n{pr.get('body') or ''}"):
+                prs_ai_prose_only += 1
             continue
         if _MECHANICAL_PR_RE.search(title) or _MIGRATION_TITLE_RE.search(title):
             continue
@@ -1345,6 +1368,9 @@ def collect_contributions(current_files: list[Path]) -> dict:
     for agents in acc_agents.values():
         agent_acc.update(agents)
 
+    current_acc = {Path(path).parent.name for path in current}
+    unidentified_acc = len(current_acc - set(acc_agents))
+
     first_acc: Counter = Counter()
     refine_acc: Counter = Counter()
     handoff: Counter = Counter()
@@ -1366,7 +1392,8 @@ def collect_contributions(current_files: list[Path]) -> dict:
         f"{int(origin_acc.get('Agent-assisted', 0)):,} agent-assisted / "
         f"{int(origin_acc.get('Human-only', 0)):,} human-only accessions "
         f"({pr_fetch} PR scan, {prs_with_agent} PRs with agent evidence, "
-        f"{multi_agent} multi-agent)"
+        f"{multi_agent} multi-agent, {unidentified_acc} unidentified vendor, "
+        f"{prs_ai_prose_only} PRs with AI prose and no vendor fingerprint)"
     )
 
     return {
@@ -1375,6 +1402,8 @@ def collect_contributions(current_files: list[Path]) -> dict:
         "human_contributors": len(all_humans),
         "ai_agents": len(agent_acc),
         "multi_agent_accessions": multi_agent,
+        "unidentified_accessions": unidentified_acc,
+        "github_prs_ai_prose_only": prs_ai_prose_only,
         "github_prs_scanned": len(pull_requests),
         "github_prs_with_agent": prs_with_agent,
         "github_pr_fetch": pr_fetch,
@@ -2724,6 +2753,7 @@ AGENT_COLORS = {
     "ChatGPT": "#10A37F",
     "Codex": "#3D8B5C",
     "Gemini": "#4285F4",
+    "Unidentified": "#8A93A3",
 }
 
 COMPLETE_CMAP = LinearSegmentedColormap.from_list(
@@ -3064,6 +3094,7 @@ def render_contributions_figure(
 
     unattr = int(contributions.get("unattributed_files", 0))
     attributed = int(contributions.get("attributed_files", 0))
+    n_unidentified = _unidentified_accessions(contributions, totals)
     extra = (
         f"{unattr:,} current files could not be matched to an add commit."
         if unattr
@@ -3071,16 +3102,16 @@ def render_contributions_figure(
     )
     n_multi = int(contributions.get("multi_agent_accessions") or 0)
     multi_bit = (
-        f" {n_multi:,} accessions were later refined by a second agent."
+        f" {n_multi:,} accessions were later refined by a second named agent."
         if n_multi
         else ""
     )
 
-    fig = plt.figure(figsize=(11.4, 10.2))
+    fig = plt.figure(figsize=(11.4, 10.4))
     outer = fig.add_gridspec(
         3,
         1,
-        height_ratios=[0.16, 0.38, 0.46],
+        height_ratios=[0.20, 0.34, 0.46],
         hspace=0.12,
         left=0.10,
         right=0.97,
@@ -3093,7 +3124,7 @@ def render_contributions_figure(
     header.set_ylim(0, 1)
     header.text(
         0.0,
-        0.72,
+        0.78,
         "AI-assisted annotation",
         fontsize=16,
         fontweight="bold",
@@ -3104,18 +3135,22 @@ def render_contributions_figure(
     header.text(
         0.0,
         0.18,
-        (
-            f"All {n_acc:,} curated accessions are AI-assisted. "
-            "Humans review and merge; agents draft the SDRF. "
-            "Codex, Cursor, and Copilot are detected from PR branches "
-            "(`codex/`, `cursor/`, `copilot/`). Review bots and corpus-wide "
-            f"cleanups are ignored.{multi_bit} {extra}"
+        textwrap.fill(
+            (
+                f"All {n_acc:,} accessions are treated as AI-assisted. "
+                "Named bars are fingerprints only (email, trailer, app, "
+                "`codex/`/`cursor/`/`copilot/` branch). Review-loop prose can "
+                "flag an LLM draft but is not used to name the vendor — "
+                "Claude Code without a trailer is Unidentified."
+                f"{multi_bit} {extra}"
+            ),
+            width=108,
         ),
-        fontsize=9.5,
+        fontsize=9.0,
         color=MUTED,
         va="center",
         ha="left",
-        wrap=True,
+        linespacing=1.35,
     )
 
     cards = outer[1, 0].subgridspec(1, 3, wspace=0.04)
@@ -3133,12 +3168,15 @@ def render_contributions_figure(
     _draw_stat_card(card_axes[2], "AI-assisted accessions", n_acc, "#1A7F7A")
 
     ax_agents = fig.add_subplot(outer[2, 0])
-    _panel_title(ax_agents, "B", "AI agent")
+    _panel_title(ax_agents, "B", "Identified fingerprints")
     agent_items = [
         (row["name"], int(row["accessions"]))
         for row in agents
         if int(row["accessions"])
     ]
+    if n_unidentified:
+        agent_items.append(("Unidentified", n_unidentified))
+    agent_items.sort(key=lambda item: item[1], reverse=True)
     agent_colors = [
         AGENT_COLORS.get(name, OTHER_COLOR) for name, _ in agent_items
     ]
@@ -3236,6 +3274,26 @@ def _lookup_specialty(rows: list[dict], name: str) -> int:
     return 0
 
 
+def _unidentified_accessions(
+    contributions: dict, totals: dict | None = None
+) -> int:
+    stored = contributions.get("unidentified_accessions")
+    if stored is not None:
+        return int(stored)
+    n_acc = int((totals or {}).get("accessions") or 0)
+    identified = 0
+    for row in contributions.get("origin") or []:
+        if row.get("name") == "Agent-assisted":
+            identified = int(row.get("accessions") or 0)
+            break
+    if n_acc:
+        return max(n_acc - identified, 0)
+    for row in contributions.get("origin") or []:
+        if row.get("name") == "Human-only":
+            return int(row.get("accessions") or 0)
+    return 0
+
+
 def build_readme_section(stats: dict, plot_paths: dict[str, str]) -> str:
     totals = stats["totals"]
     top_org = stats["organisms"][0][0] if stats["organisms"] else "n/a"
@@ -3257,6 +3315,7 @@ def build_readme_section(stats: dict, plot_paths: dict[str, str]) -> str:
         contrib.get("agents", [{}])[0].get("name") if contrib.get("agents") else None
     )
     n_multi = int(contrib.get("multi_agent_accessions") or 0)
+    n_unidentified = _unidentified_accessions(contrib, totals)
     n_codex = 0
     for row in contrib.get("agents") or []:
         if row.get("name") == "Codex":
@@ -3308,10 +3367,17 @@ def build_readme_section(stats: dict, plot_paths: dict[str, str]) -> str:
         if n_people:
             agent_bit += f" (**{fmt_int(n_people)}** human contributors"
             if n_ai_agents:
-                agent_bit += f", **{fmt_int(n_ai_agents)}** AI agents"
+                agent_bit += f", **{fmt_int(n_ai_agents)}** named AI agents"
             agent_bit += ")"
         if top_agent:
-            agent_bit += f", mostly **{top_agent}**"
+            agent_bit += (
+                f"; identified fingerprints are mostly **{top_agent}**"
+            )
+        if n_unidentified:
+            agent_bit += (
+                f"; **{fmt_int(n_unidentified)}** accessions have no vendor "
+                "fingerprint (typical of Claude Code committed as the reviewer)"
+            )
         highlight_parts.append(agent_bit)
     if n_codex:
         highlight_parts.append(
@@ -3357,8 +3423,9 @@ def build_readme_section(stats: dict, plot_paths: dict[str, str]) -> str:
         f"{fmt_int(totals['runs'])} |",
         f"| Assay rows | {fmt_int(totals['assay_rows'])} |",
         f"| Human contributors | {fmt_int(n_people)} |",
-        f"| AI agents | {fmt_int(n_ai_agents)} |",
+        f"| AI agents (named fingerprints) | {fmt_int(n_ai_agents)} |",
         f"| AI-assisted accessions | {fmt_int(int(totals['accessions']))} |",
+        f"| Unidentified agent | {fmt_int(n_unidentified)} |",
         f"| Multi-agent accessions | {fmt_int(n_multi)} |",
         f"| Distinct instruments | {fmt_int(n_instruments)} |",
         f"| Median runs per accession | {fmt_int(median_runs)} |",

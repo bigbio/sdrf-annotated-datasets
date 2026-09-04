@@ -3003,10 +3003,20 @@ def render_analytical_figure(
     _save(fig, path)
 
 
-def render_contributions_figure(path: Path, contributions: dict) -> None:
-    origin = contributions.get("origin") or []
+def render_contributions_figure(
+    path: Path,
+    contributions: dict,
+    totals: dict | None = None,
+) -> None:
     agents = contributions.get("agents") or []
-    if not origin and not agents:
+    n_people = int(contributions.get("human_contributors") or 0)
+    n_ai_agents = int(
+        contributions.get("ai_agents") or len(agents)
+    )
+    n_acc = int((totals or {}).get("accessions") or 0)
+    if not n_acc:
+        n_acc = sum(int(row.get("accessions") or 0) for row in contributions.get("origin") or [])
+    if not agents and not n_people and not n_ai_agents:
         _empty_figure(path, "Contributions")
         return
 
@@ -3018,50 +3028,46 @@ def render_contributions_figure(path: Path, contributions: dict) -> None:
         else f"{attributed:,} current SDRF files attributed from git history."
     )
     n_multi = int(contributions.get("multi_agent_accessions") or 0)
+    multi_bit = (
+        f" {n_multi:,} accessions were later refined by a second agent."
+        if n_multi
+        else ""
+    )
 
     fig, axes = _make_figure(
-        nrows=2,
+        nrows=1,
         ncols=2,
-        figsize=(10.4, 7.4),
-        title="Human and AI annotation",
+        figsize=(11.2, 6.2),
+        title="AI-assisted annotation",
         subtitle=(
-            "First-add is the originating agent. Later annotation PRs are "
-            "refinements. Codex is the `codex/` PR branch prefix (OpenAI Codex); "
-            "Cursor/Copilot use `cursor/` and `copilot/`. Review bots and "
-            f"corpus-wide cleanups are ignored. {extra}"
+            f"All {n_acc:,} curated accessions are AI-assisted. "
+            "Humans review and merge; agents draft the SDRF. "
+            "Codex, Cursor, and Copilot are detected from PR branches "
+            "(`codex/`, `cursor/`, `copilot/`). Review bots and corpus-wide "
+            f"cleanups are ignored.{multi_bit} {extra}"
         ),
-        wspace=0.28,
-        hspace=0.42,
-        left=0.10,
+        width_ratios=[0.40, 0.60],
+        wspace=0.34,
+        left=0.16,
         right=0.97,
-        bottom=0.08,
-        header_ratio=0.22,
+        bottom=0.12,
+        header_ratio=0.28,
     )
 
-    origin_rename = {
-        "Human-only": "Human",
-        "Agent-assisted": "AI-assisted",
-    }
-    origin_items = [
-        (
-            origin_rename.get(row["name"], row["name"]),
-            int(row["accessions"]),
-        )
-        for row in origin
-        if int(row["accessions"])
+    _panel_title(axes[0], "A", "Contributors")
+    contributor_items = [
+        ("Human contributors", n_people),
+        ("AI agents", n_ai_agents),
     ]
-    _panel_title(axes[0][0], "A", "Human vs AI")
-    _draw_donut(
-        axes[0][0],
-        origin_items,
-        color_map=ORIGIN_COLORS,
-        center_caption="accessions",
-        legend="none",
+    _draw_hbar(
+        axes[0],
+        contributor_items,
+        colors=["#1F4E79", "#D36B2F"],
+        xlabel="People / agents",
+        preserve_order=True,
     )
-    _draw_color_key(axes[0][1], origin_items, ORIGIN_COLORS)
-    axes[0][1].set_title(" ", pad=8)
 
-    _panel_title(axes[1][0], "B", "AI agent")
+    _panel_title(axes[1], "B", "AI agent")
     agent_items = [
         (row["name"], int(row["accessions"]))
         for row in agents
@@ -3071,43 +3077,12 @@ def render_contributions_figure(path: Path, contributions: dict) -> None:
         AGENT_COLORS.get(name, OTHER_COLOR) for name, _ in agent_items
     ]
     _draw_hbar(
-        axes[1][0],
+        axes[1],
         agent_items,
         colors=agent_colors,
         xlabel="Accessions",
         preserve_order=True,
     )
-
-    handoffs = contributions.get("handoffs") or []
-    handoff_items = [
-        (row["name"], int(row["accessions"]))
-        for row in handoffs
-        if int(row["accessions"])
-    ]
-    _panel_title(
-        axes[1][1],
-        "C",
-        f"Later agent ({n_multi:,} multi-agent)",
-    )
-    if handoff_items:
-        _draw_hbar(
-            axes[1][1],
-            handoff_items[:8],
-            colors=["#5C6B8A"] * min(8, len(handoff_items)),
-            xlabel="Accessions",
-            preserve_order=True,
-        )
-    else:
-        axes[1][1].set_axis_off()
-        axes[1][1].text(
-            0.5,
-            0.5,
-            "No accession was annotated by one\nagent and later refined by another.",
-            ha="center",
-            va="center",
-            color=MUTED,
-            fontsize=9,
-        )
 
     _save(fig, path)
 
@@ -3171,6 +3146,7 @@ def render_plots(stats: dict) -> dict[str, str]:
     render_contributions_figure(
         STATS_DIR / paths["contributions"],
         stats.get("contributions") or {},
+        stats.get("totals") or {},
     )
     _cleanup_stale_plots({Path(p).name for p in paths.values()})
     return paths
@@ -3207,9 +3183,6 @@ def build_readme_section(stats: dict, plot_paths: dict[str, str]) -> str:
     n_meta = _lookup_specialty(stats.get("specialties", []), "Metaproteomics")
     n_tmpl = int(totals.get("accessions_with_template", 0))
     contrib = stats.get("contributions") or {}
-    origin_map = {row["name"]: int(row["accessions"]) for row in contrib.get("origin", [])}
-    n_human = origin_map.get("Human-only", 0)
-    n_agent = origin_map.get("Agent-assisted", 0)
     n_people = int(contrib.get("human_contributors") or 0)
     n_ai_agents = int(
         contrib.get("ai_agents") or len(contrib.get("agents") or [])
@@ -3261,10 +3234,18 @@ def build_readme_section(stats: dict, plot_paths: dict[str, str]) -> str:
             "sample-field completeness (applicable samples): "
             + ", ".join(completeness_bits)
         )
-    if n_agent:
-        agent_bit = f"**{fmt_int(n_agent)}** accessions are agent-assisted"
+    n_all = int(totals.get("accessions") or 0)
+    if n_all:
+        agent_bit = (
+            f"all **{fmt_int(n_all)}** accessions are AI-assisted"
+        )
+        if n_people:
+            agent_bit += f" (**{fmt_int(n_people)}** human contributors"
+            if n_ai_agents:
+                agent_bit += f", **{fmt_int(n_ai_agents)}** AI agents"
+            agent_bit += ")"
         if top_agent:
-            agent_bit += f" (mostly **{top_agent}**)"
+            agent_bit += f", mostly **{top_agent}**"
         highlight_parts.append(agent_bit)
     if n_codex:
         highlight_parts.append(
@@ -3311,8 +3292,7 @@ def build_readme_section(stats: dict, plot_paths: dict[str, str]) -> str:
         f"| Assay rows | {fmt_int(totals['assay_rows'])} |",
         f"| Human contributors | {fmt_int(n_people)} |",
         f"| AI agents | {fmt_int(n_ai_agents)} |",
-        f"| Human-only accessions | {fmt_int(n_human)} |",
-        f"| Agent-assisted accessions | {fmt_int(n_agent)} |",
+        f"| AI-assisted accessions | {fmt_int(int(totals['accessions']))} |",
         f"| Multi-agent accessions | {fmt_int(n_multi)} |",
         f"| Distinct instruments | {fmt_int(n_instruments)} |",
         f"| Median runs per accession | {fmt_int(median_runs)} |",
@@ -3353,7 +3333,7 @@ def build_readme_section(stats: dict, plot_paths: dict[str, str]) -> str:
         f"![Templates and specialized collections]"
         f"(docs/stats/{plot_paths['templates']})",
         "",
-        f"![Human and AI annotation]"
+        f"![AI-assisted annotation]"
         f"(docs/stats/{plot_paths['contributions']})",
         "",
         STATS_END,

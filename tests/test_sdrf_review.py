@@ -181,6 +181,35 @@ class TestDeclaredTemplates:
         p = write_sdrf(BASE_HEADER, [row(template="not available")])
         assert gate.declared_templates(str(p)) == []
 
+
+class TestParseSdrf:
+    def test_successful_exit_is_not_hidden_by_trailing_warning(
+            self, gate, write_sdrf, monkeypatch):
+        """Warnings may be written to stderr after the success message on stdout."""
+        p = write_sdrf(BASE_HEADER, [row()])
+
+        class Result:
+            returncode = 0
+            stdout = "Everything seems to be fine. Well done.\n"
+            stderr = "WARNING: Validator type 'numeric' not found in registry\n"
+
+        monkeypatch.setattr(gate.subprocess, "run", lambda *args, **kwargs: Result())
+        assert gate.parse_sdrf_ok(str(p))[0] is True
+
+    def test_nonzero_exit_fails_even_without_expected_tail(
+            self, gate, write_sdrf, monkeypatch):
+        p = write_sdrf(BASE_HEADER, [row()])
+
+        class Result:
+            returncode = 1
+            stdout = ""
+            stderr = "There were validation errors.\n"
+
+        monkeypatch.setattr(gate.subprocess, "run", lambda *args, **kwargs: Result())
+        ok, message = gate.parse_sdrf_ok(str(p))
+        assert ok is False
+        assert "validation errors" in message
+
     def test_no_column_returns_empty(self, gate, write_sdrf):
         header = [c for c in BASE_HEADER if c != "comment[sdrf template]"]
         r = [v for c, v in zip(BASE_HEADER, row()) if c != "comment[sdrf template]"]

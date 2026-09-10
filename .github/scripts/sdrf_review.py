@@ -265,9 +265,9 @@ def parse_sdrf_ok(path):
         cmd = ["parse_sdrf", "validate-sdrf", "--sdrf_file", str(path),
                "-t", tmpl, "--use_ols_cache_only"]
         out = subprocess.run(cmd, capture_output=True, text=True)
-        tail = (out.stdout + out.stderr).strip().splitlines()
-        last = tail[-1] if tail else ""
-        if not (("Well done" in last) or ("only warnings" in last)):
+        lines = (out.stdout + out.stderr).strip().splitlines()
+        last = lines[-1] if lines else ""
+        if out.returncode != 0:
             return False, f"[{tmpl}] {last[:180]}"
     return True, last[:200]
 

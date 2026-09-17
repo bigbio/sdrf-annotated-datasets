@@ -1,0 +1,74 @@
+# Builds an advisory report of what a PR changes in dataset SDRFs: new and deleted datasets,
+# and for existing datasets the grouped value changes, ontology relations, risk levels and
+# quality delta. Runs with read-only permissions and no secrets because it executes PR code;
+# sdrf-change-comment.yml picks up the uploaded report and posts it.
+name: SDRF change report
+
+on:
+  pull_request:
+    paths:
+      - 'datasets/**/*.sdrf.tsv'
+      - 'datasets/**/*.sdrf'
+
+permissions:
+  contents: read
+
+jobs:
+  report:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install sdrf-pipelines from GitHub (main)
+        run: |
+          set -euo pipefail
+          python -m pip install --upgrade pip wheel setuptools
+          python -m pip install --upgrade "git+https://github.com/bigbio/sdrf-pipelines.git@main"
+
+      - name: Collect changed SDRF files
+        env:
+          BASE: ${{ github.event.pull_request.base.sha }}
+          HEAD: ${{ github.event.pull_request.head.sha }}
+        run: |
+          set -euo pipefail
+          # Three-dot diff: only what the PR introduces relative to the merge-base.
+          git -c core.quotepath=off diff --name-status --no-renames --diff-filter=AMD \
+            "$BASE...$HEAD" > name-status.txt
+          cat name-status.txt
+
+      - name: Snapshot base versions of modified and deleted files
+        env:
+          BASE: ${{ github.event.pull_request.base.sha }}
+        run: |
+          set -euo pipefail
+          while IFS=$'\t' read -r status path; do
+            case "$status" in
+              M|D)
+                mkdir -p ".base/$(dirname "$path")"
+                git show "$BASE:$path" > ".base/$path"
+                ;;
+            esac
+          done < name-status.txt
+
+      - name: Build change report
+        env:
+          BASE: ${{ github.event.pull_request.base.sha }}
+          HEAD: ${{ github.event.pull_request.head.sha }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+        run: |
+          python .github/scripts/sdrf_change_report.py \
+            --name-status name-status.txt --base-dir .base --out out/report.json \
+            --pr "$PR_NUMBER" --head-sha "$HEAD" --base-sha "$BASE"
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: sdrf-change-report
+          path: out/report.json
+          if-no-files-found: ignore
+          retention-days: 7

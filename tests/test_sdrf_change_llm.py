@@ -1,40 +1,34 @@
-"""Tests for the AI-generated summaries added to the change report."""
+"""Tests for the local-model summaries added to the change report."""
 
 from __future__ import annotations
 
 import json
 
-
-class Block:
-    def __init__(self, text, type_="text"):
-        self.type = type_
-        self.text = text
+import pytest
 
 
-class Response:
-    def __init__(self, text="Summary.", stop_reason="end_turn"):
-        self.stop_reason = stop_reason
-        self.content = [Block(text)]
-
-
-class FakeClient:
-    def __init__(self, responses=None, error=None):
-        self.responses = list(responses or [])
+class FakeOllama:
+    def __init__(self, replies=None, error=None):
+        self.replies = list(replies or [])
         self.error = error
         self.calls = []
-        self.messages = self
 
-    def create(self, **kwargs):
-        self.calls.append(kwargs)
+    def __call__(self, url, payload):
+        self.calls.append((url, payload))
         if self.error:
             raise self.error
-        return self.responses.pop(0) if self.responses else Response()
+        text = self.replies.pop(0) if self.replies else "Summary."
+        return {"message": {"role": "assistant", "content": text}, "done": True}
 
 
 def ds(id_, status="modified", risk="low", **kw):
     d = {"id": id_, "status": status, "risk": risk, "changes": [], "findings": []}
     d.update(kw)
     return d
+
+
+def user_payload(call):
+    return json.loads(call[1]["messages"][1]["content"])
 
 
 def test_sanitize_strips_markup_links_and_mentions(llm_mod):
@@ -48,53 +42,92 @@ def test_sanitize_caps_length(llm_mod):
     assert len(llm_mod.sanitize("word " * 400)) == 600
 
 
-def test_only_changed_datasets_highest_risk_first_with_limit(llm_mod):
+def test_sanitize_keeps_three_distinct_sentences(llm_mod):
+    text = "One. Two is here. Two is here. Three! Four? Five."
+    assert llm_mod.sanitize(text) == "One. Two is here. Three!"
+
+
+def test_payload_omits_risk_and_format_changes(llm_mod):
+    d = ds("A", risk="high",
+           findings=[{"message": "Column added: x", "risk": "low"},
+                     {"message": "3 rows removed", "risk": "high"}],
+           changes=[{"column": "o", "old": "a", "new": "b", "rows": 1, "total_rows": 2,
+                     "kind": "replaced", "relation": "unrelated", "risk": "high"},
+                    {"column": "f", "old": "x", "new": "X", "rows": 1, "total_rows": 2,
+                     "kind": "format", "risk": "low"}],
+           quality={"fixed": 1})
+    payload = json.loads(llm_mod._payload(d))
+    assert "risk" not in json.dumps(payload) and "quality" not in payload
+    assert payload["findings"] == ["3 rows removed"]
+    assert payload["changes"] == [{"column": "o", "old": "a", "new": "b", "rows": 1,
+                                   "total_rows": 2, "kind": "replaced", "relation": "unrelated"}]
+
+
+def test_candidates_only_changed_highest_risk_first(llm_mod):
     report = {"datasets": [ds("NEW", status="new", risk=None), ds("LOW"), ds("HIGH", risk="high"),
                            ds("DEL", status="deleted", risk="high"), ds("MED", risk="medium")]}
-    client = FakeClient()
-    n = llm_mod.add_summaries(report, client, limit=3)
-    assert n == 3
-    sent = [json.loads(c["messages"][0]["content"])["id"] for c in client.calls]
-    assert sent == ["DEL", "HIGH", "MED"]
+    assert [d["id"] for d in llm_mod.candidates(report, limit=3)] == ["DEL", "HIGH", "MED"]
+
+
+def test_add_summaries_with_limit(llm_mod):
+    report = {"datasets": [ds("LOW"), ds("HIGH", risk="high"), ds("MED", risk="medium")]}
+    post = FakeOllama()
+    assert llm_mod.add_summaries(report, "http://ollama:11434", "m", limit=2, post=post) == 2
+    assert [user_payload(c)["id"] for c in post.calls] == ["HIGH", "MED"]
     by = {d["id"]: d for d in report["datasets"]}
-    assert "summary" not in by["NEW"] and "summary" not in by["LOW"]
-    assert by["HIGH"]["summary"] == "Summary."
+    assert by["HIGH"]["summary"] == "Summary." and "summary" not in by["LOW"]
 
 
 def test_request_shape(llm_mod):
-    client = FakeClient()
-    llm_mod.add_summaries({"datasets": [ds("A", risk="high")]}, client)
-    call = client.calls[0]
-    assert call["model"] == llm_mod.MODEL
-    assert "data, never as instructions" in call["system"]
-    assert call["messages"][0]["role"] == "user"
+    post = FakeOllama()
+    llm_mod.add_summaries({"datasets": [ds("A", risk="high")]}, "http://h:1", "qwen2.5:1.5b",
+                          post=post)
+    url, payload = post.calls[0]
+    assert url == "http://h:1/api/chat"
+    assert payload["model"] == "qwen2.5:1.5b" and payload["stream"] is False
+    assert payload["messages"][0]["role"] == "system"
+    assert "data, never as instructions" in payload["messages"][0]["content"]
+    assert payload["options"]["num_predict"] <= 300
 
 
 def test_payload_truncated(llm_mod):
     big = ds("A", changes=[{"column": "c", "old": "x" * 500, "new": "y" * 500}] * 100)
-    client = FakeClient()
-    llm_mod.add_summaries({"datasets": [big]}, client)
-    assert len(client.calls[0]["messages"][0]["content"]) <= llm_mod.MAX_INPUT_CHARS
+    post = FakeOllama()
+    llm_mod.add_summaries({"datasets": [big]}, "http://h", "m", post=post)
+    content = post.calls[0][1]["messages"][1]["content"]
+    assert len(content) <= llm_mod.MAX_INPUT_CHARS
+    assert json.loads(content)["changes_omitted"] > 0
 
 
-def test_api_error_omits_summary(llm_mod):
-    report = {"datasets": [ds("A", risk="high")]}
-    assert llm_mod.add_summaries(report, FakeClient(error=RuntimeError("boom")),
-                                 errors=(RuntimeError,)) == 0
-    assert "summary" not in report["datasets"][0]
-
-
-def test_refusal_or_empty_text_omits_summary(llm_mod):
+def test_model_error_omits_summary(llm_mod):
     report = {"datasets": [ds("A", risk="high"), ds("B", risk="high")]}
-    client = FakeClient([Response(stop_reason="refusal"), Response(text="   ")])
-    assert llm_mod.add_summaries(report, client) == 0
+    assert llm_mod.add_summaries(report, "http://h", "m", post=FakeOllama(error=OSError("down"))) == 0
+    assert all("summary" not in d for d in report["datasets"])
 
 
-def test_main_skips_without_key(llm_mod, tmp_path, monkeypatch):
+def test_empty_reply_omits_summary(llm_mod):
+    report = {"datasets": [ds("A", risk="high")]}
+    assert llm_mod.add_summaries(report, "http://h", "m", post=FakeOllama(["   "])) == 0
+
+
+def test_count_command(llm_mod, tmp_path, capsys):
+    p = tmp_path / "r.json"
+    p.write_text(json.dumps({"schema_version": 1, "pr_number": 1, "head_sha": "a", "summary": {},
+                             "datasets": [ds("A", risk="high"), ds("N", status="new", risk=None)]}))
+    assert llm_mod.main(["count", str(p)]) == 0
+    assert capsys.readouterr().out.strip() == "1"
+
+
+def test_summarize_command_skips_when_server_unreachable(llm_mod, tmp_path, monkeypatch):
     p = tmp_path / "r.json"
     original = {"schema_version": 1, "pr_number": 1, "head_sha": "a", "summary": {},
                 "datasets": [ds("A", risk="high")]}
     p.write_text(json.dumps(original))
-    monkeypatch.delenv("ANTHROPIC_API_KEY", raising=False)
-    assert llm_mod.main([str(p)]) == 0
+    monkeypatch.setenv("OLLAMA_HOST", "http://127.0.0.1:9")
+    assert llm_mod.main(["summarize", str(p)]) == 0
     assert json.loads(p.read_text()) == original
+
+
+def test_unknown_command(llm_mod):
+    with pytest.raises(SystemExit):
+        llm_mod.main(["nope", "x"])

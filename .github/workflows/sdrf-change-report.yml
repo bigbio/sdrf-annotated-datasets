@@ -66,6 +66,30 @@ jobs:
             --name-status name-status.txt --base-dir .base --out out/report.json \
             --pr "$PR_NUMBER" --head-sha "$HEAD" --base-sha "$BASE"
 
+      # Summaries come from a small model running on the runner's CPU: no API key, and no
+      # data leaves the runner. Ollama is started only when a PR modifies or deletes datasets.
+      - name: Add AI-generated summaries (local model)
+        env:
+          OLLAMA_IMAGE: ollama/ollama:0.34.1
+          SDRF_SUMMARY_MODEL: qwen2.5:3b
+        run: |
+          set -euo pipefail
+          [ -f out/report.json ] || exit 0
+          n=$(python .github/scripts/sdrf_change_llm.py count out/report.json)
+          if [ "$n" = "0" ]; then
+            echo "No modified or deleted datasets; skipping summaries."
+            exit 0
+          fi
+          docker run -d --name ollama -p 127.0.0.1:11434:11434 "$OLLAMA_IMAGE"
+          for _ in $(seq 1 30); do
+            curl -sf http://127.0.0.1:11434/api/version >/dev/null && break
+            sleep 2
+          done
+          docker exec ollama ollama pull "$SDRF_SUMMARY_MODEL" \
+            || { echo "Model pull failed; skipping summaries."; exit 0; }
+          OLLAMA_HOST=http://127.0.0.1:11434 \
+            python .github/scripts/sdrf_change_llm.py summarize out/report.json
+
       - uses: actions/upload-artifact@v4
         with:
           name: sdrf-change-report

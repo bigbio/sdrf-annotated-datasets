@@ -1,5 +1,5 @@
 # Posts the report built by sdrf-change-report.yml as a sticky PR comment with sdrf:* labels.
-# workflow_run gives this job a write token (and secrets) even for fork PRs, so it never checks
+# workflow_run gives this job a write token even for fork PRs, so it never checks
 # out or runs PR code: scripts come from the default branch and the artifact is treated as data.
 # Like every workflow_run workflow, it only takes effect once it is on the default branch.
 name: SDRF change comment
@@ -45,18 +45,6 @@ jobs:
         if: steps.check.outputs.present == 'true'
         with:
           python-version: '3.11'
-
-      - name: Add AI-generated summaries
-        if: steps.check.outputs.present == 'true'
-        env:
-          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
-        run: |
-          if [ -z "$ANTHROPIC_API_KEY" ]; then
-            echo "ANTHROPIC_API_KEY secret not configured; skipping summaries."
-            exit 0
-          fi
-          python -m pip install --quiet "anthropic>=1,<2"
-          python .github/scripts/sdrf_change_llm.py artifact/report.json
 
       - name: Post comment and labels
         if: steps.check.outputs.present == 'true'

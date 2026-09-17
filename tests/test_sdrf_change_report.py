@@ -172,6 +172,35 @@ def test_multiplexed_rows_matched_by_label(report_mod):
                            "new": ["TMT126", "TMT127", "TMT128"]}
 
 
+def test_label_reformatting_does_not_break_matching(report_mod):
+    old = to_tsv(base_rows(**{"comment[label]": "AC=MS:1002038;NT=label free sample"}))
+    new = to_tsv(base_rows(**{"comment[label]": "NT=label free sample;AC=MS:1002038"}))
+    d = report_mod.diff_tables(old, new)
+    assert d["restructured"] is False and d["rows"]["removed"] == 0
+    assert d["labels"]["old"] == d["labels"]["new"] == ["label free sample"]
+    assert [c["kind"] for c in d["changes"]] == ["format"]
+
+
+def test_label_correction_is_a_value_change(report_mod):
+    old = to_tsv(base_rows(**{"comment[label]": "NT=label free"}))
+    new = to_tsv(base_rows(**{"comment[label]": "NT=label free sample;AC=MS:1002038"}))
+    d = report_mod.diff_tables(old, new)
+    assert d["restructured"] is False and d["rows"]["removed"] == 0
+    assert [(c["column"], c["rows"]) for c in d["changes"]] == [("comment[label]", 24)]
+
+
+def test_peak_list_replaced_by_raw_is_matched_by_file_stem(report_mod):
+    old_rows = base_rows()
+    for r in old_rows:
+        r["comment[data file]"] = r["comment[data file]"].replace(".raw", ".mzML")
+    d = report_mod.diff_tables(to_tsv(old_rows), to_tsv(base_rows()))
+    assert d["restructured"] is False
+    assert d["removed_data_files"] == []
+    assert d["rows"]["removed"] == 0
+    assert all(c["column"] == "comment[data file]" for c in d["changes"])
+    assert sum(c["rows"] for c in d["changes"]) == 24
+
+
 def test_duplicate_keys_matched_in_order(report_mod):
     rows = [make_row(1), make_row(1)]
     new_rows = [make_row(1), make_row(1, **{"characteristics[disease]": "cirrhosis"})]
@@ -421,6 +450,18 @@ def test_main_writes_report(report_mod, tmp_path, monkeypatch):
     assert by["PXD000001"]["risk"] == "high"
     assert by["PXD000002"]["rows"]["new"] == 4 and by["PXD000002"]["risk"] is None
     assert by["PXD000003"]["rows"]["old"] == 6 and by["PXD000003"]["quality"] is None
+
+
+def test_new_datasets_skip_parse_sdrf(report_mod, tmp_path, monkeypatch):
+    monkeypatch.chdir(tmp_path)
+    path = "datasets/PXD000002/PXD000002.sdrf.tsv"
+    (tmp_path / path).parent.mkdir(parents=True)
+    (tmp_path / path).write_text(to_tsv(base_rows(3)))
+    calls = []
+    monkeypatch.setattr(report_mod, "default_parse", lambda p: calls.append(p) or (True, ""))
+    ds = report_mod.build_dataset("new", path, tmp_path / ".base", None)
+    assert calls == []
+    assert ds["quality"]["parse_sdrf"] == {"base": None, "head": None}
 
 
 def test_main_without_sdrf_changes_writes_nothing(report_mod, tmp_path, monkeypatch):

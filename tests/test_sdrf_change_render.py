@@ -71,7 +71,7 @@ def test_new_datasets_collapsed(render_mod):
                   rows={"old": None, "new": 12, "added": 0, "removed": 0})
     body = render_mod.render(report(new))
     assert "<details>\n<summary>New datasets (1)</summary>" in body
-    assert "| PXD9 | 12 | pass | no\\_factor\\_value: 1 |" in body
+    assert "| PXD9 | 12 | no\\_factor\\_value: 1 |" in body
 
 
 def test_summary_rendered_only_when_present(render_mod):

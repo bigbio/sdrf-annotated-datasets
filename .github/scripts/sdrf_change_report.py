@@ -133,23 +133,90 @@ def _kind(old: tuple[str, ...], new: tuple[str, ...]) -> str | None:
     return "replaced"
 
 
-def _row_keys(rows, cols, key_columns):
-    seen: Counter = Counter()
-    keys = []
+def _canon(value: str) -> str:
+    n = _norm(value)
+    return n[1]
+
+
+def _file_stem(name: str) -> str:
+    # A peak list swapped for its vendor RAW (x.mzML -> x.raw) is the same run, not a new row.
+    base = name.strip().replace("\\", "/").rsplit("/", 1)[-1].lower()
+    base = re.sub(r"\.(gz|bz2|zip|xz)$", "", base)
+    return re.sub(r"\.[a-z0-9]+$", "", base)
+
+
+def _coordinates(rows, cols, key_columns):
+    coords = []
     for r in rows:
-        if key_columns:
-            base = tuple(_display(_values(r, cols[c], len(cols[c]) > 1)) for c in key_columns)
-        else:
-            base = (_cell(r, 0),)
-        keys.append(base + (seen[base],))
-        seen[base] += 1
-    return keys
+        c = []
+        for name in key_columns:
+            v = _display(_values(r, cols[name], len(cols[name]) > 1))
+            c.append(_file_stem(v) if name == "comment[data file]" else _canon(v))
+        coords.append(tuple(c))
+    return coords
+
+
+def _match_rows(old_rows, old_c, new_rows, new_c) -> list[tuple[int, int]]:
+    """Pair old and new rows. Returns (old index, new index) pairs.
+
+    Pass 1 pairs rows with the same data file stem, fraction and label. Pass 2 pairs the
+    leftovers by data file stem and fraction alone, in file order, so a corrected label shows
+    up as a value change on the same row instead of a removed row plus an added one.
+    """
+    key_columns = [c for c in KEY_COLUMNS if c in old_c and c in new_c]
+    if "comment[data file]" not in key_columns:
+        key_columns = ["source name"] if "source name" in old_c and "source name" in new_c else []
+    if not key_columns:
+        return [(i, i) for i in range(min(len(old_rows), len(new_rows)))]
+    old_k = _coordinates(old_rows, old_c, key_columns)
+    new_k = _coordinates(new_rows, new_c, key_columns)
+    label_pos = key_columns.index("comment[label]") if "comment[label]" in key_columns else None
+
+    pairs: list[tuple[int, int]] = []
+    free_old = set(range(len(old_rows)))
+    free_new = set(range(len(new_rows)))
+    passes = [lambda k: k]
+    if label_pos is not None:
+        passes.append(lambda k: k[:label_pos] + k[label_pos + 1:])
+    for project in passes:
+        pool: dict[tuple, list[int]] = {}
+        for i in sorted(free_old):
+            pool.setdefault(project(old_k[i]), []).append(i)
+        for j in sorted(free_new):
+            bucket = pool.get(project(new_k[j]))
+            if bucket:
+                i = bucket.pop(0)
+                pairs.append((i, j))
+                free_old.discard(i)
+                free_new.discard(j)
+    return sorted(pairs)
+
+
+def _term_name(value: str) -> str:
+    for part in value.split(";"):
+        if part.strip().upper().startswith("NT="):
+            return " ".join(part.split("=", 1)[1].split())
+    return " ".join(value.split())
 
 
 def _column_set(rows, cols, name) -> list[str]:
     if name not in cols:
         return []
-    return sorted({v for r in rows for v in _values(r, cols[name], True)})
+    names: dict[str, str] = {}
+    for r in rows:
+        for v in _values(r, cols[name], True):
+            names.setdefault(_canon(v), _term_name(v))
+    return sorted(names.values())
+
+
+def _removed_files(old_rows, old_c, new_rows, new_c) -> list[str]:
+    name = "comment[data file]"
+    if name not in old_c:
+        return []
+    old_files = {v for r in old_rows for v in _values(r, old_c[name], True)}
+    new_stems = ({_file_stem(v) for r in new_rows for v in _values(r, new_c[name], True)}
+                 if name in new_c else set())
+    return sorted(f for f in old_files if _file_stem(f) not in new_stems)
 
 
 def diff_tables(old_text: str, new_text: str) -> dict:
@@ -159,22 +226,16 @@ def diff_tables(old_text: str, new_text: str) -> dict:
         raise ValueError("SDRF file has no header")
     old_c, new_c = _column_index(old_h), _column_index(new_h)
 
-    key_columns = [c for c in KEY_COLUMNS if c in old_c and c in new_c]
-    if not key_columns and "source name" in old_c and "source name" in new_c:
-        key_columns = ["source name"]
-    old_keys = dict(zip(_row_keys(old_rows, old_c, key_columns), old_rows))
-    new_keys = dict(zip(_row_keys(new_rows, new_c, key_columns), new_rows))
-    matched = [k for k in new_keys if k in old_keys]
+    matched = _match_rows(old_rows, old_c, new_rows, new_c)
 
     result = {
         "rows": {"old": len(old_rows), "new": len(new_rows),
-                 "added": len(new_keys) - len(matched), "removed": len(old_keys) - len(matched)},
+                 "added": len(new_rows) - len(matched), "removed": len(old_rows) - len(matched)},
         "columns": {"added": [c for c in new_c if c not in old_c],
                     "removed": [c for c in old_c if c not in new_c]},
         "restructured": False,
         "changes": [],
-        "removed_data_files": sorted(set(_column_set(old_rows, old_c, "comment[data file]"))
-                                     - set(_column_set(new_rows, new_c, "comment[data file]"))),
+        "removed_data_files": _removed_files(old_rows, old_c, new_rows, new_c),
         "labels": {"old": _column_set(old_rows, old_c, "comment[label]"),
                    "new": _column_set(new_rows, new_c, "comment[label]")},
     }
@@ -188,9 +249,9 @@ def diff_tables(old_text: str, new_text: str) -> dict:
         if name not in old_c:
             continue
         multi = len(old_c[name]) > 1 or len(new_c[name]) > 1
-        for k in matched:
-            old_v = _values(old_keys[k], old_c[name], multi)
-            new_v = _values(new_keys[k], new_c[name], multi)
+        for i, j in matched:
+            old_v = _values(old_rows[i], old_c[name], multi)
+            new_v = _values(new_rows[j], new_c[name], multi)
             kind = _kind(old_v, new_v)
             if kind:
                 groups[(name, _display(old_v), _display(new_v), kind)] += 1
@@ -339,7 +400,8 @@ def classify(ds: dict) -> None:
             findings.append({"message": f"{len(ds['removed_data_files'])} data files no longer "
                                         "referenced", "risk": "high"})
         labels = ds.get("labels") or {}
-        if labels.get("old") and labels.get("new") and labels["old"] != labels["new"]:
+        if (labels.get("old") and labels.get("new")
+                and {x.lower() for x in labels["old"]} != {x.lower() for x in labels["new"]}):
             findings.append({"message": "Label set changed: " + ", ".join(labels["old"])
                              + " → " + ", ".join(labels["new"]), "risk": "high"})
         for name in (ds.get("columns") or {}).get("removed", []):
@@ -380,14 +442,18 @@ def _parse_status(path: Path, parse_fn) -> str:
     return "pass" if ok else "fail"
 
 
-def quality_delta(head: Path | None, base: Path | None, parse_fn=None) -> dict:
+def quality_delta(head: Path | None, base: Path | None, parse_fn=None,
+                  run_parse: bool = True) -> dict:
     parse_fn = parse_fn or default_parse
     head_d = _defects(head) if head else {}
     base_d = _defects(base) if base else {}
     q = {"fixed": 0, "introduced": 0, "defects_head": head_d,
-         "parse_sdrf": {"base": None, "head": _parse_status(head, parse_fn) if head else None}}
+         "parse_sdrf": {"base": None, "head": None}}
+    if head and run_parse:
+        q["parse_sdrf"]["head"] = _parse_status(head, parse_fn)
     if head and base:
-        q["parse_sdrf"]["base"] = _parse_status(base, parse_fn)
+        if run_parse:
+            q["parse_sdrf"]["base"] = _parse_status(base, parse_fn)
         keys = set(head_d) | set(base_d)
         q["fixed"] = sum(max(0, base_d.get(k, 0) - head_d.get(k, 0)) for k in keys)
         q["introduced"] = sum(max(0, head_d.get(k, 0) - base_d.get(k, 0)) for k in keys)
@@ -424,7 +490,9 @@ def build_dataset(status: str, path: str, base_dir: Path, resolver) -> dict:
                 raise ValueError("SDRF file has no header")
             ds["rows"]["new" if status == "new" else "old"] = len(rows)
         if head:
-            ds["quality"] = quality_delta(head, base)
+            # New files are already validated by the SDRF review gate; running parse_sdrf again
+            # doubles CI time on large batch PRs. Only the before/after comparison is new here.
+            ds["quality"] = quality_delta(head, base, run_parse=status == "modified")
     except Exception as exc:
         ds["error"] = f"{type(exc).__name__}: {exc}"
     classify(ds)

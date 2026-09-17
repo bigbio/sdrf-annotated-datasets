@@ -97,15 +97,15 @@ def _new_block(new) -> str:
     if not new:
         return ""
     lines = ["<details>", f"<summary>New datasets ({len(new)})</summary>", "",
-             "| Dataset | Rows | parse_sdrf | Defects |", "|---|---|---|---|"]
+             "parse\\_sdrf validation of new datasets is reported by the SDRF review gate check.", "",
+             "| Dataset | Rows | Defects |", "|---|---|---|"]
     for ds in new:
         q = ds.get("quality") or {}
         defects = ", ".join(f"{escape(k, 60)}: {v}" for k, v in sorted((q.get("defects_head") or {}).items()))
-        parse = (q.get("parse_sdrf") or {}).get("head") or "-"
         rows = (ds.get("rows") or {}).get("new")
         if ds.get("error"):
             defects = f"could not analyse: {escape(ds['error'], 120)}"
-        lines.append(f"| {escape(ds['id'], 60)} | {'-' if rows is None else rows} | {escape(parse, 10)} | "
+        lines.append(f"| {escape(ds['id'], 60)} | {'-' if rows is None else rows} | "
                      f"{defects or 'none'} |")
     lines += ["", "</details>", ""]
     return "\n".join(lines)

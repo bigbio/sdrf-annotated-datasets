@@ -1,29 +1,42 @@
 #!/usr/bin/env python3
 """Post the SDRF change report to its pull request: one sticky comment plus risk labels.
 
-Runs in the privileged workflow_run job. The report artifact was produced from untrusted PR
-code, so it is size-checked and validated, and the PR it names must have the head commit the
-triggering run was built from before anything is written.
+Runs in the privileged comment job, triggered when the report workflow finishes, when an
+allow-listed AI review bot comments, or when one submits a review. Every trigger does the same
+thing: resolve the open PR through the API, find the newest successful report run for the PR's
+current head commit, download its artifact, collect the bots' findings, and re-render the
+comment. The PR number always comes from the API, never from the (PR-built) report.
 
-Usage: sdrf_change_post.py report.json
-Environment: GITHUB_TOKEN, GITHUB_REPOSITORY, WORKFLOW_HEAD_SHA, optional GITHUB_STEP_SUMMARY
+Usage: sdrf_change_post.py
+Environment: GITHUB_TOKEN, GITHUB_REPOSITORY, and PR_NUMBER and/or HEAD_SHA;
+             optional GITHUB_STEP_SUMMARY
 """
 
 from __future__ import annotations
 
+import io
 import json
 import os
 import sys
 import urllib.error
 import urllib.request
+import zipfile
 from pathlib import Path
 from urllib.parse import quote
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from sdrf_change_render import MARKER, RANK, render, validate_report  # noqa: E402
+from sdrf_external_reviews import collect_notes  # noqa: E402
 
 API = "https://api.github.com"
+REPORT_WORKFLOW = "sdrf-change-report.yml"
+ARTIFACT_NAME = "sdrf-change-report"
+COMMENT_AUTHOR = "github-actions[bot]"
+MAX_ARTIFACT_BYTES = 20 * 1024 * 1024
 MAX_REPORT_BYTES = 5 * 1024 * 1024
+SUMMARY_MAX_CHARS = 400_000
+CLEARED_BODY = (f"{MARKER}\n### SDRF change report\n\n"
+                "This PR no longer changes dataset SDRF files.\n")
 LABEL_COLORS = {
     "sdrf:modified-high": ("d73a4a", "SDRF PR changes existing datasets: high-risk changes"),
     "sdrf:modified-medium": ("fb8c00", "SDRF PR changes existing datasets: medium-risk changes"),
@@ -33,18 +46,23 @@ LABEL_COLORS = {
 }
 
 
+class _NoRedirect(urllib.request.HTTPRedirectHandler):
+    def redirect_request(self, req, fp, code, msg, headers, newurl):
+        return None
+
+
 class GitHub:
     def __init__(self, token: str):
         self.token = token
 
+    def _headers(self):
+        return {"Authorization": f"Bearer {self.token}", "Accept": "application/vnd.github+json",
+                "X-GitHub-Api-Version": "2022-11-28"}
+
     def request(self, method: str, path: str, body=None):
         data = json.dumps(body).encode() if body is not None else None
-        req = urllib.request.Request(API + path, data=data, method=method, headers={
-            "Authorization": f"Bearer {self.token}",
-            "Accept": "application/vnd.github+json",
-            "X-GitHub-Api-Version": "2022-11-28",
-            "Content-Type": "application/json",
-        })
+        req = urllib.request.Request(API + path, data=data, method=method,
+                                     headers={**self._headers(), "Content-Type": "application/json"})
         try:
             with urllib.request.urlopen(req, timeout=30) as resp:
                 raw = resp.read()
@@ -54,15 +72,42 @@ class GitHub:
             raise
         return json.loads(raw) if raw else {}
 
+    def download(self, url: str) -> bytes:
+        # The archive URL redirects to signed blob storage; the token must not follow it there.
+        opener = urllib.request.build_opener(_NoRedirect)
+        try:
+            opener.open(urllib.request.Request(url, headers=self._headers()), timeout=30)
+            raise ValueError("artifact download did not redirect")
+        except urllib.error.HTTPError as exc:
+            if exc.code not in (301, 302, 303, 307, 308):
+                raise
+            location = exc.headers["Location"]
+        with urllib.request.urlopen(location, timeout=120) as resp:
+            data = resp.read(MAX_ARTIFACT_BYTES + 1)
+        if len(data) > MAX_ARTIFACT_BYTES:
+            raise ValueError("report artifact exceeds the size limit")
+        return data
+
+
+def _paged(gh, path: str):
+    sep = "&" if "?" in path else "?"
+    for page in range(1, 11):
+        items = gh.request("GET", f"{path}{sep}per_page=100&page={page}") or []
+        yield from items
+        if len(items) < 100:
+            return
+
 
 def labels_for(report: dict) -> list[str]:
     datasets = report["datasets"]
     wanted = set()
     if any(d.get("status") == "new" for d in datasets):
         wanted.add("sdrf:new")
-    if any(d.get("status") == "deleted" for d in datasets):
+    if any(d.get("status") == "deleted" and not d.get("remaining_files") for d in datasets):
         wanted.add("sdrf:deleted")
-    risks = [d["risk"] for d in datasets if d.get("status") == "modified" and d.get("risk") in RANK]
+    risks = [d["risk"] for d in datasets if d.get("risk") in RANK
+             and (d.get("status") == "modified"
+                  or (d.get("status") == "deleted" and d.get("remaining_files")))]
     if risks:
         wanted.add(f"sdrf:modified-{max(risks, key=RANK.__getitem__)}")
     return sorted(wanted)
@@ -74,60 +119,117 @@ def plan_labels(current: list[str], wanted: list[str]) -> tuple[list[str], list[
     return add, remove
 
 
-def _find_comment(gh, repo: str, pr: int):
-    for page in range(1, 11):
-        comments = gh.request("GET", f"/repos/{repo}/issues/{pr}/comments?per_page=100&page={page}") or []
-        for c in comments:
-            user = c.get("user") or {}
-            if MARKER in (c.get("body") or "") and user.get("type") == "Bot":
-                return c
-        if len(comments) < 100:
-            return None
+def find_pr_by_head(gh, repo: str, head_sha: str) -> dict | None:
+    for pr in _paged(gh, f"/repos/{repo}/pulls?state=open"):
+        if (pr.get("head") or {}).get("sha") == head_sha:
+            return pr
     return None
 
 
-def publish(gh, repo: str, report: dict, head_sha: str, body: str) -> None:
-    pr_number = report["pr_number"]
-    pr = gh.request("GET", f"/repos/{repo}/pulls/{pr_number}")
-    if not pr or (pr.get("head") or {}).get("sha") != head_sha:
-        raise SystemExit(f"PR #{pr_number} head does not match the workflow run; not posting")
+def find_report(gh, repo: str, head_sha: str, pr_number: int) -> tuple[dict | None, bool]:
+    """Return (report, a finished report run exists) for this PR's head commit.
 
-    existing = _find_comment(gh, repo, pr_number)
-    if existing:
-        gh.request("PATCH", f"/repos/{repo}/issues/comments/{existing['id']}", {"body": body})
-    else:
-        gh.request("POST", f"/repos/{repo}/issues/{pr_number}/comments", {"body": body})
+    Runs are searched newest first. A run is taken as this PR's when the report inside names
+    the PR, or, for a run without an artifact (no SDRF changes), when GitHub lists the PR on
+    the run or lists no PR at all (fork PRs).
+    """
+    listing = gh.request(
+        "GET", f"/repos/{repo}/actions/workflows/{REPORT_WORKFLOW}/runs"
+               f"?head_sha={head_sha}&event=pull_request&status=completed&per_page=20") or {}
+    runs = [r for r in listing.get("workflow_runs", []) if r.get("conclusion") == "success"]
+    runs.sort(key=lambda r: r.get("created_at", ""), reverse=True)
+    for run in runs:
+        listed = [p.get("number") for p in run.get("pull_requests") or []]
+        arts = (gh.request("GET", f"/repos/{repo}/actions/runs/{run['id']}/artifacts") or {}).get("artifacts", [])
+        art = next((a for a in arts if a.get("name") == ARTIFACT_NAME and not a.get("expired")), None)
+        if art is None:
+            if not listed or pr_number in listed:
+                return None, True
+            continue
+        if art.get("size_in_bytes", 0) > MAX_ARTIFACT_BYTES:
+            raise ValueError("report artifact exceeds the size limit")
+        with zipfile.ZipFile(io.BytesIO(gh.download(art["archive_download_url"]))) as zf:
+            info = zf.getinfo("report.json")
+            if info.file_size > MAX_REPORT_BYTES:
+                raise ValueError("report.json exceeds the size limit")
+            report = validate_report(json.loads(zf.read(info)))
+        if report["pr_number"] == pr_number:
+            return report, True
+    return None, False
 
-    current = [label["name"] for label in pr.get("labels", [])]
-    add, remove = plan_labels(current, labels_for(report))
+
+def _existing_comment(gh, repo: str, pr_number: int):
+    for c in _paged(gh, f"/repos/{repo}/issues/{pr_number}/comments"):
+        # Only our own comment: review bots may quote the marker when they review this report.
+        if MARKER in (c.get("body") or "") and (c.get("user") or {}).get("login") == COMMENT_AUTHOR:
+            return c
+    return None
+
+
+def _sync_labels(gh, repo: str, pr: dict, wanted: list[str]) -> None:
+    number = pr["number"]
+    add, remove = plan_labels([label["name"] for label in pr.get("labels", [])], wanted)
     for name in add:
         if gh.request("GET", f"/repos/{repo}/labels/{quote(name, safe='')}") is None:
             color, description = LABEL_COLORS[name]
             gh.request("POST", f"/repos/{repo}/labels",
                        {"name": name, "color": color, "description": description})
     if add:
-        gh.request("POST", f"/repos/{repo}/issues/{pr_number}/labels", {"labels": add})
+        gh.request("POST", f"/repos/{repo}/issues/{number}/labels", {"labels": add})
     for name in remove:
-        gh.request("DELETE", f"/repos/{repo}/issues/{pr_number}/labels/{quote(name, safe='')}")
+        gh.request("DELETE", f"/repos/{repo}/issues/{number}/labels/{quote(name, safe='')}")
 
 
-def main(argv: list[str]) -> int:
-    path = Path(argv[0])
-    if path.stat().st_size > MAX_REPORT_BYTES:
-        raise SystemExit("report.json exceeds the size limit")
-    report = validate_report(json.loads(path.read_text(encoding="utf-8")))
+def update(gh, repo: str, pr_number: int | None = None, head_sha: str | None = None,
+           summary_file: str | None = None) -> str:
+    if pr_number:
+        pr = gh.request("GET", f"/repos/{repo}/pulls/{pr_number}")
+        if not pr or pr.get("state") != "open":
+            return "no open PR"
+    else:
+        pr = find_pr_by_head(gh, repo, head_sha)
+        if not pr:
+            return "no open PR for this commit"
+    current_sha = pr["head"]["sha"]
+    if head_sha and head_sha != current_sha:
+        return "stale run"
 
-    summary_file = os.environ.get("GITHUB_STEP_SUMMARY")
+    report, has_run = find_report(gh, repo, current_sha, pr["number"])
+    existing = _existing_comment(gh, repo, pr["number"])
+    if report is None:
+        if not has_run:
+            return "report not ready"
+        if existing is None:
+            return "nothing to report"
+        gh.request("PATCH", f"/repos/{repo}/issues/comments/{existing['id']}", {"body": CLEARED_BODY})
+        _sync_labels(gh, repo, pr, [])
+        return "cleared"
+
+    notes = collect_notes(gh, repo, pr["number"], report)
+    body = render(report, external=notes)
+    if existing:
+        gh.request("PATCH", f"/repos/{repo}/issues/comments/{existing['id']}", {"body": body})
+    else:
+        gh.request("POST", f"/repos/{repo}/issues/{pr['number']}/comments", {"body": body})
+    _sync_labels(gh, repo, pr, labels_for(report))
     if summary_file:
         with open(summary_file, "a", encoding="utf-8") as fh:
-            fh.write(render(report, max_chars=10**9))
+            fh.write(render(report, max_chars=SUMMARY_MAX_CHARS, external=notes))
+    return "posted"
 
-    gh = GitHub(os.environ["GITHUB_TOKEN"])
-    publish(gh, os.environ["GITHUB_REPOSITORY"], report, os.environ["WORKFLOW_HEAD_SHA"],
-            render(report))
-    print(f"Posted change report to PR #{report['pr_number']}; labels: {labels_for(report)}")
+
+def main() -> int:
+    pr_env = os.environ.get("PR_NUMBER", "").strip()
+    sha_env = os.environ.get("HEAD_SHA", "").strip()
+    if not pr_env.isdigit() and not sha_env:
+        raise SystemExit("PR_NUMBER or HEAD_SHA is required")
+    status = update(GitHub(os.environ["GITHUB_TOKEN"]), os.environ["GITHUB_REPOSITORY"],
+                    pr_number=int(pr_env) if pr_env.isdigit() else None,
+                    head_sha=sha_env or None,
+                    summary_file=os.environ.get("GITHUB_STEP_SUMMARY"))
+    print(f"SDRF change report: {status}")
     return 0
 
 
 if __name__ == "__main__":
-    raise SystemExit(main(sys.argv[1:]))
+    raise SystemExit(main())

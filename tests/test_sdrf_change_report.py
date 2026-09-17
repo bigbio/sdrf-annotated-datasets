@@ -119,6 +119,29 @@ def test_label_and_accession_equivalence(report_mod, old, new, kind):
     assert c["kind"] == kind
 
 
+def test_identifier_renames_collapse_into_one_group(report_mod):
+    old = to_tsv(base_rows())
+    new_rows = base_rows()
+    for r in new_rows:
+        r["source name"] = "PXD1_" + r["source name"].replace(" ", "_")
+        r["assay name"] = "PXD1_" + r["assay name"].replace(" ", "_")
+    d = report_mod.diff_tables(old, to_tsv(new_rows))
+    assert [(c["column"], c["kind"], c["rows"]) for c in d["changes"]] == [
+        ("source name", "renamed", 24), ("assay name", "renamed", 24)]
+    assert d["changes"][0]["old"] == "sample 1" and d["changes"][0]["new"] == "PXD1_sample_1"
+    ds = {"status": "modified", **d}
+    report_mod.classify(ds)
+    assert ds["risk"] == "low"
+
+
+def test_data_file_rename_is_medium(report_mod):
+    c = {"column": "comment[data file]", "old": "a.mzML", "new": "a.raw", "rows": 3,
+         "total_rows": 3, "kind": "renamed"}
+    ds = {"status": "modified", "changes": [c]}
+    report_mod.classify(ds)
+    assert c["risk"] == "medium"
+
+
 def test_filled_and_emptied(report_mod):
     old = to_tsv(base_rows(**{"characteristics[organism part]": "not available"}))
     new = to_tsv(base_rows())

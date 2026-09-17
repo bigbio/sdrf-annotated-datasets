@@ -56,6 +56,7 @@ SAMPLE_COLUMNS = {
     "characteristics[cell line]",
     "characteristics[developmental stage]",
 }
+IDENTIFIER_COLUMNS = {"source name", "assay name", "comment[data file]", "comment[file uri]"}
 OLS_BASE = "https://www.ebi.ac.uk/ols4/api"
 
 
@@ -249,6 +250,7 @@ def diff_tables(old_text: str, new_text: str) -> dict:
         return result
 
     groups: Counter = Counter()
+    renames: dict[str, tuple[str, str]] = {}
     for name in new_c:
         if name not in old_c:
             continue
@@ -257,7 +259,14 @@ def diff_tables(old_text: str, new_text: str) -> dict:
             old_v = _values(old_rows[i], old_c[name], multi)
             new_v = _values(new_rows[j], new_c[name], multi)
             kind = _kind(old_v, new_v)
-            if kind:
+            if not kind:
+                continue
+            # Identifiers are unique per row, so grouping their transitions yields one group per
+            # row. Collapse renames into a single group that keeps the first example.
+            if name in IDENTIFIER_COLUMNS and kind == "replaced":
+                renames.setdefault(name, (_display(old_v), _display(new_v)))
+                groups[(name, *renames[name], "renamed")] += 1
+            else:
                 groups[(name, _display(old_v), _display(new_v), kind)] += 1
 
     order = {name: i for i, name in enumerate(new_c)}
@@ -373,6 +382,8 @@ def _change_risk(c: dict) -> str:
     column, kind, relation = c["column"], c["kind"], c.get("relation")
     if kind in ("format", "filled"):
         return "low"
+    if kind == "renamed":
+        return "low" if column in ("source name", "assay name") else "medium"
     if kind == "emptied":
         return "medium"
     if column == "characteristics[organism]":

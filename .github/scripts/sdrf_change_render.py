@@ -19,7 +19,8 @@ MAX_CHARS = 60000
 MAX_GROUPS = 30
 RANK = {"low": 1, "medium": 2, "high": 3}
 KIND_NOTE = {"format": " (format only)", "filled": " (value filled in)",
-             "emptied": " (value removed)", "replaced": ""}
+             "emptied": " (value removed)", "replaced": "",
+             "renamed": " (identifiers renamed; first example shown)"}
 
 
 def validate_report(obj):

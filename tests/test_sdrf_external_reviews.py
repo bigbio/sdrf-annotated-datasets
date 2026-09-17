@@ -208,3 +208,36 @@ def test_finding_resolved_in_summary_hides_inline_copy(ext):
                     review_comments=[comment("qodo-code-review[bot]", inline,
                                              path="datasets/PXD000513/PXD000513.sdrf.tsv")])
     assert ext.collect_notes(gh, "o/r", 5, report(ds("PXD000513"))) == {}
+
+
+def sdrf(organism, template, files):
+    header = "source name\tcharacteristics[organism]\tcomment[data file]\tcomment[sdrf template]"
+    rows = [f"s{i}\t{organism}\t{f}\tNT={template};VV=v1.1.0" for i, f in enumerate(files)]
+    return "\n".join([header] + rows) + "\n"
+
+
+YEAST = ("Yeast samples use an animal template", "Rows set saccharomyces cerevisiae under NT=invertebrates;VV=v1.1.0.")
+CHECKSUM = ("A checksum becomes an instrument run", "The final row assigns checksum.txt to comment[data file].")
+
+
+@pytest.mark.parametrize("finding,text,confirmed", [
+    (YEAST, sdrf("saccharomyces cerevisiae", "invertebrates", ["a.raw"]), True),
+    (YEAST, sdrf("Drosophila melanogaster", "invertebrates", ["a.raw"]), False),
+    (CHECKSUM, sdrf("Homo sapiens", "human", ["a.raw", "checksum.txt"]), True),
+    (CHECKSUM, sdrf("Homo sapiens", "human", ["a.raw", "b.d.zip", "c.wiff.scan", "d.mzML.gz"]), False),
+    (("Runs report the wrong instrument", "Two runs report an Orbitrap."),
+     sdrf("Homo sapiens", "human", ["checksum.txt"]), False),
+    (("Five animal datasets omit strain data", "The vertebrates template requires strain."),
+     sdrf("saccharomyces cerevisiae", "vertebrates", ["a.raw"]), False),
+])
+def test_rules(ext, finding, text, confirmed):
+    assert bool(ext.check_finding(finding[0], text)) is confirmed
+
+
+def test_collect_notes_checks_against_file(ext):
+    body = ("1\\. Yeast samples use an animal template <code>📘 Rule violation</code>\n\n<pre>\n"
+            "PXD000513 sets saccharomyces cerevisiae under the invertebrates layer.\n</pre>")
+    gh = FakeGitHub(issue_comments=[comment("qodo-code-review[bot]", body)])
+    files = {"datasets/PXD000513/PXD000513.sdrf.tsv": sdrf("saccharomyces cerevisiae", "invertebrates", ["a.raw"])}
+    notes = ext.collect_notes(gh, "o/r", 5, report(ds("PXD000513")), read_file=files.get)
+    assert notes["PXD000513"][0]["data_check"] == "organism does not fit the declared template"

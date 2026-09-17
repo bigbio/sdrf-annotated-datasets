@@ -13,6 +13,11 @@ from __future__ import annotations
 
 import html
 import re
+import sys
+from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from sdrf_change_report import parse_table  # noqa: E402
 
 REVIEWERS = ("qodo-code-review[bot]", "coderabbitai[bot]", "copilot-pull-request-reviewer[bot]")
 MAX_NOTES_PER_DATASET = 5
@@ -24,6 +29,16 @@ MAX_DETAIL_CHARS = 260
 # or inline "1\. Reverted changes keep stale warnings <code>🐞 Bug</code>".
 FINDING_START = re.compile(r"(?m)^[ \t]*(?:<summary>[ \t]*)?\d+\\?\.[ \t]+(?=.*<code>)")
 DATASET_PATH = re.compile(r"datasets/([^/\s]+)/")
+NON_ANIMAL_GENERA = {"saccharomyces", "schizosaccharomyces", "candida", "pichia", "komagataella",
+                     "escherichia", "bacillus", "mycobacterium", "streptomyces", "synechocystis",
+                     "arabidopsis", "oryza", "zea", "chlamydomonas", "plasmodium", "trypanosoma"}
+TEMPLATE_CLAIM = re.compile(r"\b(templates?|layers?|animal terms|classified as an animal)\b")
+ORGANISM_KIND = re.compile(r"\b(yeast|fung\w*|bacteri\w*|plants?|human|animals?|invertebrates?|vertebrates?)\b")
+FILE_CLAIM = re.compile(r"\b(checksums?|archives?|reports|outputs?|results?|spreadsheets?|tables|"
+                        r"(support|auxiliary|utility|analysis) files?)\b")
+RUN_WORDS = re.compile(r"\b(runs?|assays?|measurements?|acquisitions?)\b")
+ACQUISITION = re.compile(r"\.(raw|wiff2?|wiff\.scan|d|baf|tdf|yep|lcd|mzml|mzxml|mgf|ms2|dat)"
+                         r"(\.(zip|gz|bz2|tar|7z))?$")
 
 
 def clean(text: str) -> str:
@@ -95,6 +110,35 @@ def detail_of(raw: str, title: str) -> str:
     return ""
 
 
+def _column(header, rows, name) -> set[str]:
+    idx = [i for i, h in enumerate(header) if h == name]
+    return {r[i].strip() for r in rows for i in idx if i < len(r) and r[i].strip()}
+
+
+def check_finding(title: str, sdrf_text: str) -> str | None:
+    """Return why the data confirms a finding, or None when it is not checked or not confirmed.
+
+    Only two recurring issue types are checked, recognised from the finding's title, and only
+    confirmations are reported: a rule that finds nothing says nothing, so a correct finding is
+    never marked as wrong.
+    """
+    header, rows = parse_table(sdrf_text)
+    title = title.lower()
+    if TEMPLATE_CLAIM.search(title) and ORGANISM_KIND.search(title):
+        templates = {re.sub(r"^nt=|;.*$", "", t.lower()) for t in _column(header, rows, "comment[sdrf template]")}
+        organisms = {o.lower() for o in _column(header, rows, "characteristics[organism]")}
+        genera = {o.split()[0] for o in organisms}
+        if (("human" in templates and organisms - {"homo sapiens"})
+                or ({"invertebrates", "vertebrates"} & templates and genera & NON_ANIMAL_GENERA)
+                or ("vertebrates" in templates and "homo sapiens" in organisms)):
+            return "organism does not fit the declared template"
+    if FILE_CLAIM.search(title) and RUN_WORDS.search(title):
+        bad = sorted(f for f in _column(header, rows, "comment[data file]") if not ACQUISITION.search(f.lower()))
+        if bad:
+            return "non-acquisition data files: " + ", ".join(bad[:3])
+    return None
+
+
 def _paged(gh, path: str):
     sep = "&" if "?" in path else "?"
     for page in range(1, 11):
@@ -129,7 +173,7 @@ def _confirming_terms(ds: dict) -> dict[str, str]:
 
 
 def collect_notes(gh, repo: str, pr_number: int, report: dict,
-                  reviewers=REVIEWERS) -> dict[str, list[dict]]:
+                  reviewers=REVIEWERS, read_file=None) -> dict[str, list[dict]]:
     datasets = {d["id"]: d for d in report["datasets"] if isinstance(d.get("id"), str)}
     path_ids = {d.get("path"): d["id"] for d in datasets.values()}
     # (reviewer, url, finding text, text searched for accessions, datasets fixed by file path)
@@ -177,8 +221,10 @@ def collect_notes(gh, repo: str, pr_number: int, report: dict,
             text = f"{title} {detail}".lower()
             confirmed = sorted({flag for term, flag in _confirming_terms(datasets[target]).items()
                                 if term in text})
+            sdrf_text = read_file(datasets[target].get("path")) if read_file else None
             bucket.append({"reviewer": login, "url": url, "title": title, "detail": detail,
-                           "confirmed_by": confirmed, "key": key})
+                           "confirmed_by": confirmed, "key": key,
+                           "data_check": check_finding(title, sdrf_text) if sdrf_text else None})
     for bucket in notes.values():
         for n in bucket:
             n.pop("key")

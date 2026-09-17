@@ -174,3 +174,12 @@ def test_same_finding_on_several_datasets_is_one_line(render_mod):
     body = render_mod.render(r, external=notes)
     assert body.count("Eight yeast datasets use animal terms") == 1
     assert "- **PXD0, PXD1, PXD2, PXD3, PXD4, PXD5, PXD6, PXD7 and 2 more** · " in body
+
+
+def test_data_check_rendered_for_single_and_grouped_notes(render_mod):
+    checked = dict(NOTE, data_check="organism does not fit the declared template")
+    body = render_mod.render(report(dataset("PXD1")), external={"PXD1": [checked]})
+    assert "· ✓ confirmed by data: organism does not fit the declared template" in body
+    notes = {"PXD1": [checked], "PXD2": [NOTE], "PXD3": [checked]}
+    body = render_mod.render(report(dataset("PXD1"), dataset("PXD2"), dataset("PXD3")), external=notes)
+    assert "· ✓ confirmed by data for PXD1, PXD3: organism does not fit the declared template" in body

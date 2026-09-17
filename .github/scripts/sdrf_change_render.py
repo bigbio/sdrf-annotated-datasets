@@ -143,8 +143,10 @@ def _notes_block(datasets, external) -> str:
     for ds in datasets:
         for note in external.get(ds["id"]) or []:
             key = (note.get("reviewer"), note.get("title"), note.get("detail"), note.get("url"))
-            entry = grouped.setdefault(key, {"note": note, "ids": [], "confirmed": []})
+            entry = grouped.setdefault(key, {"note": note, "ids": [], "confirmed": [], "checks": []})
             entry["ids"].append(ds["id"])
+            if note.get("data_check"):
+                entry["checks"].append((ds["id"], note["data_check"]))
             entry["confirmed"] += [(ds["id"], c) for c in note.get("confirmed_by") or []]
     lines = []
     for entry in list(grouped.values())[:MAX_NOTES]:
@@ -164,6 +166,12 @@ def _notes_block(datasets, external) -> str:
                 f"{escape(c, 60)} ({escape(i, 60)})" for i, c in confirmed)
         else:
             also = ""
+        checks = entry["checks"]
+        if checks and len(ids) == 1:
+            also += f" · ✓ confirmed by data: {escape(checks[0][1], 200)}"
+        elif checks:
+            also += (f" · ✓ confirmed by data for {', '.join(escape(i, 60) for i, _ in checks[:8])}: "
+                     f"{escape(checks[0][1], 200)}")
         lines.append(f"- **{shown}** · {escape(note.get('reviewer', ''), 60)}: {text}{link}{also}")
     if not lines:
         return ""

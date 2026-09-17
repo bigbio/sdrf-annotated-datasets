@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import base64
 import io
 import json
 import re
@@ -55,7 +56,8 @@ class FakeGitHub:
     """Routes the handful of endpoints the poster uses."""
 
     def __init__(self, pr=None, open_prs=(), runs=(), artifacts=None, blobs=None, comments=(),
-                 review_items=None):
+                 review_items=None, files=None):
+        self.files = files or {}
         self.pr = pr
         self.open_prs = list(open_prs)
         self.runs = list(runs)
@@ -85,6 +87,9 @@ class FakeGitHub:
             return self.comments
         if base.endswith("/reviews") or base.endswith("/pulls/5/comments"):
             return self.review_items.get(base.rsplit("/", 1)[-1], [])
+        if "/contents/" in base:
+            text = self.files.get(base.split("/contents/", 1)[1])
+            return {"encoding": "base64", "content": base64.b64encode(text.encode()).decode()} if text else None
         if "/labels/" in base:
             return {"name": base.rsplit("/", 1)[-1]}
         return None
@@ -222,3 +227,20 @@ def test_update_writes_bounded_job_summary(post_mod, tmp_path):
     post_mod.update(gh, "o/r", pr_number=5, summary_file=str(summary))
     text = summary.read_text()
     assert post_mod.MARKER in text and len(text) <= post_mod.SUMMARY_MAX_CHARS
+
+
+def test_update_checks_findings_against_sdrf_at_head(post_mod):
+    r = report(ds("new", None, id_="PXD000513"))
+    qodo = ("1\\. Yeast samples use an animal template <code>📘 Rule violation</code>\n\n<pre>\n"
+            "PXD000513 declares the invertebrates layer.\n</pre>")
+    sdrf = ("source name\tcharacteristics[organism]\tcomment[sdrf template]\n"
+            "s1\tsaccharomyces cerevisiae\tNT=invertebrates;VV=v1.1.0\n")
+    gh = FakeGitHub(pr=pr(), runs=[run(1)], artifacts={"1": [artifact(1)]},
+                    blobs={"https://api.github.com/artifacts/1/zip": zipped(r)},
+                    comments=[{"id": 8, "body": qodo, "user": {"login": "qodo-code-review[bot]", "type": "Bot"},
+                               "html_url": "https://github.com/o/r/pull/5#issuecomment-8"}],
+                    files={"datasets/PXD000513/PXD000513.sdrf.tsv": sdrf})
+    post_mod.update(gh, "o/r", pr_number=5)
+    (body,) = posted(gh, "POST", "/issues/5/comments")
+    assert "✓ confirmed by data: organism does not fit the declared template" in body["body"]
+    assert any(p.endswith(f"?ref={SHA}") for m, p, _ in gh.calls if "/contents/" in p)

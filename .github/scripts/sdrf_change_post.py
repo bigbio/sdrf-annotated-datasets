@@ -14,6 +14,8 @@ Environment: GITHUB_TOKEN, GITHUB_REPOSITORY, and PR_NUMBER and/or HEAD_SHA;
 
 from __future__ import annotations
 
+import base64
+import functools
 import io
 import json
 import os
@@ -205,7 +207,15 @@ def update(gh, repo: str, pr_number: int | None = None, head_sha: str | None = N
         _sync_labels(gh, repo, pr, [])
         return "cleared"
 
-    notes = collect_notes(gh, repo, pr["number"], report)
+    @functools.cache
+    def read_file(path):
+        # Read as data through the API; PR code is never checked out or run in this job.
+        found = gh.request("GET", f"/repos/{repo}/contents/{quote(path)}?ref={current_sha}")
+        if not isinstance(found, dict) or found.get("encoding") != "base64":
+            return None
+        return base64.b64decode(found["content"]).decode("utf-8", errors="replace")
+
+    notes = collect_notes(gh, repo, pr["number"], report, read_file=read_file)
     body = render(report, external=notes)
     if existing:
         gh.request("PATCH", f"/repos/{repo}/issues/comments/{existing['id']}", {"body": body})

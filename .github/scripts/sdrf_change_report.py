@@ -111,8 +111,12 @@ def _equivalent(a: str, b: str) -> bool:
     if na == nb:
         return True
     if na[0] == "kv" and nb[0] == "kv":
-        return na[1] == nb[1] and (na[2] is None or nb[2] is None or na[2] == nb[2])
-    return False
+        # The accession identifies the term: a renamed label with the same AC is formatting.
+        if na[2] and nb[2]:
+            return na[2] == nb[2]
+        return na[1] == nb[1]
+    # A bare label rewritten as NT=<same label>;AC=... is formatting too.
+    return na[1] == nb[1]
 
 
 def _is_empty(values: tuple[str, ...]) -> bool:

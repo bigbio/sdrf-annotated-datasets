@@ -105,6 +105,20 @@ def test_key_value_formatting_is_format_only(report_mod):
     assert c["kind"] == "format"
 
 
+@pytest.mark.parametrize("old,new,kind", [
+    ("data-dependent acquisition", "NT=Data-dependent acquisition;AC=MS:1003221", "format"),
+    ("AC=MS:1000133;NT=CID", "NT=collision-induced dissociation;AC=MS:1000133", "format"),
+    ("NT=CID;AC=MS:1000133", "NT=HCD;AC=MS:1000422", "replaced"),
+    ("NT=CID", "NT=HCD", "replaced"),
+])
+def test_label_and_accession_equivalence(report_mod, old, new, kind):
+    header = ["source name", "comment[data file]", "comment[dissociation method]"]
+    t_old = "\t".join(header) + f"\ns1\tf1.raw\t{old}\n"
+    t_new = "\t".join(header) + f"\ns1\tf1.raw\t{new}\n"
+    (c,) = report_mod.diff_tables(t_old, t_new)["changes"]
+    assert c["kind"] == kind
+
+
 def test_filled_and_emptied(report_mod):
     old = to_tsv(base_rows(**{"characteristics[organism part]": "not available"}))
     new = to_tsv(base_rows())

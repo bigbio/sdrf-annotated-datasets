@@ -66,28 +66,52 @@ def sanitize(text: str) -> str:
     return s
 
 
+def _short(value, limit: int = 200) -> str:
+    text = " ".join(str(value).split())
+    return text if len(text) <= limit else text[: limit - 1] + "…"
+
+
 def _payload(ds: dict) -> str:
-    # Risk levels and quality counts are already in the comment; leaving them out stops a
-    # small model from spending its sentences restating them.
-    all_changes = [c for c in ds.get("changes") or [] if c.get("kind") != "format"]
-    data = {"id": ds.get("id"), "status": ds.get("status")}
-    for key in ("rows", "columns", "restructured", "error"):
-        if ds.get(key):
-            data[key] = ds[key]
-    findings = [f["message"] for f in ds.get("findings") or [] if not f["message"].startswith("Column ")]
+    """Serialise one dataset's changes for the model, always as complete JSON within the limit.
+
+    Risk levels and quality counts are already in the comment; leaving them out stops a small
+    model from spending its sentences restating them.
+    """
+    all_changes = [c for c in ds.get("changes") or []
+                   if isinstance(c, dict) and c.get("kind") != "format"]
+    data: dict = {"id": _short(ds.get("id"), 60), "status": _short(ds.get("status"), 20)}
+    rows = ds.get("rows")
+    if isinstance(rows, dict):
+        data["rows"] = {k: v for k, v in rows.items() if isinstance(v, int)}
+    columns = ds.get("columns")
+    if isinstance(columns, dict):
+        data["columns"] = {k: [_short(c, 80) for c in v[:10]] if isinstance(v, list) else v
+                           for k, v in columns.items() if k in ("added", "removed") and v}
+    if ds.get("restructured"):
+        data["restructured"] = True
+    findings = [_short(f.get("message", ""), 200) for f in ds.get("findings") or []
+                if isinstance(f, dict) and not str(f.get("message", "")).startswith(("Column ", "Repeated column"))]
     if findings:
-        data["findings"] = findings
-    changes = [{k: c[k] for k in CHANGE_KEYS if c.get(k) is not None}
-               for c in all_changes[:MAX_CHANGE_GROUPS]]
-    data["changes"] = changes
-    text = json.dumps(data, ensure_ascii=False)
-    while len(text) > MAX_INPUT_CHARS and changes:
-        changes.pop()
-        text = json.dumps(data, ensure_ascii=False)
-    if len(changes) < len(all_changes):
-        data["changes_omitted"] = len(all_changes) - len(changes)
-        text = json.dumps(data, ensure_ascii=False)
-    return text[:MAX_INPUT_CHARS]
+        data["findings"] = findings[:5]
+    data["changes"] = [{k: (_short(c[k]) if isinstance(c[k], str) else c[k])
+                        for k in CHANGE_KEYS if c.get(k) is not None}
+                       for c in all_changes[:MAX_CHANGE_GROUPS]]
+
+    def dump() -> str:
+        omitted = len(all_changes) - len(data["changes"])
+        if omitted:
+            data["changes_omitted"] = omitted
+        return json.dumps(data, ensure_ascii=False)
+
+    text = dump()
+    while len(text) > MAX_INPUT_CHARS and data["changes"]:
+        data["changes"].pop()
+        text = dump()
+    for key in ("findings", "columns"):
+        if len(text) > MAX_INPUT_CHARS and key in data:
+            del data[key]
+            text = dump()
+    return text
 
 
 def http_post(url: str, payload: dict) -> dict:
@@ -112,7 +136,10 @@ def summarize(ds: dict, host: str, model: str, post=http_post) -> str | None:
         "options": {"temperature": 0.2, "num_predict": 160, "num_ctx": 4096,
                     "repeat_penalty": 1.2},
     })
-    text = (reply.get("message") or {}).get("content") or ""
+    message = reply.get("message") if isinstance(reply, dict) else None
+    text = message.get("content") if isinstance(message, dict) else None
+    if not isinstance(text, str):
+        raise ValueError("unexpected reply from the model server")
     return sanitize(text) or None
 
 

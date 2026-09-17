@@ -74,7 +74,7 @@ def test_identical_files_have_no_changes(report_mod):
     t = to_tsv(base_rows())
     d = report_mod.diff_tables(t, t)
     assert d["changes"] == []
-    assert d["columns"] == {"added": [], "removed": []}
+    assert d["columns"] == {"added": [], "removed": [], "count_changed": []}
     assert d["rows"] == {"old": 24, "new": 24, "added": 0, "removed": 0}
     assert d["restructured"] is False
 
@@ -163,17 +163,19 @@ def test_added_modification_is_reported_as_set_change(report_mod):
     assert c["column"] == "comment[modification parameters]"
     assert c["kind"] == "replaced"
     assert "Phospho" in c["new"] and "Phospho" not in c["old"]
-    assert report_mod.diff_tables(old, new)["columns"] == {"added": [], "removed": []}
+    assert report_mod.diff_tables(old, new)["columns"] == {
+        "added": [], "removed": [],
+        "count_changed": [{"column": "comment[modification parameters]", "old": 2, "new": 3}]}
 
 
 def test_column_removed_and_added(report_mod):
     old = to_tsv(base_rows())
     new = to_tsv(base_rows(), drop=("characteristics[disease]",))
     d = report_mod.diff_tables(old, new)
-    assert d["columns"] == {"added": [], "removed": ["characteristics[disease]"]}
+    assert d["columns"] == {"added": [], "removed": ["characteristics[disease]"], "count_changed": []}
     assert d["changes"] == []
     assert report_mod.diff_tables(new, old)["columns"] == {
-        "added": ["characteristics[disease]"], "removed": []}
+        "added": ["characteristics[disease]"], "removed": [], "count_changed": []}
 
 
 def test_rows_removed_and_data_files(report_mod):
@@ -417,6 +419,39 @@ def test_dataset_findings_risk(report_mod, kw, expected):
     ds = modified(**kw)
     report_mod.classify(ds)
     assert ds["risk"] == expected
+
+
+def test_deleted_file_with_remaining_sdrfs_is_medium(report_mod):
+    d = {"id": "PXD1", "status": "deleted", "changes": [], "remaining_files": ["PXD1-dia.sdrf.tsv"]}
+    report_mod.classify(d)
+    assert d["risk"] == "medium"
+    assert d["findings"][0]["message"] == "SDRF file deleted; the dataset still has PXD1-dia.sdrf.tsv"
+
+
+def test_build_dataset_records_remaining_files(report_mod, tmp_path, monkeypatch):
+    monkeypatch.chdir(tmp_path)
+    gone = "datasets/PXD1/PXD1-dda.sdrf.tsv"
+    (tmp_path / "datasets/PXD1").mkdir(parents=True)
+    (tmp_path / "datasets/PXD1/PXD1-dia.sdrf.tsv").write_text(to_tsv(base_rows(2)))
+    (tmp_path / ".base" / gone).parent.mkdir(parents=True)
+    (tmp_path / ".base" / gone).write_text(to_tsv(base_rows(2)))
+    ds = report_mod.build_dataset("deleted", gone, tmp_path / ".base", None)
+    assert ds["remaining_files"] == ["PXD1-dia.sdrf.tsv"]
+    assert ds["risk"] == "medium"
+
+
+def test_repeated_column_count_change_is_reported(report_mod):
+    header = HEADER + ["comment[modification parameters]"]
+    old = to_tsv(base_rows(), header=header)
+    new = to_tsv(base_rows())
+    d = report_mod.diff_tables(old, new)
+    assert d["changes"] == []
+    assert d["columns"]["count_changed"] == [
+        {"column": "comment[modification parameters]", "old": 3, "new": 2}]
+    ds = {"status": "modified", **d}
+    report_mod.classify(ds)
+    assert ds["findings"] == [{"message": "Repeated column count changed: "
+                               "comment[modification parameters] (3 → 2)", "risk": "low"}]
 
 
 def test_deleted_is_high_and_new_has_no_risk(report_mod):

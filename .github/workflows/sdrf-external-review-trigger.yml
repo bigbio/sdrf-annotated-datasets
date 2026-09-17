@@ -22,4 +22,5 @@ jobs:
         env:
           REVIEWER: ${{ github.event.sender.login }}
           PR_NUMBER: ${{ github.event.pull_request.number }}
-        run: echo "External review activity by $REVIEWER on PR #$PR_NUMBER"
+        run: |
+          echo "External review activity by $REVIEWER on PR #$PR_NUMBER"

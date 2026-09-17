@@ -237,7 +237,9 @@ def diff_tables(old_text: str, new_text: str) -> dict:
         "rows": {"old": len(old_rows), "new": len(new_rows),
                  "added": len(new_rows) - len(matched), "removed": len(old_rows) - len(matched)},
         "columns": {"added": [c for c in new_c if c not in old_c],
-                    "removed": [c for c in old_c if c not in new_c]},
+                    "removed": [c for c in old_c if c not in new_c],
+                    "count_changed": [{"column": c, "old": len(old_c[c]), "new": len(new_c[c])}
+                                      for c in new_c if c in old_c and len(old_c[c]) != len(new_c[c])]},
         "restructured": False,
         "changes": [],
         "removed_data_files": _removed_files(old_rows, old_c, new_rows, new_c),
@@ -400,7 +402,10 @@ def classify(ds: dict) -> None:
         ds["risk"] = None
         return
     findings = []
-    if ds["status"] == "deleted":
+    if ds["status"] == "deleted" and ds.get("remaining_files"):
+        findings.append({"message": "SDRF file deleted; the dataset still has "
+                                    + ", ".join(ds["remaining_files"]), "risk": "medium"})
+    elif ds["status"] == "deleted":
         findings.append({"message": "Dataset deleted", "risk": "high"})
     elif ds.get("error"):
         findings.append({"message": "File could not be analysed", "risk": "high"})
@@ -424,6 +429,9 @@ def classify(ds: dict) -> None:
             findings.append({"message": f"Column removed: {name}", "risk": risk})
         for name in (ds.get("columns") or {}).get("added", []):
             findings.append({"message": f"Column added: {name}", "risk": "low"})
+        for cc in (ds.get("columns") or {}).get("count_changed", []):
+            findings.append({"message": f"Repeated column count changed: {cc['column']} "
+                                        f"({cc['old']} → {cc['new']})", "risk": "low"})
         if rows.get("added"):
             findings.append({"message": f"{rows['added']} rows added", "risk": "low"})
     for c in ds.get("changes", []):
@@ -490,7 +498,8 @@ def read_name_status(text: str) -> list[tuple[str, str]]:
 def build_dataset(status: str, path: str, base_dir: Path, resolver) -> dict:
     ds = {"id": Path(path).parent.name, "path": path, "status": status,
           "restructured": False, "rows": {"old": None, "new": None, "added": 0, "removed": 0},
-          "columns": {"added": [], "removed": []}, "changes": [], "quality": None}
+          "columns": {"added": [], "removed": [], "count_changed": []}, "changes": [],
+          "quality": None}
     head = Path(path) if status != "deleted" else None
     base = base_dir / path if status != "new" else None
     try:
@@ -504,6 +513,10 @@ def build_dataset(status: str, path: str, base_dir: Path, resolver) -> dict:
             if not header:
                 raise ValueError("SDRF file has no header")
             ds["rows"]["new" if status == "new" else "old"] = len(rows)
+            if status == "deleted":
+                # A dataset can have several SDRFs (DDA and DIA, per tissue); losing one is not
+                # losing the dataset. The PR checkout holds whatever remains.
+                ds["remaining_files"] = sorted(p.name for p in Path(path).parent.glob("*.sdrf*"))
         if head:
             # New files are already validated by the SDRF review gate; running parse_sdrf again
             # doubles CI time on large batch PRs. Only the before/after comparison is new here.

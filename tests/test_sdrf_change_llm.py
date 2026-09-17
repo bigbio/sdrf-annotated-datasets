@@ -131,3 +131,23 @@ def test_summarize_command_skips_when_server_unreachable(llm_mod, tmp_path, monk
 def test_unknown_command(llm_mod):
     with pytest.raises(SystemExit):
         llm_mod.main(["nope", "x"])
+
+
+def test_payload_is_always_valid_json_within_limit(llm_mod):
+    huge = "x" * 3000
+    d = ds("A", risk="high",
+           columns={"added": [f"comment[{huge}{i}]" for i in range(20)], "removed": []},
+           findings=[{"message": huge, "risk": "high"}],
+           changes=[{"column": "comment[label]", "old": huge, "new": huge + "y", "rows": 1,
+                     "total_rows": 1, "kind": "replaced"} for _ in range(15)])
+    text = llm_mod._payload(d)
+    assert len(text) <= llm_mod.MAX_INPUT_CHARS
+    data = json.loads(text)
+    assert data["id"] == "A"
+
+
+@pytest.mark.parametrize("reply", [None, [], {"message": "text"}, {"message": {"content": 3}}])
+def test_malformed_reply_omits_summary(llm_mod, reply):
+    report = {"datasets": [ds("A", risk="high")]}
+    assert llm_mod.add_summaries(report, "http://h", "m", post=lambda url, payload: reply) == 0
+    assert "summary" not in report["datasets"][0]

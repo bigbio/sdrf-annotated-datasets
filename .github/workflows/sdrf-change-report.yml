@@ -2,13 +2,13 @@
 # and for existing datasets the grouped value changes, ontology relations, risk levels and
 # quality delta. Runs with read-only permissions and no secrets because it executes PR code;
 # sdrf-change-comment.yml picks up the uploaded report and posts it.
+#
+# Not path-filtered on purpose: when a later push reverts every SDRF change, this run finishes
+# without an artifact and the comment job clears the earlier report and labels.
 name: SDRF change report
 
 on:
   pull_request:
-    paths:
-      - 'datasets/**/*.sdrf.tsv'
-      - 'datasets/**/*.sdrf'
 
 permissions:
   contents: read
@@ -21,17 +21,8 @@ jobs:
         with:
           fetch-depth: 0
 
-      - uses: actions/setup-python@v5
-        with:
-          python-version: '3.11'
-
-      - name: Install sdrf-pipelines from GitHub (main)
-        run: |
-          set -euo pipefail
-          python -m pip install --upgrade pip wheel setuptools
-          python -m pip install --upgrade "git+https://github.com/bigbio/sdrf-pipelines.git@main"
-
       - name: Collect changed SDRF files
+        id: changed
         env:
           BASE: ${{ github.event.pull_request.base.sha }}
           HEAD: ${{ github.event.pull_request.head.sha }}
@@ -40,9 +31,24 @@ jobs:
           # Three-dot diff: only what the PR introduces relative to the merge-base.
           git -c core.quotepath=off diff --name-status --no-renames --diff-filter=AMD \
             "$BASE...$HEAD" > name-status.txt
-          cat name-status.txt
+          count=$(grep -cE $'^[AMD]\tdatasets/.+\\.sdrf(\\.tsv)?$' name-status.txt || true)
+          echo "count=$count" >> "$GITHUB_OUTPUT"
+          echo "Dataset SDRF files changed: $count"
+
+      - uses: actions/setup-python@v5
+        if: steps.changed.outputs.count != '0'
+        with:
+          python-version: '3.11'
+
+      - name: Install sdrf-pipelines from GitHub (main)
+        if: steps.changed.outputs.count != '0'
+        run: |
+          set -euo pipefail
+          python -m pip install --upgrade pip wheel setuptools
+          python -m pip install --upgrade "git+https://github.com/bigbio/sdrf-pipelines.git@main"
 
       - name: Snapshot base versions of modified and deleted files
+        if: steps.changed.outputs.count != '0'
         env:
           BASE: ${{ github.event.pull_request.base.sha }}
         run: |
@@ -57,6 +63,7 @@ jobs:
           done < name-status.txt
 
       - name: Build change report
+        if: steps.changed.outputs.count != '0'
         env:
           BASE: ${{ github.event.pull_request.base.sha }}
           HEAD: ${{ github.event.pull_request.head.sha }}
@@ -69,6 +76,7 @@ jobs:
       # Summaries come from a small model running on the runner's CPU: no API key, and no
       # data leaves the runner. Ollama is started only when a PR modifies or deletes datasets.
       - name: Add AI-generated summaries (local model)
+        if: steps.changed.outputs.count != '0'
         env:
           OLLAMA_IMAGE: ollama/ollama:0.34.1
           SDRF_SUMMARY_MODEL: qwen2.5:3b
@@ -91,8 +99,9 @@ jobs:
             python .github/scripts/sdrf_change_llm.py summarize out/report.json
 
       - uses: actions/upload-artifact@v4
+        if: steps.changed.outputs.count != '0'
         with:
           name: sdrf-change-report
           path: out/report.json
           if-no-files-found: ignore
-          retention-days: 7
+          retention-days: 30

@@ -38,7 +38,10 @@ FILE_CLAIM = re.compile(r"\b(checksums?|archives?|reports|outputs?|results?|spre
                         r"(support|auxiliary|utility|analysis) files?)\b")
 RUN_WORDS = re.compile(r"\b(runs?|assays?|measurements?|acquisitions?)\b")
 ACQUISITION = re.compile(r"\.(raw|wiff2?|wiff\.scan|d|baf|tdf|yep|lcd|mzml|mzxml|mgf|ms2|dat)"
-                         r"(\.(zip|gz|bz2|tar|7z))?$")
+                         r"(\.(zip|gz|bz2|tar|7z|rar))?$")
+# A bare archive may hold raw files; it only counts as evidence when its name says otherwise.
+ARCHIVE = re.compile(r"\.(zip|rar|7z|tar|gz)$")
+NAMED_OUTPUT = re.compile(r"result|report|output|search|fasta|table|txt|checksum|maxquant|analysis")
 
 
 def clean(text: str) -> str:
@@ -133,7 +136,9 @@ def check_finding(title: str, sdrf_text: str) -> str | None:
                 or ("vertebrates" in templates and "homo sapiens" in organisms)):
             return "organism does not fit the declared template"
     if FILE_CLAIM.search(title) and RUN_WORDS.search(title):
-        bad = sorted(f for f in _column(header, rows, "comment[data file]") if not ACQUISITION.search(f.lower()))
+        bad = sorted(f for f in _column(header, rows, "comment[data file]")
+                     if not ACQUISITION.search(f.lower())
+                     and (not ARCHIVE.search(f.lower()) or NAMED_OUTPUT.search(f.lower())))
         if bad:
             return "non-acquisition data files: " + ", ".join(bad[:3])
     return None

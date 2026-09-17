@@ -225,6 +225,8 @@ CHECKSUM = ("A checksum becomes an instrument run", "The final row assigns check
     (YEAST, sdrf("Drosophila melanogaster", "invertebrates", ["a.raw"]), False),
     (CHECKSUM, sdrf("Homo sapiens", "human", ["a.raw", "checksum.txt"]), True),
     (CHECKSUM, sdrf("Homo sapiens", "human", ["a.raw", "b.d.zip", "c.wiff.scan", "d.mzML.gz"]), False),
+    (CHECKSUM, sdrf("Homo sapiens", "human", ["a.d.rar", "CBX7-TurboID.zip"]), False),
+    (CHECKSUM, sdrf("Homo sapiens", "human", ["a.raw", "MQ_results.zip"]), True),
     (("Runs report the wrong instrument", "Two runs report an Orbitrap."),
      sdrf("Homo sapiens", "human", ["checksum.txt"]), False),
     (("Five animal datasets omit strain data", "The vertebrates template requires strain."),

@@ -183,3 +183,26 @@ def test_data_check_rendered_for_single_and_grouped_notes(render_mod):
     notes = {"PXD1": [checked], "PXD2": [NOTE], "PXD3": [checked]}
     body = render_mod.render(report(dataset("PXD1"), dataset("PXD2"), dataset("PXD3")), external=notes)
     assert "· ✓ confirmed by data for PXD1, PXD3: organism does not fit the declared template" in body
+
+
+def test_needs_attention_lists_independent_confirmations_first(render_mod):
+    checked = dict(NOTE, title="Yeast samples use an animal template",
+                   data_check="organism does not fit the declared template")
+    notes = {"PXD1": [NOTE, checked], "PXD2": [checked]}
+    r = report(dataset("PXD1", risk="high", changes=[SWAP],
+                       findings=[{"message": "3 rows removed", "risk": "high"}]),
+               dataset("PXD2", status="new", risk=None))
+    body = render_mod.render(r, external=notes)
+    attention = body[body.index("#### ⚠️ Needs attention"):body.index("Changes to datasets")]
+    assert "- **PXD1** · 3 rows removed" in attention
+    assert "- **PXD1** · characteristics\\[organism\\]: Homo sapiens → Mus musculus (24/24 rows)" in attention
+    assert ("- **PXD1, PXD2** · Yeast samples use an animal template: organism does not fit the "
+            "declared template (qodo-code-review\\[bot\\]") in attention
+    assert "Eight yeast datasets" not in attention
+    notes_part = body[body.index("#### External reviewer notes"):]
+    assert notes_part.index("Yeast samples use an animal template") < notes_part.index("Eight yeast datasets")
+
+
+def test_no_needs_attention_without_confirmations_or_high_risk(render_mod):
+    body = render_mod.render(report(dataset("PXD1", risk="medium")), external={"PXD1": [NOTE]})
+    assert "Needs attention" not in body

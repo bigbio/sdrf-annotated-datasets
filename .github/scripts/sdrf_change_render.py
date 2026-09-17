@@ -20,6 +20,7 @@ MARKER = "<!-- sdrf-change-report -->"
 MAX_CHARS = 60000
 MAX_GROUPS = 30
 MAX_NOTES = 60
+MAX_ATTENTION = 15
 RANK = {"low": 1, "medium": 2, "high": 3}
 STATUSES = {"new", "modified", "deleted"}
 KIND_NOTE = {"format": " (format only)", "filled": " (value filled in)",
@@ -135,10 +136,8 @@ def _new_block(new) -> str:
     return "\n".join(lines)
 
 
-def _notes_block(datasets, external) -> str:
-    if not external:
-        return ""
-    # One line per finding, listing every dataset it concerns (bots often name several).
+def _group_notes(datasets, external) -> list[dict]:
+    """One entry per finding, listing every dataset it concerns; data-confirmed findings first."""
     grouped: dict[tuple, dict] = {}
     for ds in datasets:
         for note in external.get(ds["id"]) or []:
@@ -148,10 +147,40 @@ def _notes_block(datasets, external) -> str:
             if note.get("data_check"):
                 entry["checks"].append((ds["id"], note["data_check"]))
             entry["confirmed"] += [(ds["id"], c) for c in note.get("confirmed_by") or []]
+    return sorted(grouped.values(), key=lambda e: not e["checks"])
+
+
+def _ids(ids) -> str:
+    return ", ".join(escape(i, 60) for i in ids[:8]) + (f" and {len(ids) - 8} more" if len(ids) > 8 else "")
+
+
+def _attention_block(changed, entries) -> str:
+    """What this report's own checks back up: high-risk changes and data-confirmed bot findings."""
     lines = []
-    for entry in list(grouped.values())[:MAX_NOTES]:
+    for ds in changed:
+        own = [f["message"] for f in ds.get("findings", []) if f.get("risk") == "high"]
+        own += [f"{c.get('column', '')}: {c.get('old', '')} → {c.get('new', '')} "
+                f"({_num(c.get('rows'))}/{_num(c.get('total_rows'))} rows)"
+                for c in ds.get("changes", []) if c.get("risk") == "high"]
+        lines += [f"- **{escape(ds['id'], 60)}** · {escape(m, 200)}" for m in own[:3]]
+    for entry in entries:
+        if entry["checks"]:
+            note = entry["note"]
+            lines.append(f"- **{_ids([i for i, _ in entry['checks']])}** · {escape(note.get('title', ''), 120)}: "
+                         f"{escape(entry['checks'][0][1], 200)} ({escape(note.get('reviewer', ''), 60)})")
+    if not lines:
+        return ""
+    extra = [f"- … and {len(lines) - MAX_ATTENTION} more below"] if len(lines) > MAX_ATTENTION else []
+    return "\n".join(["#### ⚠️ Needs attention", "",
+                      "Backed by this report's own checks of the SDRF data: high-risk changes and "
+                      "AI reviewer findings the data confirms.", ""] + lines[:MAX_ATTENTION] + extra + [""])
+
+
+def _notes_block(entries) -> str:
+    lines = []
+    for entry in entries[:MAX_NOTES]:
         note, ids = entry["note"], entry["ids"]
-        shown = ", ".join(escape(i, 60) for i in ids[:8]) + (f" and {len(ids) - 8} more" if len(ids) > 8 else "")
+        shown = _ids(ids)
         text = escape(note.get("title", ""), 120)
         detail = str(note.get("detail") or "")
         if detail:
@@ -189,13 +218,17 @@ def render(report: dict, max_chars: int = MAX_CHARS, external: dict | None = Non
     head = [MARKER, "### SDRF change report", "",
             f"{_num(s.get('new'))} new · {_num(s.get('modified'))} modified · "
             f"{_num(s.get('deleted'))} deleted · highest risk: {escape(s.get('risk') or 'none', 10)}", ""]
+    entries = _group_notes(changed + new, external or {})
+    attention = _attention_block(changed, entries)
+    if attention:
+        head.append(attention)
     if changed:
         head += ["Changes to datasets that already exist in the repository:", "",
                  "| Dataset | Change | Risk | Rows old → new | Quality |", "|---|---|---|---|---|"]
         head += [f"| {_label(d)} | {escape(d['status'], 20)} | {escape(d.get('risk') or '-', 10)} | "
                  f"{_rows(d)} | {_quality(d.get('quality'))} |" for d in changed]
         head.append("")
-    notes = _notes_block(changed + new, external)
+    notes = _notes_block(entries)
     blocks = [_dataset_block(d) for d in changed]
     new_block = _new_block(new)
     footer = (f"<sub>Advisory report built from {escape(str(report.get('head_sha', ''))[:12], 20)}. "

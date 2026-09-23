@@ -55,6 +55,19 @@ _Auto-generated from curated `datasets/` on 2026-09-23T11:06:30Z. Sandbox drafts
 
 <!-- STATS:END -->
 
+## Gold standard datasets
+
+Looking for a known-good SDRF to point a pipeline at? A short curated list is kept for
+exactly that. Each entry passes both CI gates, maps every row to a real deposited run, and
+carries enough sample metadata to exercise what usually breaks first — TMT channel maps,
+cell-line identity, phospho-enrichment metadata and factor-value driven designs. Between
+them they span five organisms, DDA and DIA, label-free, TMT and SILAC, and 112 to 5,798
+rows. The standout is `PXD030304`: 949 cell lines with per-line sex, age, ancestry and
+Cellosaurus accession across 5,798 individually mapped runs.
+
+See **[docs/gold-standard-datasets.md](docs/gold-standard-datasets.md)** for the list,
+what each one is good for testing, and how to fetch and validate them.
+
 ## Key links
 
 | Resource | URL |

@@ -68,6 +68,12 @@ Cellosaurus accession across 5,798 individually mapped runs.
 See **[docs/gold-standard-datasets.md](docs/gold-standard-datasets.md)** for the list,
 what each one is good for testing, and how to fetch and validate them.
 
+## Known issues
+
+A few SDRFs describe deposits whose referenced data file is not instrument data (for example
+a 2 KB metadata stub named `.raw`). They are kept, not deleted, and listed with the evidence
+in **[docs/known-issues.md](docs/known-issues.md)** so pipelines can skip them.
+
 ## Key links
 
 | Resource | URL |

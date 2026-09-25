@@ -14,28 +14,28 @@ The SDRF specification lives in [`bigbio/proteomics-sample-metadata`](https://gi
 <!-- STATS:START -->
 ## Resource at a glance
 
-_Auto-generated from curated `datasets/` on 2026-09-04T14:37:17Z. Sandbox drafts are excluded._
+_Auto-generated from curated `datasets/` on 2026-09-25T02:27:50Z. Sandbox drafts are excluded._
 
 | Metric | Count |
 | --- | ---: |
-| Accessions | 7,845 |
-| SDRF files | 8,019 |
-| Accessions with a declared template | 7,790 |
-| Samples (unique `source name` per file) | 227,140 |
-| Runs (unique `comment[data file]` per file) | 294,207 |
-| Assay rows | 370,124 |
-| Human contributors | 17 |
+| Accessions | 9,991 |
+| SDRF files | 10,246 |
+| Accessions with a declared template | 9,989 |
+| Samples (unique `source name` per file) | 307,379 |
+| Runs (unique `comment[data file]` per file) | 413,472 |
+| Assay rows | 506,130 |
+| Human contributors | 27 |
 | AI agents (named fingerprints) | 5 |
-| AI-assisted accessions | 7,845 |
-| Unidentified agent | 882 |
-| Multi-agent accessions | 8 |
-| Distinct instruments | 115 |
+| AI-assisted accessions | 9,991 |
+| Unidentified agent | 2,477 |
+| Multi-agent accessions | 340 |
+| Distinct instruments | 150 |
 | Median runs per accession | 12 |
-| Accessions with modification parameters | 2,366 |
-| ProteomeXchange coverage | 7,810 / 55,772 (14.0%) |
-| PRIDE coverage | 7,648 / 41,087 (18.6%) |
+| Accessions with modification parameters | 4,423 |
+| ProteomeXchange coverage | 9,937 / 56,650 (17.5%) |
+| PRIDE coverage | 9,863 / 41,741 (23.6%) |
 
-**Highlights:** most common organism is **Homo sapiens**; **60,538** DIA assay rows; **65,027** TMT and **278,839** LFQ assay rows; **68** single-cell, **217** cell-line, and **591** metaproteomics accessions; sample-field completeness (applicable samples): disease 29%, age 10%; all **7,845** accessions are AI-assisted (**17** human contributors, **5** named AI agents); identified fingerprints are mostly **Cursor**; **882** accessions have no vendor fingerprint (typical of Claude Code committed as the reviewer); **8** accessions have Codex evidence (`codex/` PR branches); **8** accessions were touched by more than one agent (most common handoff **Cursor → Claude**); most common instrument is **Q Exactive**; most common modification is **Carbamidomethyl**; **14.0%** of public ProteomeXchange datasets have a curated SDRF here; **18.6%** of PRIDE projects are annotated.
+**Highlights:** most common organism is **Homo sapiens**; **98,801** DIA assay rows; **78,135** TMT and **382,631** LFQ assay rows; **71** single-cell, **539** cell-line, and **594** metaproteomics accessions; sample-field completeness (applicable samples): disease 39%, age 12%; all **9,991** accessions are AI-assisted (**27** human contributors, **5** named AI agents); identified fingerprints are mostly **Cursor**; **2,477** accessions have no vendor fingerprint (typical of Claude Code committed as the reviewer); **409** accessions have Codex evidence (`codex/` PR branches); **340** accessions were touched by more than one agent (most common handoff **Cursor → Codex**); most common instrument is **Q Exactive**; most common modification is **Carbamidomethyl**; **17.5%** of public ProteomeXchange datasets have a curated SDRF here; **23.6%** of PRIDE projects are annotated.
 
 ![How much of public proteomics is annotated](docs/stats/plots/coverage.png)
 
@@ -54,6 +54,27 @@ _Auto-generated from curated `datasets/` on 2026-09-04T14:37:17Z. Sandbox drafts
 ![AI-assisted annotation](docs/stats/plots/contributions.png)
 
 <!-- STATS:END -->
+
+## Gold standard datasets
+
+Looking for a known-good SDRF to point a pipeline at? A short curated list is kept for
+exactly that. Each entry passes both CI gates, maps every row to a real deposited run, and
+carries enough sample metadata to exercise what usually breaks first — TMT channel maps,
+cell-line identity, phospho-enrichment metadata and factor-value driven designs. Between
+them they span five organisms, DDA and DIA, label-free, TMT and SILAC, and 112 to 5,798
+rows. The standout is `PXD030304`: 949 cell lines with per-line sex, age, ancestry and
+Cellosaurus accession across 5,798 individually mapped runs.
+
+See **[docs/gold-standard-datasets.md](docs/gold-standard-datasets.md)** for the list,
+what each one is good for testing, and how to fetch and validate them.
+
+## Known issues
+
+Some deposits have problems that annotation alone cannot fix. Examples are a 2 KB
+metadata stub named `.raw`, or a PRIDE instrument field that contradicts the raw file.
+These SDRFs are kept, not deleted, and are listed in
+**[docs/known-issues.md](docs/known-issues.md)** by severity (critical, major, moderate,
+minor), with the evidence for each, so pipelines can skip them and curators can follow up.
 
 ## Key links
 

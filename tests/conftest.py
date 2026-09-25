@@ -27,6 +27,34 @@ def gate():
     return _load_gate()
 
 
+def load_script(name):
+    path = REPO_ROOT / ".github" / "scripts" / f"{name}.py"
+    spec = importlib.util.spec_from_file_location(name, path)
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module
+
+
+@pytest.fixture(scope="session")
+def report_mod():
+    return load_script("sdrf_change_report")
+
+
+@pytest.fixture(scope="session")
+def render_mod():
+    return load_script("sdrf_change_render")
+
+
+@pytest.fixture(scope="session")
+def llm_mod():
+    return load_script("sdrf_change_llm")
+
+
+@pytest.fixture(scope="session")
+def post_mod():
+    return load_script("sdrf_change_post")
+
+
 @pytest.fixture
 def write_sdrf(tmp_path):
     """Write a TSV from a header list and row lists; returns the path."""

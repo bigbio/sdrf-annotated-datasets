@@ -44,12 +44,8 @@ sample. Each needs one row per label channel, with its channel-to-sample map.
 
 | Dataset | Labelling | Evidence |
 |---|---|---|
-| PXD024661 | TMTpro, 15 channels | `ExperimentalDesign_TMTlabelling.txt` in the deposit; protocol sets TMTpro as a static modification |
-| PXD025746 | iodoTMT, 6 channels | Protocol: six iodoTMT-tagged samples combined and run as one file |
-| PXD027232 | TMT or iTRAQ | Protocol describes TMT/iTRAQ labelling; the reagent and plex are not stated |
-| PXD043233 | Reporter-ion quantification | Protocol reports reporter-ion quantification in Proteome Discoverer; reagent not stated |
-| PXD044020 | TMTpro | Protocol sets TMTpro on lysines and peptide N-termini; reporter ions quantified |
-| PXD074990 | SILAC | Protocol: cells grown in SILAC medium, heavy and light groups compared |
+| PXD027232 | TMT10plex, 6 samples | Raw header method `Fusion_TMT10_PTM_60min...`; deposited `LC-MS data.xlsx` quantifies Sirt7KD1-3 and Sirt7ctr1-3. Which channel carries which sample is not stated anywhere |
+| PXD044020 | TMTpro, plex not stated | Protocol sets TMTpro on K and peptide N-termini; the paper (Cell 2024, PMC11145561) pools three conditions (empty vector, MBC-TurboID, BCAT2-TurboID) in one run. No sample sheet or channel map is deposited or published |
 
 How this was checked: each SDRF's `comment[label]` was compared with PRIDE's
 quantification method, the sample and data processing protocols, and the deposited

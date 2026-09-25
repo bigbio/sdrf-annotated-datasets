@@ -84,6 +84,5 @@ kept as deposited. The deposit does not show which of the conflicting values is 
 | Dataset | Problem |
 |---|---|
 | PXD006439 | Sample 14 (2 rows) is cell line B16-F10 with disease `low metastatic potential`; the other 30 B16-F10 rows say `high metastatic potential`, and all B16-F1 rows say `low`. Either the cell line or the disease value is wrong for Sample 14. |
-| PXD006439 | `comment[cleavage agent details]` pairs the label `Trypsin` with `MS:1001313`, the accession for Trypsin/P. |
 
 Resolution: confirm with the submitter.

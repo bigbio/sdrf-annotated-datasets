@@ -260,3 +260,39 @@ class TestBaselineSubtraction:
                             root=tmp_path / "base")
         after = write_sdrf(BASE_HEADER, [row(part="heart")], root=tmp_path / "head")
         assert self._counts(gate, before, after) == {}
+
+
+class TestDroppedRuns:
+    """A change that replaces a curated annotation with a small subset of it must not pass."""
+
+    def _lost(self, gate, head, tmp_path, monkeypatch):
+        # CI passes repo-relative paths (datasets/...), which is what the baseline mirrors.
+        monkeypatch.chdir(tmp_path / "head")
+        return gate.dropped_runs(str(head.relative_to(tmp_path / "head")), str(tmp_path / "base"))
+
+    def _rows(self, n, ext="raw"):
+        return [row(src=f"PXD000001-Sample-{i}", assay=f"r{i}", data=f"r{i}.{ext}")
+                for i in range(1, n + 1)]
+
+    def test_replacing_most_runs_is_counted(self, gate, write_sdrf, tmp_path, monkeypatch):
+        write_sdrf(BASE_HEADER, self._rows(20), root=tmp_path / "base")
+        head = write_sdrf(BASE_HEADER, self._rows(1), root=tmp_path / "head")
+        assert self._lost(gate, head, tmp_path, monkeypatch) == (19, 20)
+
+    def test_changing_the_extension_is_not_a_lost_run(self, gate, write_sdrf, tmp_path, monkeypatch):
+        write_sdrf(BASE_HEADER, self._rows(5, "mzML"), root=tmp_path / "base")
+        head = write_sdrf(BASE_HEADER, self._rows(5, "raw"), root=tmp_path / "head")
+        assert self._lost(gate, head, tmp_path, monkeypatch) == (0, 5)
+
+    def test_splitting_into_two_sdrfs_is_not_a_lost_run(self, gate, write_sdrf, tmp_path, monkeypatch):
+        write_sdrf(BASE_HEADER, self._rows(4), root=tmp_path / "base")
+        rows = self._rows(4)
+        head = write_sdrf(BASE_HEADER, rows[:2], name="PXD000001.sdrf.tsv", root=tmp_path / "head")
+        (head.parent / "PXD000001-2.sdrf.tsv").write_text(
+            "\n".join(["\t".join(BASE_HEADER)] + ["\t".join(r) for r in rows[2:]]) + "\n")
+        assert self._lost(gate, head, tmp_path, monkeypatch) == (0, 4)
+
+    def test_new_dataset_has_no_baseline(self, gate, write_sdrf, tmp_path, monkeypatch):
+        (tmp_path / "base").mkdir()
+        head = write_sdrf(BASE_HEADER, self._rows(3), root=tmp_path / "head")
+        assert self._lost(gate, head, tmp_path, monkeypatch) == (0, 0)

@@ -148,6 +148,46 @@ def _baseline_path(baseline, f):
     return Path(baseline) / rel
 
 
+# A change that drops most of a dataset's runs replaces a curated annotation instead of
+# improving it. Measured over main's history: of 8 merges that shrank a dataset (still
+# annotated), 3 deliberate corrections removed 50-84% of runs; the only one above 90%
+# (PXD001305, 110 -> 4 runs) was itself a regression. So >= 90% blocks, >= 25% is advisory.
+DROPPED_RUNS_BLOCK = 0.9
+DROPPED_RUNS_ADVISE = 0.25
+
+
+def run_stems(folder):
+    """Runs referenced by every SDRF in a dataset folder, as lower-cased file stems.
+
+    The stem drops the extension so re-pointing a run (.mzML -> .raw) is not a lost run,
+    and the whole folder counts so splitting one SDRF into several (per instrument) is not.
+    """
+    stems = set()
+    for f in sorted(Path(folder).glob("*.sdrf*")):
+        if not f.name.endswith((".sdrf.tsv", ".sdrf")):
+            continue
+        lines = f.read_text(encoding="utf-8", errors="ignore").splitlines()
+        if not lines:
+            continue
+        H = [c.strip().lower() for c in lines[0].split("\t")]
+        idx = [i for i, c in enumerate(H) if c == "comment[data file]"]
+        for ln in lines[1:]:
+            r = ln.split("\t")
+            for i in idx:
+                v = r[i].strip() if i < len(r) else ""
+                if v and v.lower() not in SENTINELS:
+                    stems.add(Path(v).stem.lower())
+    return stems
+
+
+def dropped_runs(path, baseline):
+    """(runs lost, runs on the base branch) for the dataset folder holding <path>."""
+    base = run_stems(_baseline_path(baseline, path).parent)
+    if not base:
+        return 0, 0
+    return len(base - run_stems(Path(path).parent)), len(base)
+
+
 def content_check(path):
     """Defects parse_sdrf does not catch. Returns {defect_name: count}."""
     lines = Path(path).read_text(encoding="utf-8", errors="ignore").splitlines()
@@ -312,6 +352,12 @@ def main(argv):
         advisories = []
         for k, v in sorted(new_cont.items()):
             (advisories if k in ADVISORY else problems).append(f"{v} {k}")
+        if baseline:
+            lost, base_runs = dropped_runs(f, baseline)
+            if base_runs and lost / base_runs >= DROPPED_RUNS_ADVISE:
+                msg = (f"{lost}/{base_runs} runs on the base branch are gone from "
+                       f"{Path(f).parent.name} -- the current annotation may be better")
+                (problems if lost / base_runs >= DROPPED_RUNS_BLOCK else advisories).append(msg)
         if not ok:
             problems.append(f"parse_sdrf: {last}")
         status = "OK" if not problems else "FAIL"

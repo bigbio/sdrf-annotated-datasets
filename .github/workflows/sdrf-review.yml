@@ -50,6 +50,13 @@ jobs:
             # Missing on base => newly added file; leave absent so the gate checks it in full.
             git show "$base:$f" > ".base/$f" 2>/dev/null || rm -f ".base/$f"
           done < changed.txt
+          # Also every other SDRF in those dataset folders: the dropped-runs rule compares
+          # whole folders, so splitting one SDRF into several is not read as lost runs.
+          cut -d/ -f1-2 changed.txt | sort -u | while IFS= read -r d; do
+            git ls-tree --name-only "$base" "$d/" | grep -E '\.sdrf(\.tsv)?$' | while IFS= read -r f; do
+              [ -e ".base/$f" ] || { mkdir -p ".base/$d"; git show "$base:$f" > ".base/$f"; }
+            done || true
+          done
 
       - name: Run SDRF review gate
         if: steps.changed.outputs.count != '0'

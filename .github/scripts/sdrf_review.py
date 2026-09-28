@@ -154,6 +154,7 @@ def _baseline_path(baseline, f):
 # (PXD001305, 110 -> 4 runs) was itself a regression. So >= 90% blocks, >= 25% is advisory.
 DROPPED_RUNS_BLOCK = 0.9
 DROPPED_RUNS_ADVISE = 0.25
+ARCHIVES = (".zip", ".tar", ".tar.gz", ".tgz", ".gz", ".7z", ".rar")
 
 
 def run_stems(folder):
@@ -161,6 +162,8 @@ def run_stems(folder):
 
     The stem drops the extension so re-pointing a run (.mzML -> .raw) is not a lost run,
     and the whole folder counts so splitting one SDRF into several (per instrument) is not.
+    An archive (.zip, .tar.gz, ...) holds runs rather than being one, so replacing it with
+    the runs inside it is not a lost run either.
     """
     stems = set()
     for f in sorted(Path(folder).glob("*.sdrf*")):
@@ -175,7 +178,7 @@ def run_stems(folder):
             r = ln.split("\t")
             for i in idx:
                 v = r[i].strip() if i < len(r) else ""
-                if v and v.lower() not in SENTINELS:
+                if v and v.lower() not in SENTINELS and not v.lower().endswith(ARCHIVES):
                     stems.add(Path(v).stem.lower())
     return stems
 

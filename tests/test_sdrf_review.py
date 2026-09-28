@@ -292,6 +292,12 @@ class TestDroppedRuns:
             "\n".join(["\t".join(BASE_HEADER)] + ["\t".join(r) for r in rows[2:]]) + "\n")
         assert self._lost(gate, head, tmp_path, monkeypatch) == (0, 4)
 
+    def test_expanding_an_archive_into_its_runs_is_not_a_lost_run(
+            self, gate, write_sdrf, tmp_path, monkeypatch):
+        write_sdrf(BASE_HEADER, [row(data="RawFiles.zip")], root=tmp_path / "base")
+        head = write_sdrf(BASE_HEADER, self._rows(3), root=tmp_path / "head")
+        assert self._lost(gate, head, tmp_path, monkeypatch) == (0, 0)
+
     def test_new_dataset_has_no_baseline(self, gate, write_sdrf, tmp_path, monkeypatch):
         (tmp_path / "base").mkdir()
         head = write_sdrf(BASE_HEADER, self._rows(3), root=tmp_path / "head")

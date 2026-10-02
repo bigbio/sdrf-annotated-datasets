@@ -72,6 +72,34 @@ file header.
 Resolution: correct PRIDE's instrument field, or confirm with the submitter where
 the header and the paper disagree.
 
+## Moderate: SCIEX run deposited without its `.wiff`
+
+Category: `wiff-scan-without-wiff`. A SCIEX run is written as a `.wiff` file plus a
+`.wiff.scan` companion holding the scan data. The companion cannot be read without the
+`.wiff`. In these deposits some runs have only the `.wiff.scan`, so the SDRF lists the
+complete runs and leaves these out.
+
+| Dataset | Runs without `.wiff` | `.wiff` in deposit | Example |
+|---|---|---|---|
+| PXD028310 | 42 | 125 | `PVJ11_R2.wiff.scan`: every `PVJ*_R2` run |
+| PXD023168 | 6 | 184 | `20150516_ZT_IDA_059.wiff.scan` |
+| PXD017052 | 5 | 3,322 | `EXP19072_2019v1ms068X1_A.wiff.scan` |
+| PXD011198 | 1 | 126 | `171205_LDC_Hist_SWATH_blanco_14.wiff.scan` |
+| PXD014800 | 1 | 316 | `RCB_SALSW_TB_E00193_V2.3.wiff.scan` |
+| PXD028078 | 1 | 57 | `20200628_SWATH_LC172.wiff.scan` |
+| PXD030354 | 1 | 88 | `IDA_PreIP_APP23_5.wiff.scan` |
+| PXD030947 | 1 | 64 | `Bobby_masto_18bobby_masto_18_2_10.wiff.scan` |
+| PXD032299 | 1 | 448 | `20200128_OvCa_Lemba_ECA_PosControl_2.wiff.scan` |
+| PXD038003 | 1 | 72 | `Pool_neuron-derived_EVs_from_rheumatoid_arthritid_patients_1..wiff.scan` |
+| PXD050920 | 1 | 58 | `200403DDA-HC8-5uL-150min-50msec.wiff.scan` |
+| PXD061811 | 1 | 65 | `HippocampalProteomics_WT_uncond_2.wiff.scan` |
+
+How this was checked: every `.wiff.scan` in the PRIDE Archive file listing
+(`/pride/ws/archive/v3/projects/<PXD>/files/all`) was matched to a `.wiff` with the same
+name, without the `.scan` suffix.
+
+Resolution: the submitters deposit the missing `.wiff` files.
+
 ## Moderate: deposited SDRF is internally inconsistent
 
 Category: `deposited-sdrf-inconsistent`. The SDRF was deposited by the submitter and is

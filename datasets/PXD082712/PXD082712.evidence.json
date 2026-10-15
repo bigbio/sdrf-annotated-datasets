@@ -1,0 +1,102 @@
+{
+ "schema_version": 1,
+ "artifact": "datasets/PXD082712/PXD082712.sdrf.tsv",
+ "dataset": "PXD082712",
+ "sources": [
+  {
+   "id": "pride",
+   "kind": "repository",
+   "location": "https://www.ebi.ac.uk/pride/ws/archive/v3/projects/PXD082712 (local: evidence/project.json)"
+  },
+  {
+   "id": "pride_files",
+   "kind": "repository",
+   "location": "https://www.ebi.ac.uk/pride/ws/archive/v3/projects/PXD082712/files/all (local: evidence/files.json)"
+  },
+  {
+   "id": "mq",
+   "kind": "search_output",
+   "location": "combined_PROTAC.zip and combined_IR.zip txt/summary.txt, parameters.txt, GlyGly (K)Sites.txt (local: evidence/mq_PROTAC/, evidence/mq_IR/)"
+  },
+  {
+   "id": "raw",
+   "kind": "raw_header",
+   "location": "first 3 MB of the F1 and F6 RAW files of every replicate (local: evidence/raw/hdr/)"
+  },
+  {
+   "id": "paper",
+   "kind": "publication",
+   "location": "Munro et al., Life Sci Alliance 2026;9(11):e202603698, doi:10.26508/lsa.202603698, PMC13542637 (local: evidence/paper.xml, paper_flat.txt)"
+  },
+  {
+   "id": "cellosaurus",
+   "kind": "ontology",
+   "location": "Cellosaurus CVCL_0030 (HeLa)"
+  },
+  {
+   "id": "ols",
+   "kind": "ontology",
+   "location": "OLS4: NCIT:C17052 Ionizing Radiation, EFO:0009106 sample enrichment, MS:1003028 Orbitrap Exploris 480, UNIMOD:121 GG, UNIMOD:108 Nethylmaleimide"
+  }
+ ],
+ "claims": [
+  {
+   "location": "comment[label], characteristics[compound], characteristics[dose], characteristics[exposure duration], factor value[compound]",
+   "value": "R1 and R2: heavy (Arg10/Lys8) = 1 uM dTAG-7, light = DMSO; R3: label swap (heavy = DMSO, light = dTAG-7); same in the PROTAC (-IR) and PROTAC_IR series",
+   "source_ids": [
+    "paper",
+    "mq"
+   ],
+   "evidence": "Paper: 'differentially labeled HeLa Ufd1-dTAG cells were treated with dTAG-7 or DMSO control for 8 h, or with dTAG-7 or DMSO for 4 h and irradiated 1 h after the start of treatment'; dTAG-7 1 uM. Data (GlyGly (K)Sites.txt, median log2 H/L normalized of diGly sites): RAD21 +0.80/+0.72/-0.61 (R1/R2/R3, -IR) and +0.28/+0.53/-0.93 (+IR); HUS1 +0.71/+0.93/-1.08; MORF4L1 +0.43/+0.82/-0.54; FKBP1A (FKBP12F36V tag, ubiquitylated upon dTAG engagement) +1.22/+0.74/-1.05 (-IR) and +0.91/+0.79/-0.52 (+IR). The paper names RAD21, HUS1, XRCC1 and MORF4L1 as targets with increased ubiquitylation upon Ufd1 degradation, so heavy = dTAG-7 in R1/R2 and light = dTAG-7 in R3."
+  },
+  {
+   "location": "characteristics[treatment], factor value[treatment], characteristics[exposure duration]",
+   "value": "PROTAC series: no irradiation ('control'), 8 h dTAG-7/DMSO; PROTAC_IR series: Ionizing Radiation (2 Gy) 1 h after start of a 4 h dTAG-7/DMSO treatment",
+   "source_ids": [
+    "paper"
+   ],
+   "evidence": "Paper: 'cells subjected to ionizing radiation (IR, 2 Gy)'; Fig. 1 legend: '(C) Analysis of unchallenged cells (-IR, 8 h dTAG treatment) or (D) cells challenged with ionizing radiation (+IR, 1 h dTAG pretreatment, continued for 3 h after 2 Gy IR)'"
+  },
+  {
+   "location": "characteristics[biological replicate], comment[fraction identifier], comment[fractionation method], characteristics[enrichment process]",
+   "value": "anti-K-epsilon-GG enrichment, micro-SCX into 6 fractions (F1-F6, pH 4-11); PROTAC R1-R3 = biological replicates 1-3, PROTAC_IR R1-R3 = 4-6",
+   "source_ids": [
+    "pride",
+    "mq"
+   ],
+   "evidence": "PRIDE: 'diglycine-lysine (K-epsilon-GG) antibody resin', 'separated into six fractions by micro-SCX ... pH 4.0/5.0/6.0/7.0/8.5/11.0'. summary.txt: experiments R1/R2/R3 (combined PROTAC) and IR_R1/IR_R2/IR_R3 (combined IR), 6 fractions each."
+  },
+  {
+   "location": "comment[instrument], comment[collision energy], comment[ms2 mass analyzer], comment[ms1 scan range]",
+   "value": "Orbitrap Exploris 480, HCD 30%, Orbitrap MS2 15,000, MS1 300-1650 m/z at 60,000",
+   "source_ids": [
+    "raw",
+    "pride"
+   ],
+   "evidence": "RAW method in all checked headers: Orbitrap Exploris 480, Scan Range 300-1650, Orbitrap Resolution 60000/15000, HCD Collision Energies 30%, isolation 1.4 m/z; PRIDE text identical."
+  },
+  {
+   "location": "comment[precursor mass tolerance], comment[fragment mass tolerance], comment[modification parameters], comment[cleavage agent details]",
+   "value": "4.5 ppm main search / 20 ppm FTMS MS/MS; Carbamidomethyl C fixed; Oxidation M, Acetyl Protein N-term, GlyGly K, NEM (C) variable; Arg10/Lys8; Trypsin",
+   "source_ids": [
+    "mq",
+    "pride"
+   ],
+   "evidence": "PRIDE: 'Peptide tolerance was 20 ppm for the first search and 4.5 ppm for the main search'; parameters.txt (MaxQuant 2.0.3.0) MS/MS tol. (FTMS) 20 ppm; summary.txt (both searches): Trypsin/P, fixed Carbamidomethyl (C), variable Oxidation (M);Acetyl (Protein N-term);GlyGly (K);NEM, Labels1 Arg10;Lys8. NEM is from the 10 mM N-ethylmaleimide in the lysis buffer."
+  },
+  {
+   "location": "cell line metadata",
+   "value": "HeLa, CVCL_0030, female, 30Y6M, African American, uterine cervix, cervical adenocarcinoma; engineered UFD1 KO + Ufd1-FKBP12F36V",
+   "source_ids": [
+    "cellosaurus",
+    "paper"
+   ],
+   "evidence": "Cellosaurus CVCL_0030: SX Female, AG 30Y6M, Population African American, derived from uterus/cervix, DI HPV-related endocervical adenocarcinoma. Paper: 'stably introduced a transgene coding for Ufd1-FKBP12F36V in HeLa cells and subsequently knocked out the Ufd1 gene'."
+  }
+ ],
+ "limitations": [
+  "dTAG-7 has no NCIT/ChEBI term; it is given by name in characteristics[compound]. Irradiation status is carried by characteristics[treatment] (Ionizing Radiation, NCIT:C17052 vs control); the 2 Gy dose is in the source name because characteristics[dose] units do not include Gy and the dose column holds the dTAG-7 concentration.",
+  "Exposure duration is the dTAG-7/DMSO treatment length (8 h without IR; 4 h with IR, irradiated at 1 h).",
+  "The MaxQuant search enzyme was Trypsin/P; the wet-lab enzyme trypsin is annotated."
+ ]
+}

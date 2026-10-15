@@ -1,0 +1,106 @@
+{
+ "schema_version": 1,
+ "artifact": "datasets/PXD048460/PXD048460.sdrf.tsv",
+ "dataset": "PXD048460",
+ "sources": [
+  {
+   "id": "pride",
+   "kind": "repository",
+   "location": "https://www.ebi.ac.uk/pride/ws/archive/v3/projects/PXD048460 (local: evidence/project.json)"
+  },
+  {
+   "id": "pride_files",
+   "kind": "repository",
+   "location": "https://www.ebi.ac.uk/pride/ws/archive/v3/projects/PXD048460/files/all (local: evidence/files.json)"
+  },
+  {
+   "id": "mq",
+   "kind": "search_output",
+   "location": "deposited MaxQuant 1.6.17.0 summary.txt, parameters.txt, evidence.txt, proteinGroups.txt (local: evidence/)"
+  },
+  {
+   "id": "raw",
+   "kind": "raw_header",
+   "location": "first 2.5 MB of each RAW file (instrument + embedded method), local: evidence/raw/hdr/"
+  },
+  {
+   "id": "paper",
+   "kind": "publication",
+   "location": "Glover et al., J Cell Sci 2024, doi:10.1242/jcs.261522, PMC10917062 (local: evidence/paper.xml, paper_flat.txt)"
+  },
+  {
+   "id": "cellosaurus",
+   "kind": "ontology",
+   "location": "Cellosaurus CVCL_0042 (U2OS)"
+  },
+  {
+   "id": "ols",
+   "kind": "ontology",
+   "location": "OLS4: NCIT:C75228 Nocodazole, NCIT:C1411 Paclitaxel, GO:0015630 microtubule cytoskeleton, MS:1002634 Q Exactive Plus"
+  }
+ ],
+ "claims": [
+  {
+   "location": "comment[label], characteristics[treatment], characteristics[compound], characteristics[dose], characteristics[exposure duration]",
+   "value": "light = DMSO control; medium (Arg6/Lys4) = 6 uM nocodazole 1 h; heavy (Arg10/Lys8) = 6 uM taxol (paclitaxel) 30 min",
+   "source_ids": [
+    "paper",
+    "mq"
+   ],
+   "evidence": "Paper Fig. 1E legend: 'U2OS cells labelled with light (Lys0, Arg0), medium (Lys4, Arg6) or heavy (Lys8, Arg10) amino acids were treated with either DMSO alone (control), nocodazole or taxol, respectively'; Table S1: 'control (Light labeled), Nocodazole (Medium labeled), and Taxol (Heavy labeled)'; Methods: '6 uM of nocodazole for 1 h or 6 uM of taxol for 30 min at 37C alongside a DMSO control'. Data (proteinGroups): tubulins depleted in medium (TUBA1B log2 M/L -3.26, TUBB -2.62) and enriched in heavy (TUBA1B H/L +0.67, TUBB +0.56), as expected for depolymerised vs stabilised microtubules."
+  },
+  {
+   "location": "characteristics[cellular component], source name",
+   "value": "microtubule cytoskeleton (GO:0015630): residual MT fraction after LMS cytosol extraction, three channels mixed 1:1:1",
+   "source_ids": [
+    "paper",
+    "pride"
+   ],
+   "evidence": "PRIDE/paper: cytosolic proteins extracted with LMS buffer, residual material incl. microtubules collected; 'Extracted microtubules from each condition were combined in a 1:1:1 ratio'"
+  },
+  {
+   "location": "comment[fraction identifier], comment[technical replicate], comment[fractionation method]",
+   "value": "one SDS-PAGE lane cut into 12 slices = fractions 1-12; SILAC_1_REp2 = slice 1 tech rep 2; Blank_SILAC_7 = slice 7 tech rep 2; SILAC_1_Set1 = slice 12 tech rep 2",
+   "source_ids": [
+    "pride",
+    "mq"
+   ],
+   "evidence": "PRIDE: 'The sample lane was cut into 12 equal slices'. evidence.txt peptide Jaccard: adjacent slices 0.12-0.21; SILAC_1_Set1 vs SILAC_12 = 0.81 (vs 0.20 to SILAC_11), log2 M/L correlation r=0.95 over 2615 shared features -> re-injection of slice 12 despite the file name. SILAC_7 has IDs only at RT 29.6-42.8 min (aborted, 4958 MS scans) and Blank_SILAC_7 at RT 49.4-106.2 min; both overlap slices 6 and 8 (J 0.05-0.07) -> slice 7 material. summary.txt: SILAC_1 (3 MS/MS) and SILAC_1_REp2 (13 MS/MS) have no identifications (failed injections of slice 1)."
+  },
+  {
+   "location": "comment[instrument], comment[dissociation method], comment[collision energy], comment[ms2 mass analyzer], comment[ms1 scan range]",
+   "value": "Q Exactive Plus, HCD NCE 28, Orbitrap MS2 (17,500), MS1 375-1500 m/z (70,000)",
+   "source_ids": [
+    "raw",
+    "pride"
+   ],
+   "evidence": "All 15 RAW headers: 'Q Exactive Plus - Orbitrap MS', method DDA_Top12_SILAC_120TG_UDP.meth (SILAC_1: _160TG_), Scan range 375 to 1500 m/z, nce: 28, resolution 70,000 / 17,500; file prefix 'Qplus'; PRIDE instrument field Q Exactive Plus."
+  },
+  {
+   "location": "comment[precursor mass tolerance], comment[fragment mass tolerance], comment[modification parameters], comment[cleavage agent details]",
+   "value": "4.5 ppm / 20 ppm; Carbamidomethyl C fixed; Oxidation M, Acetyl Protein N-term variable; Arg6/Lys4 + Arg10/Lys8; Trypsin",
+   "source_ids": [
+    "mq",
+    "pride"
+   ],
+   "evidence": "parameters.txt: MaxQuant 1.6.17.0, MS/MS tol. (FTMS) 20 ppm; main search 4.5 ppm is the MaxQuant default; summary.txt Labels1 Arg6;Lys4, Labels2 Arg10;Lys8, enzyme Trypsin/P; PRIDE: 'Peptides were cleaved with 3 ug trypsin'"
+  },
+  {
+   "location": "cell line metadata",
+   "value": "U2OS, CVCL_0042, 15Y female, European ancestry, tibia, osteosarcoma",
+   "source_ids": [
+    "cellosaurus"
+   ],
+   "evidence": "Cellosaurus CVCL_0042"
+  }
+ ],
+ "limitations": [
+  "Duration of the DMSO control is not stated ('alongside a DMSO control'), so exposure duration is 'not available' for light.",
+  "Protocol text says 'fractionated on a QExactive HF column' and MS1 resolution 120000 / MS2 15000; RAW headers show Q Exactive Plus at 70,000/17,500, which are used. sdrf-tools reconcile flags this (false positive) and also flags Trypsin because the protocol only says 'cleaved with 3 ug trypsin' (lowercase).",
+  "SILAC_1 and SILAC_1_REp2 produced no identifications; Blank_SILAC_7 is named a blank but contains slice-7 peptides from the late gradient after the aborted SILAC_7 run. All were searched in the deposited MaxQuant run and are annotated.",
+  "The deposit corresponds to 'Set2' of the paper's Table S1 (protein ratios match Set2 exactly per independent review); Set1 and Set3 were not deposited, so a single biological replicate is annotated.",
+  "SILAC_7 and Blank_SILAC_7 share no peptides and have non-overlapping RT windows (29.6-42.8 vs 49.4-106.2 min): they are complementary parts of one aborted slice-7 measurement, encoded as technical replicates 1 and 2 of fraction 7 because each file needs its own row.",
+  "The MaxQuant search enzyme was Trypsin/P; annotated as Trypsin.",
+  "characteristics[cellular component] = microtubule cytoskeleton describes the targeted fraction; the LMS-resistant residue also contains other cytoskeletal and nuclear proteins."
+ ]
+}

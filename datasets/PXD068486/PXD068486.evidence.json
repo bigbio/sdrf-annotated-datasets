@@ -1,0 +1,96 @@
+{
+ "schema_version": 1,
+ "artifact": "datasets/PXD068486/PXD068486.sdrf.tsv",
+ "dataset": "PXD068486",
+ "sources": [
+  {
+   "id": "pride",
+   "kind": "repository",
+   "location": "https://www.ebi.ac.uk/pride/ws/archive/v3/projects/PXD068486 (local: evidence/project.json)"
+  },
+  {
+   "id": "pride_files",
+   "kind": "repository",
+   "location": "https://www.ebi.ac.uk/pride/ws/archive/v3/projects/PXD068486/files/all (local: evidence/files.json)"
+  },
+  {
+   "id": "mq",
+   "kind": "search_output",
+   "location": "deposited MaxQuant 2.0.3.0 summary.txt, parameters.txt, proteinGroups.txt, evidence.txt (local: evidence/)"
+  },
+  {
+   "id": "raw",
+   "kind": "raw_header",
+   "location": "first 2.5 MB of each RAW file (local: evidence/raw/hdr/)"
+  },
+  {
+   "id": "paper",
+   "kind": "publication",
+   "location": "Mevizou et al., Cell Death Differ 2025, doi:10.1038/s41418-025-01633-1, PMC13156305 (local: evidence/paper.xml, paper_flat.txt)"
+  },
+  {
+   "id": "cellosaurus",
+   "kind": "ontology",
+   "location": "Cellosaurus CVCL_0547 (SW620)"
+  },
+  {
+   "id": "ols",
+   "kind": "ontology",
+   "location": "OLS4: EFO:0002368 SW620, MONDO:0002271 colon adenocarcinoma, UBERON:0000029 lymph node, MS:1001742 LTQ Orbitrap Velos, MS:1001910 Orbitrap Elite"
+  }
+ ],
+ "claims": [
+  {
+   "location": "comment[label], characteristics[genotype], factor value[genotype]",
+   "value": "heavy (Arg10/Lys8) = SW620 expressing SLAP-Flag (mouse Sla); light = control without SLAP-Flag; lysates mixed and anti-Flag M2 IP; three independent experiments",
+   "source_ids": [
+    "pride",
+    "paper",
+    "mq"
+   ],
+   "evidence": "Paper: 'we performed SILAC-based interatomic analysis of SW620 CRC cells ... by overexpressing a SLAP-Flag construct'; '164 proteins with a log ratio >1.5 were retrieved in >=2/3 independent experiments'. PRIDE: heavy/light lysates mixed and immunoprecipitated with anti-Flag M2 agarose. Data (proteinGroups): Sla (Q60898, mouse; SLAP_MOUSE.fasta deposited) H/L 17.2 (Rep0), 22.5 (Rep1), 14.5 (Rep2); mTORC2 and named interactors heavy-enriched in all reps (log2 H/L: MTOR 2.06/3.23/1.71, RICTOR 1.05/2.73/1.98, UBE3C 2.21/2.97/1.90, LTN1 2.26/3.20/2.62) -> heavy = SLAP-Flag in every replicate."
+  },
+  {
+   "location": "characteristics[biological replicate], comment[fraction identifier], comment[fractionation method]",
+   "value": "Rep0 = SLAP1_1000728 (9 runs), Rep1 = MTORC2_150707 (6), Rep2 = MTORC2_150910 (8) -> biological replicates 1-3; runs are SDS-PAGE gel slices; fraction ids follow MaxQuant (MTORC2_150707_2_E_6 = fraction 7)",
+   "source_ids": [
+    "mq"
+   ],
+   "evidence": "summary.txt Experiment/Fraction columns. Median protein MW of identified evidence decreases monotonically with fraction in each replicate (Rep0 216->22 kDa, Rep1 202->21 kDa, Rep2 167->17 kDa), consistent with an SDS-PAGE lane cut into slices; peptide charge is flat, arguing against peptide-level SCX."
+  },
+  {
+   "location": "comment[instrument], comment[dissociation method], comment[collision energy], comment[ms2 mass analyzer], comment[ms1 scan range]",
+   "value": "Rep0: LTQ Orbitrap Velos, CID 35 NCE; Rep1/2: Orbitrap Elite, CID 33 NCE; ion-trap MS2; MS1 400-2000 m/z",
+   "source_ids": [
+    "raw"
+   ],
+   "evidence": "RAW headers: SLAP1_* 'LTQ Orbitrap Velos MS', TOP20_CID_104.meth, Normalized Coll. Energy 35.0; MTORC2_* 'Orbitrap Elite MS', Top20_FTIT_104_150402.meth, Normalized Coll. Energy 33.0; all 'FTMS + p norm o(400.0-2000.0)' + 'ITMS + c norm Dep ... MS/MS'"
+  },
+  {
+   "location": "comment[precursor mass tolerance], comment[fragment mass tolerance], comment[modification parameters], comment[cleavage agent details]",
+   "value": "4.5 ppm (MaxQuant default) / 0.5 Da ITMS; Carbamidomethyl C fixed; Oxidation M, Acetyl Protein N-term variable; Arg10/Lys8; Trypsin",
+   "source_ids": [
+    "mq",
+    "pride"
+   ],
+   "evidence": "parameters.txt (MaxQuant 2.0.3.0): MS/MS tol. (ITMS) 0.5 Da; summary.txt: Trypsin/P specific, Labels1 Arg10;Lys8, variable Oxidation (M);Acetyl (Protein N-term), fixed Carbamidomethyl (C)"
+  },
+  {
+   "location": "cell line metadata",
+   "value": "SW620, CVCL_0547, 51Y male, Caucasian, colon adenocarcinoma, metastatic site lymph node",
+   "source_ids": [
+    "cellosaurus",
+    "ols"
+   ],
+   "evidence": "Cellosaurus CVCL_0547: DI NCIt C4349 Colon adenocarcinoma; SX Male; AG 51Y; Population Caucasian; Derived from site Metastatic; Lymph node"
+  }
+ ],
+ "limitations": [
+  "PRIDE lists LTQ Orbitrap XL; the RAW headers of the SLAP1 runs say LTQ Orbitrap Velos, which is used.",
+  "The nature of the light control (e.g. empty vector) is not stated; it is encoded as 'control (no SLAP-Flag)'.",
+  "The fractionation (SDS-PAGE slices) is inferred from per-fraction protein molecular weight; the PRIDE protocol does not mention it and refers to Naudin et al. 2014 (not open access).",
+  "sdrf-tools reconcile reports Mus musculus as the only record organism (false positive: project.json organisms = NEWT:9606 Homo sapiens; the mouse SLAP bait sequence file is the likely trigger) and Trypsin as unsupported (it is the MaxQuant search enzyme).",
+  "The MaxQuant search enzyme was Trypsin/P; annotated as Trypsin.",
+  "Precursor tolerance 4.5 ppm is the MaxQuant default (not recorded in parameters.txt); observed mass errors fit it (99th percentile 4.22 ppm per independent review)."
+ ]
+}

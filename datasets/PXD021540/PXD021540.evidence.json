@@ -1,0 +1,85 @@
+{
+ "schema_version": 1,
+ "artifact": "datasets/PXD021540/PXD021540.sdrf.tsv",
+ "dataset": "PXD021540",
+ "sources": [
+  {
+   "id": "pride",
+   "kind": "repository",
+   "location": "https://www.ebi.ac.uk/pride/ws/archive/v3/projects/PXD021540 (local: scratchpad/PXD021540/evidence/project.json)"
+  },
+  {
+   "id": "pride_files",
+   "kind": "repository",
+   "location": "https://www.ebi.ac.uk/pride/ws/archive/v3/projects/PXD021540/files/all (local: evidence/files.json)"
+  },
+  {
+   "id": "mq",
+   "kind": "search_output",
+   "location": "experimentalDesignTemplate.txt, summary.txt, parameters.txt, proteinGroups.txt (local: evidence/)"
+  },
+  {
+   "id": "raw_headers",
+   "kind": "raw_file",
+   "location": "first 2.5 MB of all 10 RAW files (local: evidence/raw/hdr/)"
+  },
+  {
+   "id": "paper",
+   "kind": "publication",
+   "location": "PMC7897491 (tRNA 3' shortening by LCCR4 ..., Nucleic Acids Res 2021; local: evidence/paper_flat.txt)"
+  }
+ ],
+ "claims": [
+  {
+   "location": "comment[label], characteristics[treatment], characteristics[exposure duration], characteristics[growth condition], characteristics[sampling time], characteristics[genotype]",
+   "value": "heavy (Arg10/Lys8) = tetracycline-induced LCCR4-HA (4 days); light = uninduced; both nutritionally stressed 2 h in PBS, anti-HA IP, eluates mixed 1:1; duplicate (repA, repB)",
+   "source_ids": [
+    "pride",
+    "paper",
+    "mq"
+   ],
+   "evidence": "PRIDE: samples from uninduced cultures and cultures induced with tetracycline for LCCR4-HA expression for 4 days, stressed 2 h in PBS, LCCR4-HA IP, eluates mixed 1:1, done in duplicate; proteinGroups: bait LCCR4 (Tb927.4.2430) H/L 63.1 (repA) and 59.3 (repB), so heavy = induced in both replicates"
+  },
+  {
+   "location": "characteristics[strain or breed], characteristics[developmental stage]",
+   "value": "Lister 427 (strain); 29-13 background (T7 RNA polymerase, TetR) in genotype; procyclic form; pLew100-derived LCCR4-HA construct",
+   "source_ids": [
+    "paper"
+   ],
+   "evidence": "Paper: 'Procyclic stage Lister 427 wild-type and 29-13 cells ... grown at 27C'; 'Tetracycline-inducible expression of C-terminally HA-tagged LCCR4 (Tb927.4.2430) ... using pLew100-derived constructs'"
+  },
+  {
+   "location": "comment[data file], comment[fraction identifier], comment[fractionation method]",
+   "value": "SDS-PAGE lane cut into 5 slices (i01-i05 = fractions 1-5) per replicate",
+   "source_ids": [
+    "mq",
+    "pride"
+   ],
+   "evidence": "experimentalDesignTemplate: fractions 1-5 for repA and repB; PRIDE: eluates separated in 10% SDS-PAGE and in-gel digested"
+  },
+  {
+   "location": "comment[instrument], comment[collision energy], comment[ms1 scan range], comment[ms2 mass analyzer], tolerances, modifications",
+   "value": "Orbitrap Fusion Lumos, HCD 30, ion-trap MS2, MS1 400-1400 m/z; 4.5 ppm / 0.4 Da; Carbamidomethyl fixed; Oxidation M, Acetyl Protein N-term, Deamidated NQ variable; Trypsin",
+   "source_ids": [
+    "raw_headers",
+    "mq"
+   ],
+   "evidence": "10 headers: Orbitrap Fusion Lumos, Scan Range 400-1400, ActivationType HCD, Collision Energy 30, MS2 IonTrap; parameters MS/MS tol (ITMS) 0.4 Da; summary.txt Enzyme Trypsin, variable Oxidation (M);Acetyl (Protein N-term);Deamidation (NQ)"
+  },
+  {
+   "location": "characteristics[growth condition], characteristics[sampling time]",
+   "value": "growth condition = starvation (EFO:0022074) and sampling time = 2 hour, all samples",
+   "source_ids": [
+    "pride",
+    "paper"
+   ],
+   "evidence": "PRIDE sample protocol: 'Then cells were stressed for 2h in PBS and samples collected from uninduced cultures and from cultures that had been induced with tetracycline for expression of LCCR4-HA for 4 days.' Paper Methods: 'In the case of nutritional stress, exponentially growing T. brucei cells were centrifuged, washed in chilled 1x PBS ... and resuspended in pre-warmed 1x PBS at 27C. After 2 h of nutritional stress, T. brucei cells were harvested.'"
+  }
+ ],
+ "limitations": [
+  "Precursor tolerance 4.5 ppm is the MaxQuant 1.6.1.0 default main-search tolerance (not listed in parameters.txt); the deposited evidence.txt has max |mass error| 4.514 ppm over 70,053 MS/MS evidences, consistent with it.",
+  "sdrf-tools reconcile flags Trypsin as not named in the PRIDE record; it is the MaxQuant search enzyme (summary.txt) for in-gel digestion per the cited protocol.",
+  "The paper states Lister 427 wild-type and 29-13 procyclic cells were used and LCCR4-HA was expressed from pLew100 (requires 29-13 T7RNAP/TetR); the 29-13 background and procyclic stage for the LCCR4-HA line are inferred from this system, not stated explicitly.",
+  "Light channel treatment is encoded as 'control' (EFO:0001461) = no tetracycline; 'untreated' would be incorrect because all samples were PBS-stressed."
+ ]
+}

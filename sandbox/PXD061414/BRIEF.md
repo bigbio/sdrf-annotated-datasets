@@ -1,11 +1,7 @@
 # PXD061414 — under repair
 
-Immunopeptidomics/proteomics re-annotation held in `sandbox/` because the file(s) below do
-not yet pass the repository's review gate (`.github/scripts/sdrf_review.py`) or
-`parse_sdrf validate-sdrf` against `sdrf-pipelines` `main`. Row content, run-to-sample
-mapping and ontology terms are otherwise complete.
+1 coordinate collision remains. The two runs of `LL5176T` differ by an acquisition token (`IDA` vs `NTA`) and by cell input (`4.4E8`), both only in the deposited filenames. The deposit carries no publication reference and its protocol text does not define `NTA`, so the dimension cannot be named faithfully.
 
-## `PXD061414.sdrf.tsv`
-- 1 coordinate collisions (source name x biological replicate x technical replicate x fraction, no separating column)
+Affected file(s): `PXD061414.sdrf.tsv`.
 
-Promotion to `datasets/` will follow the workflow in `sandbox/README.md` once the defects above are fixed.
+The other defect classes from the first submission (ontology-invalid `characteristics[sample type]`, `NT=`/`AC=` characteristics cells, pandas artifact headers) are fixed in the file above; the coordinate collisions described here are the only remaining blocker.

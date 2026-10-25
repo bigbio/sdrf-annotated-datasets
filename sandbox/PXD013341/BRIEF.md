@@ -1,14 +1,24 @@
-# PXD013341  (package A)
+# PXD013341: WT/K3 sample map recovered from the author figure
 
-**Title:** Decreased synthesis of ribosomal proteins in tauopathy revealed by non-canonical amino acid labelling
+Checked on 2026-09-29 against the [PRIDE project](https://www.ebi.ac.uk/pride/archive/projects/PXD013341), all ten deposited SWATH `.wiff` names, the [primary article](https://pmc.ncbi.nlm.nih.gov/articles/PMC6600635/) and its Expanded View Figure 2 / supporting data.
 
-- Organisms: Mus musculus (mouse)
-- Organism parts declared: Brain
-- Diseases declared: Frontotemporal dementia
-- Runs: 10 (raw)
+The project protocol states that one brain hemisphere was taken from each mouse and that the SWATH experiment contains five WT and five K3 samples. Expanded View Figure 2 labels the ten individual heatmap columns as `WT-1191`, `WT-1196`, `WT-1194`, `WT-1202`, `WT-1200`, `K3-1192`, `K3-1193`, `K3-1203`, `K3-1204` and `K3-1201`. Those suffixes match the ten deposited RAW basenames exactly:
 
-## Publication
-- Evans HT, Benetatos J, van Roijen M, Bodea LG, Götz J. Decreased synthesis of ribosomal proteins in tauopathy revealed by non-canonical amino acid labelling. EMBO J. 2019 (PMID 31118249)
+| Author label | Deposited RAW |
+| --- | --- |
+| WT-1191 | `180323_P21492_1191_SWATH.wiff` |
+| WT-1196 | `180322_P21324_1196_SWATH.wiff` |
+| WT-1194 | `180323_P21492_1194_SWATH.wiff` |
+| WT-1202 | `180323_P21492_1202_SWATH.wiff` |
+| WT-1200 | `180326_P21492_1200_SWATH.wiff` |
+| K3-1192 | `180323_P21492_1192_SWATH.wiff` |
+| K3-1193 | `180323_P21492_1193_SWATH.wiff` |
+| K3-1203 | `180322_P21324_1203_SWATH.wiff` |
+| K3-1204 | `180323_P21492_1204_SWATH.wiff` |
+| K3-1201 | `180326_P21492_1201_SWATH.wiff` |
 
-## Sample processing protocol
-One brain hemisphere from each mouse was snap-frozen after removing the cerebellum samples were extracted in radioimmunoprecipitation assay (RIPA) buffer (Cell Signalling, #9806) as previously described (Bodea et al, 2017).  For quantitative mass spectrometry, AHA-labelled proteins were first purified using BONCAT. 250 μg of extract from each sample was alkylated with iodoacetamide and then incubated with 100 μM DIBO-biotin (Click Chemistry Tools, A112) overnight at 4°C. Biotinylated proteins were purified using 100 μg of streptavidin-coated Dynabeads (ThermoFisher, 11205D), with the beads first being washed in IP wash buffer (0.1% SDS and 0.05% Tween in Tris-buffered saline (TBS) and then in TBS. Sample preparation information dependent acquisition (IDA) and nano-liquid chromatography tandem mass spec (nano LC MS/MS) and SWATH-MS analysis BONCAT-purified proteins bound to beads from 5 WT and 5 K3 samples were placed in Triethylammonium bicarbonate (TEAB) buffer and subsequently reduced with DTT, followed by alkylation with iodoacetamide. Samples were then digested with 80 ng of trypsin overnight. Peptides were then transferred to a new tube acidified with formic acid. Peptides were then diluted in loading buffer (2% acetonitrile, 97.9% water, 0.1% formic acid) and subjected to 1D-IDA nanoLC MS/MS analysis (IDA-LC–MS/MS) and SWATH-MS.    Data acquisition via 1D IDA Each sample was injected onto a reverse-phase trap column (Halo-C18, 160Å, 2.7µm, 200 µm x 2 cm) for pre-concentration and desalted with loading buffer. The peptide trap was then switched into line with the analytical column (Halo-C18, 160Å, 2.7µm, 150 µm x 10cm). Peptides were eluted from the column using linear solvent gradients of 5-35% of mobile phase B (99.9% acetonitrile, 0.1% formic acid). After the peptide elution, the column was cleaned with 90% mobile phase B and then equilibrated with 95% mobile phase A (99.9% water, 0.1% formic acid). The reverse phase nano-LC eluent was subject to positive ion nano-flow electrospray analysis in an information dependant acquisition mode (IDA). A time of flight (TOF)-MS survey scan was acquired (m/z 350-1,500, 0.25 s) with the 10 most intense multiply charged ions (2+ to 5+; exceeding 150 counts per second) in the survey scan being sequentially subjected to MS/MS analysis. MS/MS spectra were accumulated for 50 ms in the mass range m/z 100–1,500 with rolling collision energy.  Data acquisition via independent acquisition (SWATH-MS) Each sample was prepared as above with the reverse phase nano-LC eluent being subjected to positive ion nano-flow electrospray analysis in a data independent acquisition mode (SWATH). For SWATH MS, m/z window sizes were determined based on precursor m/z frequencies (m/z 400–1,250) in previous IDA data (SWATH variable window acquisition, 60 windows in total). In SWATH mode, first a TOF-MS survey scan was acquired (m/z 350-1,500, 0.05 s) then the 60 predefined m/z ranges were sequentially subjected to MS/MS analysis. MS/MS spectra were accumulated for 60 ms in the mass range m/z 350-1,500 with rolling collision energy optimised for lowed m/z in m/z window +10%. To minimize instrument condition caused bias, SWATH data were acquired in random order for the samples with one blank run between every sample injection.
+The draft now uses the author label as `source name`, its numeric suffix as the biological-replicate identifier, and records `WT` or `K3` in `factor value[genotype]`, while leaving sample-level disease as `not available` rather than converting a tauopathy model into a clinical diagnosis. Each deposited acquisition has technical replicate 1 and fraction 1. The project and article directly support mouse brain, SWATH/DIA, and trypsin digestion; no additional fractions or technical injections are created.
+
+## Local validation
+
+The revised draft has ten rows with exact one-to-one coverage of the ten deposited SWATH RAW files and no `FILL` placeholders. Search/quantification settings remain those reported by PRIDE and the article: ProteinPilot 5.0 for IDA search, PeakView 2.1 ion-library/SWATH extraction, and fixed cysteine carbamidomethylation with methionine oxidation retained in the ion library. The article reports DTT reduction and iodoacetamide alkylation before trypsin digestion. A separate workflow or raw-file alias is not inferred from the larger `.wiff.scan` representations. The pinned `ms-proteomics` and `dia-acquisition` validators, repository review, and deposit reconciliation all pass; the validator retains only the existing advisory that the plain acquisition label could use an ontology accession.

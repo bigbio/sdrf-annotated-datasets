@@ -1,11 +1,7 @@
 # PXD023143 — under repair
 
-Immunopeptidomics/proteomics re-annotation held in `sandbox/` because the file(s) below do
-not yet pass the repository's review gate (`.github/scripts/sdrf_review.py`) or
-`parse_sdrf validate-sdrf` against `sdrf-pipelines` `main`. Row content, run-to-sample
-mapping and ontology terms are otherwise complete.
+4 coordinate collisions remain. Each group is one donor sample measured at three hepatocyte input levels (100E6, 400E6 and 1800E6 cells — the tokens appear in the deposited filenames). That is a real experimental variable, but no column in the declared templates (`ms-proteomics`, `immunopeptidomics`, `sample-metadata`) carries an input amount or cell count: `characteristics[tissue mass]` is for tissue and there is no injected-amount column. Porting needs a decision — a non-standard `characteristics[input cell number]` column, or treating each input level as its own `source name`.
 
-## `PXD023143.sdrf.tsv`
-- 4 coordinate collisions (source name x biological replicate x technical replicate x fraction, no separating column)
+Affected file(s): `PXD023143.sdrf.tsv`.
 
-Promotion to `datasets/` will follow the workflow in `sandbox/README.md` once the defects above are fixed.
+The other defect classes from the first submission (ontology-invalid `characteristics[sample type]`, `NT=`/`AC=` characteristics cells, pandas artifact headers) are fixed in the file above; the coordinate collisions described here are the only remaining blocker.

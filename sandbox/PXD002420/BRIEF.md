@@ -1,0 +1,15 @@
+# PXD002420: five RAW acquisitions repaired; environmental sample identities unresolved
+
+Rechecked on 2026-09-28 against [PRIDE](https://www.ebi.ac.uk/pride/archive/projects/PXD002420), all five RAW headers and metadata from all ten deposited X!Tandem result XMLs. The [primary article](https://doi.org/10.1002/pmic.201500041) identifies the study, but its full text and supplementary sample table were not available in this audit. The public [HAL record](https://hal.science/hal-01536494) supplies bibliographic metadata without an accessible manuscript file.
+
+The five source codes CO, RU, R1, R4 and Sludge are preserved. The draft contains five actual `.raw` basenames, with separate URI fields. The ten identification XMLs, five mzXML conversions and the FASTA database are not additional biological acquisitions. The existing canonical annotation is retained; its non-RAW rows are not used as independent sample evidence.
+
+All RAWs identify Q Exactive with HCD and 400–1400 m/z MS1. The four 2013 acquisitions use Top12 and 27 NCE; the 2015 Sludge acquisition uses Top8 and 26 NCE. Thus the old common CID description was incorrect. Physical preparation supports short SDS-PAGE, in-gel tryptic digestion and combining peptide extracts from pieces of the same gel track. Reduction and alkylation are reported, but the reagent identities were not established; the old DTT/IAA assignments are removed.
+
+Each RAW links to two independent search results, one metagenome-based and one UniProt-based. The original X!Tandem CYCLONE 2013.02.01.1 settings give 10 ppm precursor/10 ppm fragment tolerances for the four 2013 files, and 5 ppm/0.005 Da for Sludge. They specify one missed cleavage, fixed C carbamidomethylation, variable M oxidation and a +42.01056 N-terminal-region refinement. That refinement is recorded separately rather than described as unrestricted peptide acetylation; see the [X!Tandem parameter definition](https://www.thegpm.org/tandem/api/refpntm.html).
+
+The source record discusses both reactor lines and inocula, but does not assign these exact origins to all five codes. The blanket `anaerobic sludge`, 37 °C and liquid-nitrogen values in the old draft were not independently supported for every specimen and are left unavailable. The metaproteomics template is retained. Keep this file in `sandbox/` until the code-to-environment map is recovered; a parser pass alone cannot supply it.
+
+## Local validation
+
+The metaproteomics template and deposit-record reconciliation pass. The ms-proteomics template and repository review still require organism, organism part and biological-replicate columns that this environmental draft does not supply. The old sandbox draft has the same three missing-column errors, including when the two templates are requested together; these are retained as unresolved validation limitations. The old canonical file passes review, which does not establish its sample mapping. No template or review code was changed. Offline ontology warnings remain in the stored logs.

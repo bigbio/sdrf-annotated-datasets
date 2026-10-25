@@ -1,11 +1,7 @@
 # PXD036811 — under repair
 
-Immunopeptidomics/proteomics re-annotation held in `sandbox/` because the file(s) below do
-not yet pass the repository's review gate (`.github/scripts/sdrf_review.py`) or
-`parse_sdrf validate-sdrf` against `sdrf-pipelines` `main`. Row content, run-to-sample
-mapping and ontology terms are otherwise complete.
+9 coordinate collisions remain. Every group is a pair distinguished only by the submitter's `DR2a` / `DR2b` tokens. The deposit's protocol describes standard immunoaffinity chromatography without defining them, and the publication (Naghavian et al., Nature 2023, 10.1038/s41586-023-06081-w) describes one HLA class II isolation per sample using L243 and Tü39 mixed 1:1 with data-dependent acquisition in technical triplicates, with no occurrence of `DR2a` or `DR2b` in its full text. The tokens are thus undefined in both sources, and the paper's single 1:1 antibody mix argues against reading them as allotype-specific antibody arms — which leaves `characteristics[cell line]` plus distinct `source name`s, or `comment[fraction identifier]`, as untestable alternatives.
 
-## `PXD036811.sdrf.tsv`
-- 9 coordinate collisions (source name x biological replicate x technical replicate x fraction, no separating column)
+Affected file(s): `PXD036811.sdrf.tsv`.
 
-Promotion to `datasets/` will follow the workflow in `sandbox/README.md` once the defects above are fixed.
+The other defect classes from the first submission (ontology-invalid `characteristics[sample type]`, `NT=`/`AC=` characteristics cells, pandas artifact headers) are fixed in the file above; the coordinate collisions described here are the only remaining blocker.

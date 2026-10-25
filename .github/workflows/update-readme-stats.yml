@@ -49,6 +49,7 @@ jobs:
         env:
           MPLCONFIGDIR: /tmp/matplotlib
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PUBLISH_STATS_PR: ${{ github.repository == 'bigbio/sdrf-annotated-datasets' }}
         run: |
           set -euo pipefail
           # Generation takes ~1–2 minutes. A standing stats PR can be merged
@@ -65,8 +66,10 @@ jobs:
             python .github/scripts/generate_readme_stats.py
             git fetch origin main
             if [ "$(git rev-parse origin/main)" = "${base}" ]; then
-              echo "main still at ${base}; resetting chore/readme-resource-stats"
-              git push origin "HEAD:refs/heads/chore/readme-resource-stats" --force
+              echo "main still at ${base}; stats are ready"
+              if [ "${PUBLISH_STATS_PR}" = "true" ]; then
+                git push origin "HEAD:refs/heads/chore/readme-resource-stats" --force
+              fi
               exit 0
             fi
             echo "main moved to $(git rev-parse origin/main) during generation; retrying"
@@ -74,7 +77,19 @@ jobs:
           echo "main kept moving during stats generation" >&2
           exit 1
 
+      # Forks can generate stats without enabling automated pull requests.
+      - name: Save stats for manual review
+        if: github.repository != 'bigbio/sdrf-annotated-datasets'
+        uses: actions/upload-artifact@v4
+        with:
+          name: readme-resource-stats
+          path: |
+            README.md
+            docs/stats/
+          if-no-files-found: error
+
       - name: Open or update stats PR
+        if: github.repository == 'bigbio/sdrf-annotated-datasets'
         uses: peter-evans/create-pull-request@22a9089034f40e5a961c8808d113e2c98fb63676 # v7.0.11
         with:
           token: ${{ secrets.GITHUB_TOKEN }}

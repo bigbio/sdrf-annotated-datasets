@@ -128,6 +128,9 @@ TECHNOLOGY_TEMPLATES = {
     "ms-metabolomics",
 }
 
+# Gemini CLI was renamed Antigravity; one category covers both.
+GEMINI_LABEL = "Gemini/Antigravity"
+
 AGENT_EMAILS = {
     "cursoragent@cursor.com": "Cursor",
     "noreply@anthropic.com": "Claude",
@@ -144,7 +147,7 @@ AGENT_NAME_PATTERNS = (
     (re.compile(r"sdrf annotator", re.I), "SDRF Annotator"),
     (re.compile(r"\bcodex\b", re.I), "Codex"),
     (re.compile(r"chatgpt", re.I), "ChatGPT"),
-    (re.compile(r"gemini", re.I), "Gemini"),
+    (re.compile(r"gemini(?![- ]code[- ]assist)|antigravity", re.I), GEMINI_LABEL),
 )
 
 HUMAN_NAME_ALIASES = {
@@ -202,6 +205,15 @@ _AGENT_TEXT_PATTERNS = (
             re.I,
         ),
         "Codex",
+    ),
+    (
+        re.compile(
+            r"(?:generated|made) with \[?(?:google )?"
+            r"(?:gemini(?![- ]code[- ]assist)|antigravity)|"
+            r"co-authored-by:\s*(?:google )?(?:gemini(?![- ]code[- ]assist)|antigravity)",
+            re.I,
+        ),
+        GEMINI_LABEL,
     ),
 )
 
@@ -267,6 +279,8 @@ _BRANCH_PREFIX_AGENTS = (
     ("codex/", "Codex"),
     ("cursor/", "Cursor"),
     ("copilot/", "Copilot"),
+    ("gemini/", GEMINI_LABEL),
+    ("antigravity/", GEMINI_LABEL),
 )
 _REVIEW_BOT_LOGINS = {
     "copilot-pull-request-reviewer",
@@ -689,6 +703,10 @@ def fetch_repository_coverage(accessions: set[str]) -> dict:
         "pride_annotated": int(previous.get("pride_annotated") or 0),
         "pride_match": previous.get("pride_match") or "prefix",
         "fetched_at": previous.get("fetched_at") or "",
+        "massive_public": int(previous.get("massive_public") or 0),
+        "massive_annotated": int(previous.get("massive_annotated") or 0),
+        "iprox_public": int(previous.get("iprox_public") or 0),
+        "iprox_annotated": int(previous.get("iprox_annotated") or 0),
         "source_px": PROXI_DATASETS_URL,
         "source_pride": PRIDE_COUNT_URL,
     }
@@ -740,6 +758,33 @@ def fetch_repository_coverage(accessions: set[str]) -> dict:
             {name for name in local if name.startswith(("PXD", "PAD"))}
         )
         coverage["pride_match"] = "prefix"
+
+    for key, repo, prefixes in (
+        ("massive", "MassIVE", ("MSV",)),
+        ("iprox", "iProX", ("IPX",)),
+    ):
+        native = {name for name in local if name.startswith(prefixes)}
+        try:
+            payload = json.loads(
+                _http_get(
+                    f"{PROXI_DATASETS_URL}?repository={repo}&pageSize=100000",
+                    timeout=180,
+                )
+            )
+            ids = {
+                str(row[0]).upper()
+                for row in payload.get("datasets") or []
+                if row
+            }
+            print(f"  ProteomeCentral {repo} datasets: {len(ids):,}")
+            if ids:
+                coverage[f"{key}_public"] = len(ids)
+                coverage[f"{key}_annotated"] = len((local & ids) | native)
+                coverage["fetched_at"] = fetched_at
+        except (OSError, urllib.error.URLError, json.JSONDecodeError, KeyError, TypeError, ValueError) as exc:
+            print(f"  warning: could not fetch {repo} accessions from ProteomeCentral ({exc})")
+            if not coverage[f"{key}_annotated"]:
+                coverage[f"{key}_annotated"] = len(native)
 
     return coverage
 
@@ -842,13 +887,13 @@ def _agent_from_login(login: str) -> str | None:
 
 
 def _agent_from_branch(ref: str) -> str | None:
-    """OpenAI Codex / Cursor / Copilot PR branches (codex/..., cursor/..., copilot/...)."""
+    """Agent PR branches (codex/..., cursor/..., copilot/..., gemini/..., antigravity/...)."""
     name = (ref or "").strip().lower()
     name = name.split(":")[-1]
     if name.startswith("origin/"):
         name = name[len("origin/") :]
     parts = [p for p in name.split("/") if p]
-    if len(parts) >= 2 and parts[0] not in {"codex", "cursor", "copilot"}:
+    if len(parts) >= 2 and parts[0] not in {"codex", "cursor", "copilot", "gemini", "antigravity"}:
         name = "/".join(parts[1:])
     for prefix, label in _BRANCH_PREFIX_AGENTS:
         if name.startswith(prefix):
@@ -2504,36 +2549,42 @@ def render_coverage_figure(path: Path, coverage: dict) -> None:
     fetched = str(coverage.get("fetched_at") or "")
     when = f" Catalogue totals fetched {fetched[:10]}." if fetched else ""
     fig, axes = _make_figure(
-        nrows=2,
+        nrows=4,
         ncols=1,
-        figsize=(10.4, 5.4),
+        figsize=(10.4, 9.0),
         title="How much of public proteomics is annotated?",
         subtitle=(
-            "Share of public ProteomeXchange and PRIDE datasets with a curated "
-            f"SDRF in this repository. Open a PR to move the bar.{when}"
+            "Share of public ProteomeXchange, PRIDE, MassIVE and iProX datasets "
+            f"with a curated SDRF in this repository. Open a PR to move the bar.{when}"
         ),
-        hspace=0.55,
+        hspace=0.75,
         left=0.06,
         right=0.97,
-        bottom=0.10,
-        header_ratio=0.28,
+        bottom=0.07,
+        header_ratio=0.18,
     )
-    _draw_coverage_bar(
-        axes[0],
-        letter="A",
-        title="ProteomeXchange",
-        annotated=px_ann,
-        total=px_tot,
-        color="#1F4E79",
+    panels = (
+        ("A", "ProteomeXchange", px_ann, px_tot, "#1F4E79"),
+        ("B", "PRIDE", pride_ann, pride_tot, "#1A7F7A"),
+        (
+            "C",
+            "MassIVE",
+            int(coverage.get("massive_annotated") or 0),
+            int(coverage.get("massive_public") or 0),
+            "#8A4B9E",
+        ),
+        (
+            "D",
+            "iProX",
+            int(coverage.get("iprox_annotated") or 0),
+            int(coverage.get("iprox_public") or 0),
+            "#C2571A",
+        ),
     )
-    _draw_coverage_bar(
-        axes[1],
-        letter="B",
-        title="PRIDE",
-        annotated=pride_ann,
-        total=pride_tot,
-        color="#1A7F7A",
-    )
+    for ax, (letter, title, ann, tot, color) in zip(axes, panels, strict=True):
+        _draw_coverage_bar(
+            ax, letter=letter, title=title, annotated=ann, total=tot, color=color
+        )
     _save(fig, path)
 
 
@@ -2752,7 +2803,7 @@ AGENT_COLORS = {
     "SDRF Annotator": "#1A7F7A",
     "ChatGPT": "#10A37F",
     "Codex": "#3D8B5C",
-    "Gemini": "#4285F4",
+    GEMINI_LABEL: "#4285F4",
     "Unidentified": "#8A93A3",
 }
 
@@ -3442,6 +3493,23 @@ def build_readme_section(stats: dict, plot_paths: dict[str, str]) -> str:
             if pride_tot
             else f"| PRIDE datasets annotated | {fmt_int(pride_ann)} |"
         ),
+        *[
+            f"| {label} coverage | {fmt_int(ann)} / {fmt_int(tot)} "
+            f"({100.0 * ann / tot:.1f}%) |"
+            for label, ann, tot in (
+                (
+                    "MassIVE",
+                    int(coverage.get("massive_annotated") or 0),
+                    int(coverage.get("massive_public") or 0),
+                ),
+                (
+                    "iProX",
+                    int(coverage.get("iprox_annotated") or 0),
+                    int(coverage.get("iprox_public") or 0),
+                ),
+            )
+            if tot
+        ],
         "",
         "**Highlights:** " + "; ".join(highlight_parts) + ".",
         "",

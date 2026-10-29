@@ -14,14 +14,14 @@ The SDRF specification lives in [`bigbio/proteomics-sample-metadata`](https://gi
 <!-- STATS:START -->
 ## Resource at a glance
 
-_Auto-generated from curated `datasets/` on 2026-10-29T18:10:59Z. Sandbox drafts are excluded._
+_Auto-generated from curated `datasets/` on 2026-10-29T18:51:17Z. Sandbox drafts are excluded._
 
 | Metric | Count |
 | --- | ---: |
 | Accessions | 13,399 |
 | SDRF files | 13,954 |
 | Accessions with a declared template | 13,379 |
-| Samples (unique `source name` per file) | 699,812 |
+| Samples (unique `source name` per file) | 699,796 |
 | Runs (unique `comment[data file]` per file) | 880,074 |
 | Assay rows | 1,125,100 |
 | Human contributors | 40 |

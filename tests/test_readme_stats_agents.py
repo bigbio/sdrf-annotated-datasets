@@ -82,10 +82,18 @@ def test_deepseek_branch_prefix():
         ("gemini-2.0-flash", {"Gemini 2"}),
         ("grok 4.7 benchmark", {"Grok 4.7"}),
         ("grok-4.7", {"Grok 4.7"}),
+        ("Import from crosslinking-datasets bulk annotation project", {"Community import (XL-MS)"}),
+        ("produced with the sdrf-skills workflow on top of sdrf-pipelines", {"Claude (sdrf-skills)"}),
     ],
 )
 def test_parse_model_text(text, expected):
     assert g.parse_model_text(text) == expected
+
+
+def test_read_sdrf_annotation_tool(tmp_path):
+    sdrf = tmp_path / "test.sdrf.tsv"
+    sdrf.write_text("source name\tcomment[sdrf annotation tool]\nSample 1\tNT=sdrf-skeleton-gen;VV=v2.0.0\n")
+    assert g._read_sdrf_annotation_tool(sdrf) == "NT=sdrf-skeleton-gen;VV=v2.0.0"
 
 
 def test_render_models_figure(tmp_path):

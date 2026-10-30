@@ -261,6 +261,10 @@ MODEL_PATTERNS = (
     (re.compile(r"\bgemini[- ]2(?:\.5)?\b", re.I), "Gemini 2"),
     (re.compile(r"\bgemini[- ]1\.5\b", re.I), "Gemini 1.5"),
     (re.compile(r"\bgemini(?![- ]code[- ]assist)|antigravity\b", re.I), "Gemini (unspecified model)"),
+
+    # xAI Grok
+    (re.compile(r"grok[- ]?4(?:\.7)?\b", re.I), "Grok 4.7"),
+    (re.compile(r"\bgrok\b", re.I), "Grok (unspecified)"),
 )
 
 
@@ -280,6 +284,8 @@ def parse_model_text(text: str) -> set[str]:
         found.discard("DeepSeek V4 Pro")
     if any(m.startswith("Gemini ") and m != "Gemini (unspecified model)" for m in found):
         found.discard("Gemini (unspecified model)")
+    if any(m.startswith("Grok ") and m != "Grok (unspecified)" for m in found):
+        found.discard("Grok (unspecified)")
     return found
 
 # LLM-drafted annotation prose that does not name a vendor. Use only as an
@@ -1524,7 +1530,13 @@ def collect_contributions(current_files: list[Path]) -> dict:
         acc_refine_models[accession].update(file_refine_models.get(path, ()))
 
         if not models and agents:
-            models = {f"{a} (unspecified model)" for a in agents}
+            proxy_models = set()
+            for a in agents:
+                if a == "Cursor":
+                    proxy_models.add("Grok 4.7 (Cursor)")
+                else:
+                    proxy_models.add(f"{a} (unspecified model)")
+            models = proxy_models
             file_models[path].update(models)
             acc_origin_models[accession].update(models)
 
@@ -3002,6 +3014,10 @@ MODEL_COLORS = {
     "Gemini 2": "#4285F4",
     "Gemini 1.5": "#60A5FA",
     "Gemini (unspecified model)": "#38BDF8",
+    # xAI Grok
+    "Grok 4.7": "#E11D48",
+    "Grok 4.7 (Cursor)": "#E11D48",
+    "Grok (unspecified)": "#FB7185",
     # Agent proxies (when tool declared without explicit model)
     "Cursor (unspecified model)": "#F54E00",
     "Codex (unspecified model)": "#3D8B5C",

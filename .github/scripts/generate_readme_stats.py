@@ -174,7 +174,7 @@ _AGENT_TEXT_PATTERNS = (
     ),
     (
         re.compile(
-            r"generated with \[claude|generated with claude|"
+            r"(?:generated|annotated|made) with \[?claude|"
             r"claude\.com/claude-code|co-authored-by:\s*claude\b",
             re.I,
         ),
@@ -190,10 +190,17 @@ _AGENT_TEXT_PATTERNS = (
     ),
     (
         re.compile(
-            r"sdrf annotator|annotator@sdrf-skills",
+            r"sdrf annotator|annotator@sdrf-skills|sdrf-skills",
             re.I,
         ),
         "SDRF Annotator",
+    ),
+    (
+        re.compile(
+            r"crosslinking-datasets|crosslinking proteomics sdrf annotation effort",
+            re.I,
+        ),
+        "Community import (XL-MS)",
     ),
     (
         re.compile(r"made with chatgpt|generated with chatgpt", re.I),
@@ -265,6 +272,10 @@ MODEL_PATTERNS = (
     # xAI Grok
     (re.compile(r"grok[- ]?4(?:\.7)?\b", re.I), "Grok 4.7"),
     (re.compile(r"\bgrok\b", re.I), "Grok (unspecified)"),
+
+    # Community import & workflow models
+    (re.compile(r"crosslinking-datasets|crosslinking proteomics sdrf annotation effort", re.I), "Community import (XL-MS)"),
+    (re.compile(r"sdrf-skills workflow", re.I), "Claude (sdrf-skills)"),
 )
 
 
@@ -1224,7 +1235,7 @@ def _fetch_merged_pull_requests() -> tuple[list[dict], str]:
       repository(owner: $owner, name: $name) {
         pullRequests(
           states: MERGED
-          first: 25
+          first: 50
           after: $cursor
           orderBy: {field: CREATED_AT, direction: ASC}
         ) {
@@ -1385,6 +1396,29 @@ def _union_pr_paths(
     return combined
 
 
+def _read_sdrf_annotation_tool(path: Path) -> str:
+    """Read comment[sdrf annotation tool] from an SDRF file if present."""
+    try:
+        with path.open(newline="", encoding="utf-8", errors="replace") as handle:
+            reader = csv.reader(handle, delimiter="\t")
+            headers = next(reader, None)
+            if not headers:
+                return ""
+            indices = [i for i, c in enumerate(headers) if c.strip().lower() == "comment[sdrf annotation tool]"]
+            if not indices:
+                return ""
+            for row in reader:
+                for idx in indices:
+                    if idx < len(row):
+                        val = row[idx].strip()
+                        if val and val.lower() not in {"not available", "not applicable", "manual curation"}:
+                            return val
+                break
+    except Exception:
+        pass
+    return ""
+
+
 def collect_contributions(current_files: list[Path]) -> dict:
     """Attribute current datasets/ SDRFs using first-add git history and PRs.
 
@@ -1422,6 +1456,12 @@ def collect_contributions(current_files: list[Path]) -> dict:
             file_humans[path].update(humans)
             file_origin_models[path].update(models)
             file_models[path].update(models)
+        if sha and sha.startswith("293b5b833"):
+            file_humans[path].add("Specification community")
+            file_origin_agents[path].add("Human curation (specification)")
+            file_agents[path].add("Human curation (specification)")
+            file_origin_models[path].add("Human curation (specification)")
+            file_models[path].add("Human curation (specification)")
 
     for path in sorted(current):
         if path in file_agents or path in file_humans or path in file_models:
@@ -1436,6 +1476,41 @@ def collect_contributions(current_files: list[Path]) -> dict:
         file_humans[path].update(humans)
         file_origin_models[path].update(models)
         file_models[path].update(models)
+
+    # Inspect in-file comment[sdrf annotation tool] declarations
+    for p in current_files:
+        rel = p.resolve().relative_to(REPO_ROOT).as_posix()
+        tool = _read_sdrf_annotation_tool(p)
+        if not tool:
+            continue
+        if "sdrf-skeleton-gen" in tool:
+            file_origin_agents[rel].add("Claude")
+            file_agents[rel].add("Claude")
+            file_origin_models[rel].add("Claude Opus 5")
+            file_models[rel].add("Claude Opus 5")
+        elif "sdrf-skills" in tool:
+            file_origin_agents[rel].add("SDRF Annotator")
+            file_agents[rel].add("SDRF Annotator")
+            file_origin_models[rel].add("Claude (sdrf-skills)")
+            file_models[rel].add("Claude (sdrf-skills)")
+        elif "sonnet-5-ollama-gemma2-9b" in tool:
+            file_origin_agents[rel].add("Claude")
+            file_agents[rel].add("Claude")
+            file_origin_models[rel].add("Claude Sonnet 5")
+            file_models[rel].add("Claude Sonnet 5")
+        elif "ollama-gemma2-9b" in tool:
+            file_origin_models[rel].add("Gemma 2 (9B)")
+            file_models[rel].add("Gemma 2 (9B)")
+        elif "sdrf-agentic-annotator" in tool:
+            file_origin_agents[rel].add("DeepSeek")
+            file_agents[rel].add("DeepSeek")
+            file_origin_models[rel].add("DeepSeek V4 Flash")
+            file_models[rel].add("DeepSeek V4 Flash")
+        elif "sdrf-annotation-pipeline" in tool:
+            file_origin_agents[rel].add("sdrf-annotation-pipeline")
+            file_agents[rel].add("sdrf-annotation-pipeline")
+            file_origin_models[rel].add("sdrf-annotation-pipeline")
+            file_models[rel].add("sdrf-annotation-pipeline")
 
     pr_added = _git_pr_file_map(diff_filter="A")
     pr_modified = _git_pr_file_map(diff_filter="M")
@@ -2988,6 +3063,10 @@ AGENT_COLORS = {
     "Codex": "#3D8B5C",
     GEMINI_LABEL: "#4285F4",
     "DeepSeek": "#2563EB",
+    "Community import (XL-MS)": "#059669",
+    "Human curation (specification)": "#1F4E79",
+    "Specification community": "#1F4E79",
+    "sdrf-annotation-pipeline": "#0284C7",
     "Unidentified": "#8A93A3",
 }
 
@@ -3018,6 +3097,11 @@ MODEL_COLORS = {
     "Grok 4.7": "#E11D48",
     "Grok 4.7 (Cursor)": "#E11D48",
     "Grok (unspecified)": "#FB7185",
+    # Community and workflow provenance
+    "Claude (sdrf-skills)": "#D97757",
+    "Community import (XL-MS)": "#059669",
+    "Human curation (specification)": "#1F4E79",
+    "sdrf-annotation-pipeline": "#0284C7",
     # Agent proxies (when tool declared without explicit model)
     "Cursor (unspecified model)": "#F54E00",
     "Codex (unspecified model)": "#3D8B5C",

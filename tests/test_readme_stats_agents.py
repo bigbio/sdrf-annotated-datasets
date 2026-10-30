@@ -80,6 +80,8 @@ def test_deepseek_branch_prefix():
         ("gemma2:9b review", {"Gemma 2 (9B)"}),
         ("Ollama qwen2.5:3b summarizer", {"Qwen 2.5 (3B)"}),
         ("gemini-2.0-flash", {"Gemini 2"}),
+        ("grok 4.7 benchmark", {"Grok 4.7"}),
+        ("grok-4.7", {"Grok 4.7"}),
     ],
 )
 def test_parse_model_text(text, expected):
@@ -88,16 +90,17 @@ def test_parse_model_text(text, expected):
 
 def test_render_models_figure(tmp_path):
     contrib = {
-        "ai_models": 3,
+        "ai_models": 4,
         "models": [
+            {"name": "Grok 4.7 (Cursor)", "accessions": 7000, "files": 7000},
             {"name": "DeepSeek V4 Flash", "accessions": 198, "files": 198},
             {"name": "Claude Opus 5.5", "accessions": 150, "files": 170},
             {"name": "Cursor (unspecified model)", "accessions": 500, "files": 500},
         ],
-        "origin": [{"name": "Agent-assisted", "accessions": 848}],
+        "origin": [{"name": "Agent-assisted", "accessions": 7848}],
     }
     out_png = tmp_path / "models.png"
-    g.render_models_figure(out_png, contrib, {"accessions": 848})
+    g.render_models_figure(out_png, contrib, {"accessions": 7848})
     assert out_png.exists()
     assert out_png.stat().st_size > 1000
 

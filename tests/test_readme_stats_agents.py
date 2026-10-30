@@ -44,3 +44,60 @@ def test_review_bot_and_gemma_are_not_annotators():
     assert g.classify_contributor("gemini-code-assist[bot]", "a@b.c") is None
     assert g._parse_agent_text("Generated with Gemini Code Assist") == set()
     assert g._parse_agent_text("gemma2:9b draft, independently reviewed") == set()
+
+
+@pytest.mark.parametrize(
+    "text",
+    [
+        "Add 198 SDRF annotations from sdrf-agentic-annotator (DeepSeek-V4-Flash-0731, agent workflow)",
+        "Add SDRF annotations from DeepSeek-v4-pro LLM",
+        "Co-authored-by: deepseek <noreply@deepseek.com>",
+    ],
+)
+def test_text_declares_deepseek(text):
+    assert "DeepSeek" in g._parse_agent_text(text)
+
+
+def test_deepseek_branch_prefix():
+    assert g._agent_from_branch("deepseek/pxd000001") == "DeepSeek"
+    assert g._agent_from_branch("ypriverol:deepseek/batch") == "DeepSeek"
+
+
+@pytest.mark.parametrize(
+    "text,expected",
+    [
+        ("DeepSeek-V4-Flash-0731", {"DeepSeek V4 Flash"}),
+        ("deepseek-v4-flash", {"DeepSeek V4 Flash"}),
+        ("DeepSeek-v4-pro LLM", {"DeepSeek V4 Pro"}),
+        ("Model used for annotation: **deepseek pro4.1**", {"DeepSeek Pro 4.1"}),
+        ("Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>", {"Claude Opus 5.5"}),
+        ("Co-Authored-By: claude-opus-5-5[1m] <noreply@anthropic.com>", {"Claude Opus 5.5"}),
+        ("Co-Authored-By: claude-opus-5[1m] <noreply@anthropic.com>", {"Claude Opus 5"}),
+        ("Co-authored-by: Claude Opus 4.8 (1M context) <noreply@anthropic.com>", {"Claude Opus 4.8"}),
+        ("Co-Authored-By: Claude Sonnet 5 <noreply@anthropic.com>", {"Claude Sonnet 5"}),
+        ("Co-Authored-By: Claude Sonnet 5.5 <noreply@anthropic.com>", {"Claude Sonnet 5.5"}),
+        ("claude-haiku-5-5", {"Claude Haiku 5.5"}),
+        ("gemma2:9b review", {"Gemma 2 (9B)"}),
+        ("Ollama qwen2.5:3b summarizer", {"Qwen 2.5 (3B)"}),
+        ("gemini-2.0-flash", {"Gemini 2"}),
+    ],
+)
+def test_parse_model_text(text, expected):
+    assert g.parse_model_text(text) == expected
+
+
+def test_render_models_figure(tmp_path):
+    contrib = {
+        "ai_models": 3,
+        "models": [
+            {"name": "DeepSeek V4 Flash", "accessions": 198, "files": 198},
+            {"name": "Claude Opus 5.5", "accessions": 150, "files": 170},
+            {"name": "Cursor (unspecified model)", "accessions": 500, "files": 500},
+        ],
+        "origin": [{"name": "Agent-assisted", "accessions": 848}],
+    }
+    out_png = tmp_path / "models.png"
+    g.render_models_figure(out_png, contrib, {"accessions": 848})
+    assert out_png.exists()
+    assert out_png.stat().st_size > 1000
+

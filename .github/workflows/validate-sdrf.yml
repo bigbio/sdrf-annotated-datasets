@@ -87,6 +87,11 @@ jobs:
             fi
             echo "::group::parse_sdrf validate-sdrf --sdrf_file $f"
             # Options aligned with current sdrf-pipelines main (see parse_sdrf validate-sdrf -h).
-            parse_sdrf validate-sdrf --sdrf_file "$f" --use_ols_cache_only
+            # Files named PAD* are affinity-proteomics SDRFs; validate them with that template.
+            if [[ "$(basename "$f")" == PAD* ]]; then
+              parse_sdrf validate-sdrf --sdrf_file "$f" --use_ols_cache_only -t affinity-proteomics
+            else
+              parse_sdrf validate-sdrf --sdrf_file "$f" --use_ols_cache_only
+            fi
             echo "::endgroup::"
           done

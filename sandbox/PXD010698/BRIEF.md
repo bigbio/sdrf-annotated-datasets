@@ -1,0 +1,15 @@
+# PXD010698: five DDA acquisitions; individual versus pool relationship unresolved
+
+The existing five-row sandbox draft was rechecked on 2026-09-28 against [PRIDE](https://www.ebi.ac.uk/pride/archive/projects/PXD010698), the actual RAW headers, deposited mzTab/mzIdentML metadata, the two deposited SDRFs, and the [publisher's supporting information](https://acs.figshare.com/articles/journal_contribution/7075202). The canonical SDRF is retained. Its `Individual 1`–`Individual 5` labels and the matching archived community SDRF are not independent proof of five donors.
+
+All five deposited RAWs are **DDA** on Q Exactive HF, despite the study's DIA-focused title. Their actual methods report HCD at 27 NCE, 350–1400 m/z MS1 and 200–2000 m/z MS2. The described physical preparation uses trypsin, DTT, iodoacetamide and HRM calibration peptides. The deposited result metadata establish Proteome Discoverer **1.4.1.14** and link each acquisition to its corresponding MGF.
+
+The project protocol describes five native CSF samples, then describes an aliquot from a pool of four hydrocephalus patients. The supplementary information describes different native samples but does not supply a per-RAW donor or pool table. Neither an assumed single shared pool nor five distinct individuals can resolve this ambiguity. Individual, biological replicate, technical replicate and pooling values therefore remain unavailable. The only five rows are QExHF00747, QExHF00749, QExHF00753, QExHF00755 and QExHF00757, all with `.raw` suffixes; no fractionated library or DIA runs from related accessions are invented.
+
+The original five Proteome Discoverer `.msf` projects were checked directly through their SQLite metadata tables, with each `FileInfos` entry linking to its exact deposited RAW basename. All five specify **5 ppm precursor tolerance, 20 mmu (0.02 Da) fragment tolerance, trypsin, two missed cleavages, fixed C carbamidomethylation and variable M oxidation**. The configured database name is `uniprot_sprot_human_with_claudia_mutations`; its exact contents and sequence count were not independently verified. These original settings resolve the conflicting tolerance and fixed-modification values in the converted mzIdentML/mzTab metadata. The Mascot processing node's version 1.30 is not evidence of the Mascot server version. Its `MascotXValue` setting assigns 111.000 Da to residue X without a chemical identity; this is retained as a search-setting comment and is not assigned an invented chemical modification.
+
+Search metadata are repaired, but the sample-to-file/pool map remains unresolved. Keep this draft in `sandbox/`.
+
+## Local validation
+
+The ms-proteomics and human templates, and consequently the repository review script, fail because biological and technical replicate values are unavailable. The pre-existing canonical and sandbox files both passed the review script, but those passes did not establish their donor assignments. The updated draft passes deposit-record reconciliation. The existing canonical file is unchanged pending independent sample-to-file evidence. Offline ontology warnings are retained in the validation logs.

@@ -1,0 +1,13 @@
+# PXD014738: purified-protein crosslinking; five preparation relationships unresolved
+
+Rechecked on 2026-09-28 against [PRIDE](https://www.ebi.ac.uk/pride/archive/projects/PXD014738), all five RAW headers, all five ProteinProspector result tables, the [primary paper](https://pmc.ncbi.nlm.nih.gov/articles/PMC6733591/) and [NCBI taxonomy 209285](https://www.ncbi.nlm.nih.gov/Taxonomy/Browser/wwwtax.cgi?id=209285). The current species name is Thermochaetoides thermophila; Chaetomium thermophilum is a synonym. This identifies the protein source, rather than the recombinant expression host.
+
+The material is purified recombinant CtLas1/Grc3 protein preparation, not tissue. Physical digestion uses **trypsin and Lys-C**. The five actual instruments are Q Exactive Plus, with HCD at 27 NCE and 375–1500 m/z MS1. BS3 is the physical crosslinker, while the reported ProteinProspector search uses its DSS setting, 10 ppm precursor/50 ppm fragment tolerances and three missed cleavages. Variable M oxidation is supported. The old fixed carbamidomethylation assignment lacks support in the inspected preparation/search descriptions and is removed. The generic 30 Å constraint is not assigned as an experimentally documented value.
+
+The five `.txt` files are crosslink result tables, each corresponding to one of the five RAWs; they are not extra acquisitions. Their result `Fraction` values are preserved as author result labels, not treated as evidence of peptide fractionation or biological replication. The three 2018 tables use Pillon_1/Pillon_2/Pillon_3 labels. The two 2017 tables have different labels and reported target-protein mass summaries; this does not establish either identical repeated injections or a definite construct/condition map.
+
+Biological and technical replicate values remain unavailable until the per-file preparation map is supplied. Counts of replicates from the paper's other biochemical assays are not imported into these five LC–MS acquisitions. The existing canonical annotation is retained; its ten-row representation is not independent mapping evidence. Keep the corrected five-row draft in `sandbox/`.
+
+## Local validation
+
+The ms-proteomics and crosslinking templates, and consequently repository review, fail only on unavailable biological and technical replicate values. Both prior canonical and sandbox files passed review; the revised failures expose unverified repeat assignments. A no-factor advisory remains. The record-reconciliation CLI falsely reports missing Lys-C when reading the duplicated enzyme columns; a direct check of the two actual values passes. Offline ontology warnings remain in the stored logs.

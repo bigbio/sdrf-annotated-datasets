@@ -1,0 +1,26 @@
+# Signals that an allow-listed AI review bot reviewed a PR, so sdrf-change-comment.yml re-renders
+# the change report with the bot's findings. Review events on fork PRs only get a read-only
+# token, so this job does nothing itself; the comment job reacts to its completion.
+name: SDRF external review trigger
+
+on:
+  pull_request_review:
+    types: [submitted, edited, dismissed]
+  pull_request_review_comment:
+    types: [created, edited, deleted]
+
+permissions: {}
+
+jobs:
+  signal:
+    if: >-
+      contains(fromJSON('["qodo-code-review[bot]", "coderabbitai[bot]",
+      "copilot-pull-request-reviewer[bot]"]'), github.event.sender.login)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Record review
+        env:
+          REVIEWER: ${{ github.event.sender.login }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+        run: |
+          echo "External review activity by $REVIEWER on PR #$PR_NUMBER"

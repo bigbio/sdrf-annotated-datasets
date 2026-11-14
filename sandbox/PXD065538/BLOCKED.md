@@ -1,6 +1,6 @@
 # PXD065538 - BLOCKED subset: label-free protein-abundance time course (Exploris 480)
 
-Annotated elsewhere in this folder: `PXD065538-silac.sdrf.tsv` (288 SILAC .raw runs) and
+Annotated in [`datasets/PXD065538/`](../../datasets/PXD065538/): `PXD065538-silac.sdrf.tsv` (288 SILAC .raw runs) and
 `PXD065538-ubiquitin.sdrf.tsv` (18 ubiquitin .raw runs). Every deposited vendor .raw file is covered.
 
 ## Affected files (23, from PRIDE files/all; PRIDE files them under category RAW but they are mzML)
@@ -31,9 +31,11 @@ Annotated elsewhere in this folder: `PXD065538-silac.sdrf.tsv` (288 SILAC .raw r
 Associated (not runs): `Timecourse_2023_01_UniProt_Homo_sapiens.fasta`, `Timecourse_KossBS_031323_Metadata.csv`, `Timecourse_MzTab_Report_KossBS_031323.mztab`, `Timecourse_Samples_Report_KossBS_031323.csv`.
 
 ## Why
-- These runs exist only as mzML peak lists; no vendor .raw file is deposited for any `KossBS_031323_*`
-  run. An SDRF `comment[data file]` must reference the vendor raw file (a peak list breaks reprocessing),
-  so they cannot be annotated faithfully.
+- These runs exist only as mzML; no vendor .raw file is deposited for any `KossBS_031323_*` run. The
+  SDRF specification itself allows mzML data files, but the curation convention this annotation follows
+  (bigbio/sdrf-skills: `comment[data file]` references the vendor raw file, never a converted peak list)
+  does not, so they were left out rather than annotated against the mzML. Nothing in the mzML content was
+  found to prevent an annotation.
 - The experiment is label-free (EncyclopeDIA/Scaffold DIA; Orbitrap Exploris 480), not SILAC, so it is
   also outside the SILAC campaign.
 - The sample map itself IS recoverable: `Timecourse_KossBS_031323_Metadata.csv` gives Day 4/6/8,
@@ -41,4 +43,6 @@ Associated (not runs): `Timecourse_2023_01_UniProt_Homo_sapiens.fasta`, `Timecou
   chromatogram-library runs (GPF6_4 is not deposited).
 
 ## What would unblock
-- The submitters depositing the Thermo .raw files for the 18 samples and the GPF library runs.
+- The submitters depositing the Thermo .raw files for the 18 samples and the GPF library runs, or
+- a maintainer decision to accept the deposited mzML files as `comment[data file]`, in which case a
+  label-free `PXD065538-timecourse.sdrf.tsv` can be built from the metadata CSV above.

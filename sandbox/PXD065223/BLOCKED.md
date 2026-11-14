@@ -99,8 +99,8 @@ annotated ones - should take the instrument from the raw headers, not from the r
 
 - The MaxQuant run-to-experiment table from the original search - `mqpar.xml`,
   `experimentalDesignTemplate.txt`, `summary.txt` or `evidence.txt` (any file pairing a `Raw file`
-  column with an `Experiment` column) - which would resolve the Group A run grouping and the Group B
-  experiment membership, but not which variant occupied which channel (Group A still needs the
+  column with an `Experiment` column) - which would resolve the Group A run grouping and, if it includes the
+  Group B runs, the Group B experiment membership, but not which variant occupied which channel (Group A still needs the
   channel statement below), or
 - a statement from the authors (or an SI table) of which Merlin variant occupied the light, medium and
   heavy channel in each of the two triple-SILAC groups, which raw files belong to each group, and which

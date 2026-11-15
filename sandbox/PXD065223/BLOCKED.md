@@ -99,12 +99,13 @@ annotated ones - should take the instrument from the raw headers, not from the r
 
 - The MaxQuant run-to-experiment table from the original search - `mqpar.xml`,
   `experimentalDesignTemplate.txt`, `summary.txt` or `evidence.txt` (any file pairing a `Raw file`
-  column with an `Experiment` column) - which would resolve both the Group A channel sets and the
-  Group B experiment membership, or
+  column with an `Experiment` column) - which would resolve the Group A run grouping and, if it includes the
+  Group B runs, the Group B experiment membership, but not which variant occupied which channel (Group A still needs the
+  channel statement below), or
 - a statement from the authors (or an SI table) of which Merlin variant occupied the light, medium and
-  heavy channel in each of the two triple-SILAC groups, and which raw files constitute the gpUL141
-  SILAC-IP. With either, Group A becomes a 36-row addition (12 runs x 3 channels) and coverage reaches
-  47/59.
+  heavy channel in each of the two triple-SILAC groups, which raw files belong to each group, and which
+  raw files constitute the gpUL141 SILAC-IP. With that channel statement, Group A becomes a 36-row
+  addition (12 runs x 3 channels) and coverage reaches 47/59.
 - A variant-to-stock-number key for 1111 / 1149 / 1178 / 1502 / 1780 / 1864 would additionally add the
   genotype to the 35 annotated rows and give the study its real factor, replacing
   `factor value[source name]`.

@@ -14,12 +14,12 @@ The SDRF specification lives in [`bigbio/proteomics-sample-metadata`](https://gi
 <!-- STATS:START -->
 ## Resource at a glance
 
-_Auto-generated from curated `datasets/` on 2026-11-16T10:56:09Z. Sandbox drafts are excluded._
+_Auto-generated from curated `datasets/` on 2026-11-16T13:56:05Z. Sandbox drafts are excluded._
 
 | Metric | Count |
 | --- | ---: |
 | Accessions | 15,896 |
-| SDRF files | 16,768 |
+| SDRF files | 16,769 |
 | Accessions with a declared template | 15,872 |
 | Samples (unique `source name` per file) | 985,168 |
 | Runs (unique `comment[data file]` per file) | 1,233,145 |
@@ -33,8 +33,8 @@ _Auto-generated from curated `datasets/` on 2026-11-16T10:56:09Z. Sandbox drafts
 | Distinct instruments | 226 |
 | Median runs per accession | 16 |
 | Accessions with modification parameters | 9,787 |
-| ProteomeXchange coverage | 15,834 / 58,331 (27.1%) |
-| PRIDE coverage | 15,218 / 42,755 (35.6%) |
+| ProteomeXchange coverage | 15,834 / 58,335 (27.1%) |
+| PRIDE coverage | 15,218 / 42,759 (35.6%) |
 | MassIVE coverage | 211 / 3,759 (5.6%) |
 | iProX coverage | 392 / 8,488 (4.6%) |
 

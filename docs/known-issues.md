@@ -46,6 +46,11 @@ sample. Each needs one row per label channel, with its channel-to-sample map.
 |---|---|---|
 | PXD027232 | TMT10plex, 6 samples | Raw header method `Fusion_TMT10_PTM_60min...`; deposited `LC-MS data.xlsx` quantifies Sirt7KD1-3 and Sirt7ctr1-3. Which channel carries which sample is not stated anywhere |
 | PXD044020 | TMTpro, plex not stated | Protocol sets TMTpro on K and peptide N-termini; the paper (Cell 2024, PMC11145561) pools three conditions (empty vector, MBC-TurboID, BCAT2-TurboID) in one run. No sample sheet or channel map is deposited or published |
+| PXD000752 | iTRAQ 8-plex, 2 pools × 36 IPG fractions | PRIDE `sampleProcessingProtocol` labels samples with 8plex iTRAQ then separates by IEF; each `.raw` fraction is one slice of a pooled 8-plex, so it holds all 8 channels. The only source names are the pools (`alveolar macrophage iTRAQ plex 1/2`); which reporter carries which subject is not recorded |
+| PXD000928 | iTRAQ 8-plex, 2 pools × IPG fractions | PRIDE `sampleProcessingProtocol` labels with 8plex iTRAQ and isoelectric focusing; each `.raw` is a pooled 8-plex slice. Source names collapse to `melanoma lymph-node metastasis iTRAQ plex I/II` with no per-channel sample map |
+| PXD000996 | iTRAQ 8-plex, 2 pools × 72 IPG fractions | Same Karolinska HiRIEF iTRAQ 8-plex design; PRIDE `sampleProcessingProtocol` states 8plex iTRAQ + isoelectric focusing. Rows use only pool-level sources (`thyroid cyst fluid iTRAQ plex 1/2`), no channel map |
+| PXD001808 | iTRAQ 8-plex, 3 pools (15 cases + 5 controls) | `sampleProcessingProtocol` describes three 8-plex experiments "each with one reference pool (113 reporter), two controls … and five cases", but the SDRF keeps only pool-level sources (`BALF exosome iTRAQ plex 1-3`); the exact channel→subject assignment is not recorded and not recoverable from file names |
+| PXD003702 | iTRAQ 8-plex, 6 pools × IPG fractions | PRIDE `sampleProcessingProtocol`: "processed using FASP with trypsin, iTRAQ and HiRIEF". Each fraction `.raw` is a pooled 8-plex slice; sources are named only by pool (`ascending aorta tissue iTRAQ 2013apr23_pool1_pool1` …), no channel map |
 
 How this was checked: each SDRF's `comment[label]` was compared with PRIDE's
 quantification method, the sample and data processing protocols, and the deposited

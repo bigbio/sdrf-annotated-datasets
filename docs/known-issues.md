@@ -46,6 +46,9 @@ sample. Each needs one row per label channel, with its channel-to-sample map.
 |---|---|---|
 | PXD027232 | TMT10plex, 6 samples | Raw header method `Fusion_TMT10_PTM_60min...`; deposited `LC-MS data.xlsx` quantifies Sirt7KD1-3 and Sirt7ctr1-3. Which channel carries which sample is not stated anywhere |
 | PXD044020 | TMTpro, plex not stated | Protocol sets TMTpro on K and peptide N-termini; the paper (Cell 2024, PMC11145561) pools three conditions (empty vector, MBC-TurboID, BCAT2-TurboID) in one run. No sample sheet or channel map is deposited or published |
+| PXD005894 | TMT6plex, 6 final pooled samples | Protocol pools biological replicates into 6 TMT sixplex-labelled samples but assigns **no reporter channel to any sample**; the SDRF keeps run-level sources (`Gustavo-Vega_TMT_TPV1A/B` … CID/HCD pairs) with no per-channel map. c-di-GMP/BCG pellicle strains WT, ΔPDE, ΔDGC are never tied to a channel |
+| PXD055203 | TMTpro 16-plex, cervical cancer | Protocol labels 16-plex TMTpro and pools each TMT set for high-pH fractionation; the SDRF source names are acquired `_GroupNN.tar`/DIA archive names, not samples, and assign **no channel to any of the 139 patients**. Channel→patient map appears only in the paper's extended data, not in the deposit |
+| IPX0002466000 | iTRAQ (phospho + proteome), OSCC | One row per pooled iTRAQ run: sources are pool names (`OSCC_7779TPSY01` …) each spanning up to 24 fraction files, with **no channel/reporter column** and no per-channel sample map anywhere |
 
 How this was checked: each SDRF's `comment[label]` was compared with PRIDE's
 quantification method, the sample and data processing protocols, and the deposited

@@ -21,3 +21,20 @@
 - **Sex and age are `not available`.** The paper's metabolic cohort is male mice on high-fat diet, but the proteomics has 8 HET mice while the reported male HET cohort is N = 7, so the cohort match is not assumed.
 - The run group MaxQuant calls "Slow" (`_4`) uses a method file named `Olsen_FAST_Top20`. Both names are recorded.
 - The paper says CID, but the instrument is a Q Exactive. HCD is recorded, and fragment tolerance is 0.5 Da as stated.
+
+## Update (odense-tromso-1): MDM2 co-IP annotated → `PXD020812-ip.sdrf.tsv`
+
+There are 45 runs: 3 antibodies (4B2 = `IP_Cyt_*`, 2A10, SMP14) × 15 SDS-PAGE gel bands. The file has 90 rows (2 SILAC channels per run) and passes `parse_sdrf` (ms-proteomics + vertebrates + cell-lines) with no warnings. The specimen is 3T3-L1 adipocytes (CVCL_0123; male, embryo-derived, per Cellosaurus).
+
+- **Label → condition.** The PRIDE data protocol states double labels Arg6/Lys4 and Arg10/Lys8, recorded as SILAC medium and SILAC heavy. In the deposited `MDM2_proteinGroups.txt`, the bait Mdm2 has H/L = 1419 (4B2), 269 (2A10) and 28 (SMP14), against a global median of about 1. So heavy (Arg10/Lys8) is anti-MDM2 and medium (Arg6/Lys4) is nonspecific IgG.
+  - The MaxQuant L state is taken as Arg6/Lys4, following the label order in the protocol. Evidence-file masses could not confirm this, because MaxQuant `Mass` excludes the label.
+- **Raw files → experiments.** The `Raw file` / `Experiment` columns of `MDM2_evidence.txt` match all 45 deposited file names one-to-one.
+- **Digestion.** Trypsin: the evidence contains many R-terminal peptides. The other technical values follow the stated search parameters (20 ppm / 0.5 Da, carbamidomethyl C, oxidation M, protein N-term acetyl, SILAC label modifications).
+
+### MORC2 IP / RIME (22 RAW files): still blocked, but the label map is now known
+
+- **Label map, from the paper's Table S3** (`41598_2021_1240_MOESM3_ESM.xlsx`) against `MORC2_proteinGroups.txt`:
+  - `aMORC2/IgG` tracks the MaxQuant M/L ratio (r = 0.95 Regular, 0.96 RIME).
+  - `siMdm2/siGFP` tracks the H/M ratio (r = 0.98 on the Regular/RIME average).
+  - So L (Arg0/Lys0) = IgG, M (Arg6/Lys4) = anti-MORC2 in siGFP cells, and H (Arg10/Lys8) = anti-MORC2 in siMdm2 cells.
+- **Why it stays blocked.** The deposited raws (`20180525_..._IP_MORC2_1-12`, `20180611_..._IP_MORC2_RIME_1-10`) are not the runs in the deposited search. `MORC2_evidence.txt` lists `20170705_PH_MORC2IP_1-15` (Reg) and `20180130/20180202_..._MORC2_RIME_1st*` (RIME) instead, and none of those files are in PRIDE. So the deposited MORC2 files cannot be tied to a search or a label layout. They stay unannotated.

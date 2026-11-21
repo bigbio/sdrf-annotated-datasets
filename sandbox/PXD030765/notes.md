@@ -44,6 +44,6 @@ Modifications and tolerances are not stated anywhere in the record.
 
 ## Return criteria
 
-- Confirm the AP-MS cell line (293T vs HAP1) from the published PDF.
+- Confirm the AP-MS cell line (293T vs HAP1) with the submitter. The published paper is internally inconsistent, so it cannot settle this on its own.
 - Confirm the DENV2 strain, MOI and harvest time of the AP-MS infection, and the IP3 file order (ask the submitter or Taplin).
 - Then build a label-free SDRF (`ms-proteomics` + `human` + `cell-lines`), with 27 rows and factor values for bait (HA-RACK1 vs untagged RACK1) and infection (DENV2 vs mock). Pass `parse_sdrf validate-sdrf` and independent review, and move the folder to `datasets/PXD030765/`.

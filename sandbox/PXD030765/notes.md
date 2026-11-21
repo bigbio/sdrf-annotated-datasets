@@ -14,7 +14,7 @@ BLOCKED: not a SILAC dataset. It is label-free AP-MS with spectral counting. No 
    - The paper's Methods describe no isotope labelling.
 
    The correct label is therefore `label free sample`. This is an inference from the evidence above, because the paper never says "label-free" explicitly.
-2. **The cell line conflicts between sources.** The PRIDE protocol, the Results and the Fig. 2A legend say 293T. A Methods-section summary of the paper says "HAP1 cells (5 × 10^8)". This needs resolving from the published PDF.
+2. **The cell line conflicts between sources.** The PRIDE protocol, the Results and the Fig. 2A legend say 293T. A Methods-section summary of the paper says "HAP1 cells (5 × 10^8)". The paper is internally inconsistent, so the submitter must confirm the cell line.
 3. **The infection details are missing.** The workbooks label two of the three conditions per IP as `+DENV2`, and the viral-proteins sheet names DENV2-16681. The paper's AP-MS Methods give no virus strain, MOI or time post infection.
 
 ## Resolved file → condition map (from the deposited workbooks)

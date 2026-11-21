@@ -45,6 +45,22 @@ channel relationships.
    ≈ 1) fit WT = heavy in FW. That is an inference from results, not a stated design, and it still
    does not say which raw files make up that experiment.
 
+3. **Other inconsistencies found in the public record:**
+   - In `RFP_IP_FW/REV` the bait CSB (ERCC6) has raw H/L 0.49 (FW) and 0.66 (REV), but normalized H/L
+     0.32 (FW) and 2.09 (REV) in the deposited proteinGroups. The papers do not say which conditions
+     this CSB-mScarlet IP compares (the preprint text suggests WT vs STK19-/-), so its sample identities
+     cannot be pinned down from the data alone.
+   - The diGly file names encode three high-pH fractions (F1-F3). The methods state "a single LC-MS/MS run
+     was performed for all immunoprecipitated peptide material from one sample".
+   - The 2350 batch skips slice numbers `_03` to `_10`. No public source explains this.
+
+## Independent check
+A fresh-context reviewer tried to disprove the block from public sources only. Verdict: **BLOCK_CONFIRMED**.
+- Only the 6 diGly files can be tied to an experiment, from their file names, and not to a channel.
+- Not reachable: the Mol Cell STAR Methods and Table S1 (cell.com / sciencedirect returned HTTP 403; no PMC
+  copy). The bioRxiv supplements (media-1.pdf with Suppl. Fig. 8C/9A, and media-2.xlsx) were rate-limited
+  (HTTP 429). A curator with browser access should check these before treating the block as final.
+
 ## What would unblock
 - The submitters depositing the MaxQuant `mqpar.xml` (or `summary.txt` / experimental design template)
   for each search, or a table that maps raw file to experiment, FW/REV and the heavy/light condition. With that,

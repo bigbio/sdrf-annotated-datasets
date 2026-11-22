@@ -1518,6 +1518,14 @@ def collect_contributions(current_files: list[Path]) -> dict:
     pr_added = _union_pr_paths(pr_added, merge_added)
     pr_modified = _union_pr_paths(pr_modified, merge_modified)
 
+    # Living-resource activity: how many merged PRs grew the corpus vs refined
+    # existing annotations. "Modify existing" = a PR changed at least one file
+    # that already existed; "add only" = a PR introduced brand-new datasets and
+    # touched nothing that predated it. The two buckets are disjoint.
+    pr_all = set(pr_added) | set(pr_modified)
+    pr_add_only = set(pr_added) - set(pr_modified)
+    pr_modify_existing = set(pr_modified)
+
     pull_requests, pr_fetch = _fetch_merged_pull_requests()
     prs_with_agent = 0
     prs_with_model = 0
@@ -1694,6 +1702,9 @@ def collect_contributions(current_files: list[Path]) -> dict:
         "github_prs_with_agent": prs_with_agent,
         "github_prs_with_model": prs_with_model,
         "github_pr_fetch": pr_fetch,
+        "prs_total": len(pr_all),
+        "prs_add_only": len(pr_add_only),
+        "prs_modify_existing": len(pr_modify_existing),
         "origin": [
             {
                 "name": "Human-only",
@@ -3780,6 +3791,11 @@ def build_readme_section(stats: dict, plot_paths: dict[str, str]) -> str:
     )
     n_multi = int(contrib.get("multi_agent_accessions") or 0)
     n_unidentified = _unidentified_accessions(contrib, totals)
+    prs_total = int(contrib.get("prs_total") or 0)
+    prs_add_only = int(contrib.get("prs_add_only") or 0)
+    prs_modify = int(contrib.get("prs_modify_existing") or 0)
+    prs_modify_pct = 100.0 * prs_modify / prs_total if prs_total else 0.0
+    prs_add_pct = 100.0 * prs_add_only / prs_total if prs_total else 0.0
     n_codex = 0
     for row in contrib.get("agents") or []:
         if row.get("name") == "Codex":
@@ -3855,6 +3871,13 @@ def build_readme_section(stats: dict, plot_paths: dict[str, str]) -> str:
         if top_handoff:
             handoff_bit += f" (most common handoff **{top_handoff}**)"
         highlight_parts.append(handoff_bit)
+    if prs_total:
+        highlight_parts.append(
+            f"**{fmt_int(prs_total)}** merged PRs have changed curated datasets "
+            f"— **{fmt_int(prs_add_only)}** ({prs_add_pct:.0f}%) added "
+            f"brand-new datasets and **{fmt_int(prs_modify)}** "
+            f"({prs_modify_pct:.0f}%) refined existing annotations"
+        )
     if top_inst:
         highlight_parts.append(f"most common instrument is **{top_inst}**")
     if top_mod:
@@ -3886,6 +3909,23 @@ def build_readme_section(stats: dict, plot_paths: dict[str, str]) -> str:
         f"| Runs (unique `comment[data file]` per file) | "
         f"{fmt_int(totals['runs'])} |",
         f"| Assay rows | {fmt_int(totals['assay_rows'])} |",
+        (
+            f"| Merged PRs that changed curated datasets | {fmt_int(prs_total)} |"
+            if prs_total
+            else ""
+        ),
+        (
+            f"| ... adding new datasets | {fmt_int(prs_add_only)} "
+            f"({prs_add_pct:.0f}%) |"
+            if prs_total
+            else ""
+        ),
+        (
+            f"| ... modifying existing datasets | {fmt_int(prs_modify)} "
+            f"({prs_modify_pct:.0f}%) |"
+            if prs_total
+            else ""
+        ),
         f"| Human contributors | {fmt_int(n_people)} |",
         f"| AI agents (named fingerprints) | {fmt_int(n_ai_agents)} |",
         f"| Foundation models identified | {fmt_int(n_models)} |",

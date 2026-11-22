@@ -1,0 +1,29 @@
+# MS2-precursor pair counts from deposited MGF peak lists (neutral mass delta +/-0.004 Da, same charge, RT within 1 min). 'off' = same search at delta -0.03,-0.02,+0.02,+0.03 Da (background).
+FL0067_AysegulS_2.mgf
+  K4               on=  258  off=[349, 295, 275, 241]
+  R6               on=  320  off=[342, 327, 245, 237]
+  K8               on= 1508  off=[285, 281, 279, 264]
+  R10              on=  769  off=[273, 275, 285, 281]
+  2xK4             on=  249  off=[563, 305, 193, 171]
+  2xK8             on=  827  off=[342, 260, 237, 224]
+  R6-K4 (1.995)    on=  324  off=[238, 258, 295, 276]
+  R10-K8 (1.994)   on=  321  off=[233, 274, 315, 264]
+FL0067_AysegulS_3.mgf
+  K4               on=  574  off=[365, 195, 197, 151]
+  R6               on=  432  off=[190, 222, 174, 203]
+  K8               on=  662  off=[350, 196, 166, 297]
+  R10              on=  365  off=[186, 230, 208, 203]
+  2xK4             on=  553  off=[285, 175, 115, 105]
+  2xK8             on=  629  off=[451, 174, 132, 124]
+  R6-K4 (1.995)    on=  175  off=[169, 220, 276, 153]
+  R10-K8 (1.994)   on=  182  off=[152, 189, 284, 162]
+FL0067_AysegulS_2.mgf
+  K4->K8 3.9891    on=  256  off=[255, 250, 325, 269]
+  R6->R10 3.9881   on=  254  off=[259, 248, 322, 275]
+   K4 median RT(partner-light) min -0.13
+   K8 median RT(partner-light) min 0.0
+FL0067_AysegulS_3.mgf
+  K4->K8 3.9891    on=  668  off=[150, 136, 190, 274]
+  R6->R10 3.9881   on=  645  off=[151, 137, 190, 229]
+   K4 median RT(partner-light) min -0.05
+   K8 median RT(partner-light) min 0.0

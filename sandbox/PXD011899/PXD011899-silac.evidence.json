@@ -1,0 +1,317 @@
+{
+ "schema_version": 1,
+ "artifact": "sandbox/PXD011899/PXD011899-silac.sdrf.tsv",
+ "dataset": "PXD011899",
+ "sources": [
+  {
+   "id": "pride",
+   "kind": "repository",
+   "location": "https://www.ebi.ac.uk/pride/ws/archive/v3/projects/PXD011899"
+  },
+  {
+   "id": "pride_files",
+   "kind": "repository",
+   "location": "https://www.ebi.ac.uk/pride/ws/archive/v3/projects/PXD011899/files/all"
+  },
+  {
+   "id": "paper",
+   "kind": "publication",
+   "location": "PMC6440979 (doi:10.1038/s41467-019-09437-x, PMID 30926795); Europe PMC fullTextXML https://www.ebi.ac.uk/europepmc/webservices/rest/PMC6440979/fullTextXML"
+  },
+  {
+   "id": "mascot_dat",
+   "kind": "search-output",
+   "location": "https://ftp.pride.ebi.ac.uk/pride/data/archive/2019/03/PXD011899/ (*.dat parameter headers: MODS, IT_MODS, CLE)"
+  },
+  {
+   "id": "raw_headers",
+   "kind": "raw-file",
+   "location": "https://ftp.pride.ebi.ac.uk/pride/data/archive/2019/03/PXD011899/*.raw (first 3 MB, instrument/method strings)"
+  },
+  {
+   "id": "mgf_pairs",
+   "kind": "raw-file",
+   "location": "sandbox/PXD011899/silac_pair_analysis.txt (computed from deposited FL0067_AysegulS_2.mgf / FL0067_AysegulS_3.mgf; script /tmp/claude-0/-home-user-sdrf-annotated-datasets/aae1d588-77dd-5d96-be0b-62ffdeab482a/scratchpad/PXD011899/pairs2.py, pairs3.py)"
+  },
+  {
+   "id": "cellosaurus",
+   "kind": "database",
+   "location": "https://www.cellosaurus.org/CVCL_1403"
+  },
+  {
+   "id": "ols",
+   "kind": "ontology",
+   "location": "https://www.ebi.ac.uk/ols4 (MONDO:0005012, UBERON:0002097, MS:1001911, MS:1002732, MS:1000422, MS:1001309, MS:1001251, PRIDE:0000627, PRIDE:0000325, PRIDE:0000326, MS:1002038, UNIMOD:4/121/35/7)"
+  },
+  {
+   "id": "spec",
+   "kind": "specification",
+   "location": "sdrf-skills spec/sdrf-proteomics README.adoc (Version v1.1.0)"
+  }
+ ],
+ "claims": [
+  {
+   "location": "characteristics[organism] rows 1-2",
+   "value": "Homo sapiens",
+   "source_ids": [
+    "pride",
+    "paper"
+   ],
+   "evidence": "PRIDE organisms Homo sapiens; paper uses human MelJuSo cells"
+  },
+  {
+   "location": "characteristics[cell line] rows 1-2",
+   "value": "MEL-JUSO",
+   "source_ids": [
+    "paper",
+    "cellosaurus",
+    "ols"
+   ],
+   "evidence": "Methods: 'MelJuSo cells'; Cellosaurus CVCL_1403 (Mel JuSo); ontology label MEL-JUSO (EFO:0022720, CLO:0007676 'MEL-JUSO cell'). Cellosaurus name kept in characteristics[cellosaurus name]"
+  },
+  {
+   "location": "characteristics[cellosaurus accession] rows 1-2",
+   "value": "CVCL_1403",
+   "source_ids": [
+    "cellosaurus"
+   ],
+   "evidence": "Cellosaurus entry for Mel JuSo"
+  },
+  {
+   "location": "characteristics[cellosaurus name] rows 1-2",
+   "value": "Mel JuSo",
+   "source_ids": [
+    "cellosaurus"
+   ],
+   "evidence": "Cellosaurus recommended name"
+  },
+  {
+   "location": "characteristics[disease] rows 1-2",
+   "value": "cutaneous melanoma",
+   "source_ids": [
+    "cellosaurus",
+    "ols",
+    "pride"
+   ],
+   "evidence": "Cellosaurus disease: Cutaneous melanoma (MONDO:0005012); PRIDE lists Melanoma"
+  },
+  {
+   "location": "characteristics[organism part] rows 1-2",
+   "value": "skin of body",
+   "source_ids": [
+    "cellosaurus",
+    "ols"
+   ],
+   "evidence": "Cellosaurus derived-from site: skin; UBERON:0002097"
+  },
+  {
+   "location": "characteristics[cell type] rows 1-2",
+   "value": "not available",
+   "source_ids": [
+    "cellosaurus"
+   ],
+   "evidence": "Cellosaurus gives no cell type for Mel JuSo; PRIDE 'Melanocyte' is a submitter dropdown not tied to rows"
+  },
+  {
+   "location": "characteristics[age] rows 1-2",
+   "value": "58Y",
+   "source_ids": [
+    "cellosaurus"
+   ],
+   "evidence": "Cellosaurus donor age 58Y"
+  },
+  {
+   "location": "characteristics[sex] rows 1-2",
+   "value": "female",
+   "source_ids": [
+    "cellosaurus"
+   ],
+   "evidence": "Cellosaurus sex of cell: Female"
+  },
+  {
+   "location": "characteristics[ancestry category] rows 1-2",
+   "value": "not available",
+   "source_ids": [
+    "cellosaurus"
+   ],
+   "evidence": "Cellosaurus states 'Population: Caucasian', a population descriptor that does not map one-to-one to a HANCESTRO ancestry term; left not available rather than guessing a HANCESTRO category"
+  },
+  {
+   "location": "characteristics[material type] rows 1-2",
+   "value": "cell line",
+   "source_ids": [
+    "paper"
+   ],
+   "evidence": "Cultured MelJuSo cell line"
+  },
+  {
+   "location": "comment[cleavage agent details] rows 1-2",
+   "value": "Lys-C, Trypsin",
+   "source_ids": [
+    "paper",
+    "pride"
+   ],
+   "evidence": "Methods: digestion with LysC (Wako) overnight, then trypsin (Promega)"
+  },
+  {
+   "location": "comment[modification parameters] rows 1-2",
+   "value": "Carbamidomethyl C fixed; GG K, Oxidation M, Deamidated N variable",
+   "source_ids": [
+    "mascot_dat",
+    "ols"
+   ],
+   "evidence": "Mascot .dat headers: MODS=Carbamidomethyl (C); IT_MODS=Deamidated (N),GlyGly (K),Oxidation (M) (FL0067_AysegulS_2, QE0380 searches)"
+  },
+  {
+   "location": "comment[proteomics data acquisition method] rows 1-2",
+   "value": "Data-dependent acquisition",
+   "source_ids": [
+    "paper",
+    "ols"
+   ],
+   "evidence": "Methods: QE top-15 DDA; Fusion Lumos Universal Method (DDA)"
+  },
+  {
+   "location": "comment[technical replicate] rows 1-2",
+   "value": "1",
+   "source_ids": [
+    "pride_files",
+    "paper"
+   ],
+   "evidence": "One raw file per sample injection; no repeated injections described"
+  },
+  {
+   "location": "comment[fraction identifier] rows 1-2",
+   "value": "1",
+   "source_ids": [
+    "paper"
+   ],
+   "evidence": "No fractionation described"
+  },
+  {
+   "location": "comment[data file] rows 1-2",
+   "value": "raw file names",
+   "source_ids": [
+    "pride_files"
+   ],
+   "evidence": "RAW category files in PRIDE file listing"
+  },
+  {
+   "location": "assay name rows 1-2",
+   "value": "raw file stem",
+   "source_ids": [
+    "pride_files"
+   ],
+   "evidence": "Derived from RAW file names"
+  },
+  {
+   "location": "technology type rows 1-2",
+   "value": "proteomic profiling by mass spectrometry",
+   "source_ids": [
+    "spec"
+   ],
+   "evidence": "Template-fixed for ms-proteomics"
+  },
+  {
+   "location": "comment[sdrf version] rows 1-2",
+   "value": "v1.1.0",
+   "source_ids": [
+    "spec"
+   ],
+   "evidence": "README.adoc Version v1.1.0"
+  },
+  {
+   "location": "comment[sdrf template] rows 1-2",
+   "value": "ms-proteomics/human/cell-lines v1.1.0",
+   "source_ids": [
+    "spec"
+   ],
+   "evidence": "templates.yaml latest"
+  },
+  {
+   "location": "comment[sdrf annotation tool] rows 1-2",
+   "value": "manual curation",
+   "source_ids": [
+    "spec"
+   ],
+   "evidence": "Annotated by hand-written tables via sdrf-tools build"
+  },
+  {
+   "location": "source name rows 1-2",
+   "value": "MelJuSo_siCtrl_SILAC (row 1), MelJuSo_siUSP32_SILAC (row 2)",
+   "source_ids": [
+    "paper"
+   ],
+   "evidence": "Methods: SILAC knockdown n=1; scrambled siRNA MelJuSo light K0R0, siUSP32 MelJuSo heavy K8R10, mixed 1:1"
+  },
+  {
+   "location": "characteristics[treatment] rows 1-2",
+   "value": "non-targeting control siRNA (row 1); USP32 siRNA (row 2)",
+   "source_ids": [
+    "paper"
+   ],
+   "evidence": "Methods SILAC design"
+  },
+  {
+   "location": "factor value[treatment] rows 1-2",
+   "value": "as characteristics[treatment]",
+   "source_ids": [
+    "paper"
+   ],
+   "evidence": "Compared variable"
+  },
+  {
+   "location": "characteristics[biological replicate] rows 1-2",
+   "value": "1",
+   "source_ids": [
+    "paper"
+   ],
+   "evidence": "n = 1 SILAC sample set"
+  },
+  {
+   "location": "comment[label] rows 1-2",
+   "value": "SILAC light (row 1), SILAC heavy (row 2)",
+   "source_ids": [
+    "paper",
+    "mgf_pairs",
+    "ols"
+   ],
+   "evidence": "Paper: control light K0R0, KD heavy K8R10. FL0067_AysegulS_2 MGF precursor pairs show strong K8 (+8.0142) and R10 (+10.0083) partners (1508/769 vs ~280 background) and none at K4/R6 -> L/H mix = KD set"
+  },
+  {
+   "location": "comment[data file] rows 1-2",
+   "value": "FL0067_AysegulS_2.raw",
+   "source_ids": [
+    "pride_files",
+    "paper",
+    "mgf_pairs"
+   ],
+   "evidence": "Paper: Fusion Lumos used for SILAC samples; FL0067_AysegulS_2 is the only FL file with a pure light/heavy (K8R10) pattern"
+  },
+  {
+   "location": "comment[instrument] rows 1-2",
+   "value": "Orbitrap Fusion Lumos",
+   "source_ids": [
+    "raw_headers",
+    "paper"
+   ],
+   "evidence": "RAW header 'Orbitrap Fusion Lumos'"
+  },
+  {
+   "location": "comment[dissociation method] rows 1-2",
+   "value": "collision-induced dissociation",
+   "source_ids": [
+    "raw_headers",
+    "paper"
+   ],
+   "evidence": "FL0067_AysegulS_2.raw header: 'ActivationType = CID', 'Collision Energy (%) = 35', 'Detector Type = IonTrap'; method PM1h_TopS_UniversalMethod_CID_nano (MS:1000133)"
+  }
+ ],
+ "limitations": [
+  "Precursor/fragment tolerances not annotated: Mascot searches used differing precursor tolerances (0.05 or 0.1 Da) and the MaxQuant parameters used for quantification were not deposited.",
+  "characteristics[treatment] values are free text (no NCIT/EFO term for a gene-specific or non-targeting siRNA); validator warns.",
+  "BLOCKED: FL0067_AysegulS_3.raw (the second SILAC run, expected per paper to be HeLa vector (light) vs USP32-HA overexpression (medium K4R6)) is not annotated. Its MGF shows light-medium (K4/R6), light-heavy (K8/R10) AND medium-heavy (+3.989) precursor pairs well above background, i.e. a three-channel mix the paper does not describe; the identity of its heavy channel (and hence a full channel map) is not in any public source.",
+  "SILAC label-specific modifications (Label:13C(6)15N(2) K, Label:13C(6)15N(4) R) are conveyed only through comment[label]; the MaxQuant SILAC configuration was not deposited.",
+  "Di-Gly (K-epsilon-GG) antibody enrichment of all samples (paper Methods, PRIDE protocol) is not encoded: no PRIDE/EFO child of EFO:0009090 for ubiquitin-remnant peptide enrichment was found in OLS."
+ ]
+}

@@ -37,11 +37,11 @@ There is no `.sdrf.tsv` here. Nothing below was invented. Each fact cites its so
 | Organism | Homo sapiens | PRIDE record |
 | Cell line | AMO1-BtzR, a bortezomib-resistant derivative of AMO-1 (Besse et al., 2018; Soriano et al., 2016). Parental AMO-1 is Cellosaurus CVCL_1806; whether Cellosaurus has an entry for the BtzR derivative was not checked. | PRIDE protocol, paper Results |
 | Disease | plasma cell myeloma (PRIDE: DOID:9538 multiple myeloma). All channels are the same cell line, so there is no healthy control arm. | PRIDE, paper |
-| Design | AMO1-BtzR treated 22 h with 800 nM JG98, 400 nM JG342, 200 nM DMAG, 800 nM CB-5083 or DMSO; one TMT10plex; high-pH reversed-phase kit fractionation (Pierce 84868) into 8 fractions. The paper says "two biological replicates per condition" for TMT proteomics in general, which fits 5 × 2 = 10, but it does not say so for this plex specifically. | PRIDE sample protocol, paper Methods / Quantification |
+| Design | AMO1-BtzR treated 22 h with 800 nM JG98, 400 nM JG342, 200 nM DMAG, 800 nM CB-5083 or DMSO; one TMT10plex; high-pH reversed-phase kit fractionation (Pierce 84868) into 8 fractions (the protocol lists only 7 acetonitrile steps, but 8 raw files carry MaxQuant `Fraction` 1–8). The paper says "two biological replicates per condition" for TMT proteomics in general, which fits 5 × 2 = 10, but it does not say so for this plex specifically. | PRIDE sample protocol, paper Methods / Quantification |
 | Raw files → fraction | Q20210823-04 … -11 = fractions 1 … 8 (8 raw files) | `Sample_List.xlsx`, `summary.txt` `Fraction` column |
 | Instrument | Q Exactive Plus (MS:1002634), DDA top 15, MS1 70k, MS2 35k, NCE 32 | PRIDE record and protocol, paper Methods |
 | Digest | Trypsin (Pierce 90057) per the protocol. **Note:** the MaxQuant search used `Trypsin/P;LysC`. | PRIDE protocol, `summary.txt` |
-| Search | MaxQuant (`parameters.txt` says version 2.0.2.0; the PRIDE data-processing text says 1.6.2.1), fixed Carbamidomethyl (C), variable Oxidation (M) and Acetyl (Protein N-term), max. 2 missed cleavages, MS/MS tolerance (FTMS) 20 ppm, PSM/protein FDR 0.01 | `parameters.txt`, `summary.txt`, PRIDE |
+| Search | MaxQuant (`parameters.txt` says version 2.0.2.0; the PRIDE data-processing text says 1.6.2.1), fixed Carbamidomethyl (C), variable Oxidation (M) and Acetyl (Protein N-term), max. 2 missed cleavages, MS/MS tolerance (FTMS) 20 ppm, PSM/protein FDR 0.01. **Note:** `parameters.txt` has `Match between runs False`; the PRIDE text says match between runs was used. | `parameters.txt`, `summary.txt`, PRIDE |
 
 ## What blocks a TMT SDRF
 
@@ -50,8 +50,8 @@ There is no `.sdrf.tsv` here. Nothing below was invented. Each fact cites its so
    `Sample_List.xlsx` (file → fraction only) and the paper text do not say which
    TMT10plex channel (126 … 131) holds which drug or replicate.
    - The map is most likely in **Dataset S4** (`NIHMS1825533-supplement-4.xlsx` on PMC).
-     The Europe PMC supplementaryFiles endpoint answers "Article with id PMC9434701 is
-     not open access one", and the PMC `bin/` URLs return a bot challenge page instead of
+     The Europe PMC supplementaryFiles endpoint answered "Article with id PMC9434701 is
+     not open access one" (on a later try it refused the connection), and the PMC `bin/` URLs return a bot challenge page instead of
      the file. It is unread, not known to lack the map.
 2. **Scope.** The request was for a SILAC annotation. A TMT annotation belongs in a
    separate task once the map is available.

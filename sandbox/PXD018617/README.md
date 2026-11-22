@@ -36,7 +36,7 @@ Nothing below was invented. Each fact cites its source.
 | Item | Value | Source |
 |---|---|---|
 | Organism | Homo sapiens | PRIDE record |
-| Cell lines | MM.1S (ATCC CRL-2974), RPMI-8226 (DSMZ ACC 402), KMS34 (JCRB) | PRIDE protocol, paper Key Resources Table |
+| Cell lines | MM.1S (ATCC CRL-2974), RPMI-8226 (DSMZ ACC 402), KMS34 (JCRB1195) | PRIDE protocol, paper Key Resources Table |
 | Disease | plasma cell myeloma (PRIDE: DOID:9538 multiple myeloma); all samples are myeloma cell lines, no control arm | PRIDE, paper |
 | Design | 22 h treatment, then one TMT10plex per cell line (5 conditions × 2 biological replicates): MM.1S 1.75 µM JG98, 2.5 nM bortezomib, 1 µM CB-5083, 150 nM DMAG, DMSO; RPMI-8226 1.5 µM JG98, 7.5 nM bortezomib, 1 µM CB-5083, 200 nM DMAG, DMSO; KMS34 2 µM JG98, 7.5 nM bortezomib, 1 µM CB-5083, 500 nM DMAG, DMSO. High-pH kit fractionation (Pierce 84868). | PRIDE sample protocol, paper Fig. 3A legend |
 | Raw files → plex / fraction (24 files) | KMS34 F1–F8 = Q20190528-03, -04, -05, **Q20190611-16**, Q20190528-07, -08, -09, **Q20190611-12** (there is no Q20190528-06). MM1S F1–F8 = Q20190521-**10, -09 … -03** (reverse run order). RPMI8226 F1–F8 = Q20190611-**10, -09 … -03** (reverse run order). | deposited `sample_list.xlsx`; experiment per file confirmed by `summary.txt` (which has no Fraction column) |
@@ -51,8 +51,8 @@ Nothing below was invented. Each fact cites its source.
    which TMT10plex channel (126 … 131) holds which drug and replicate, nor whether the
    order is the same in all three plexes.
    - The map is most likely in **Dataset S2** (`NIHMS1825533-supplement-2.xlsx` on PMC).
-     The Europe PMC supplementaryFiles endpoint answers "Article with id PMC9434701 is
-     not open access one", and the PMC `bin/` URLs return a bot challenge page instead of
+     The Europe PMC supplementaryFiles endpoint answered "Article with id PMC9434701 is
+     not open access one" (on a later try it refused the connection), and the PMC `bin/` URLs return a bot challenge page instead of
      the file. It is unread, not known to lack the map.
 2. **Scope.** The request was for a SILAC annotation. A TMT annotation belongs in a
    separate task once the map is available.

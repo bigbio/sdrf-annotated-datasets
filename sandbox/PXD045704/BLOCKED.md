@@ -11,7 +11,10 @@ Evidence (all public):
 - Deposited MaxQuant output (`parameters.txt`, MaxQuant 1.6.14.0): no SILAC labels/multiplicity;
   `proteinGroups.txt` holds `LFQ intensity <experiment>` columns only, no `Ratio H/L` columns.
 - Publication: Phongbunchoo et al. 2024, Cell Rep 43:114456, doi:10.1016/j.celrep.2024.114456, PMID 38990722
-  (Europe PMC has abstract only; no open full text).
+  (Europe PMC has abstract only; no open full text there). The article is gold open access at
+  https://doi.org/10.1016/j.celrep.2024.114456 and in MPG PuRe
+  (https://pure.mpg.de/pubman/item/item_3635981_1/component/file_3635982/10.1016_j.celrep.2024.114456.pdf),
+  but it was not read for this note: automated retrieval was blocked.
 
 The sister datasets PXD045694, PXD045636 and PXD045637 (same study, same submitter) are SILAC
 label-swap experiments and are annotated separately.
@@ -30,8 +33,11 @@ What a label-free annotation would look like (for whoever picks this up; not don
   `Rep07_00001792___P_EnhancerMAR_E1mt_gb05_02b.raw` (stands in for `gb05_02`).
 - MaxQuant settings: fixed Carbamidomethyl (C); variable Oxidation (M), Acetyl (Protein N-term),
   Deamidation (NQ).
-- PRIDE lists disease "lymphoma" (DOID:0060058): 38B9 is an Abelson-MuLV transformed pre-B cell
-  line, so this needs a Cellosaurus check rather than being copied from the dropdown.
+- Cell stage of 38B9 is unresolved: PRIDE says "preB", and the article reportedly calls it pro-B
+  (not verified here). The stage-neutral CL:0000817 "precursor B cell" (descendants include late
+  pro-B cells) avoids choosing. 38B9 has no Cellosaurus entry.
+- PRIDE lists disease "lymphoma" (DOID:0060058); this is a submitter field and needs confirming
+  from the article before it is used.
 
 Unblock: annotate as a label-free dataset (`ms-proteomics` + `vertebrates` + `cell-lines`) in a
 label-free pass, or confirm with the submitter that no SILAC runs exist for this accession.

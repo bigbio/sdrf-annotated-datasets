@@ -15,15 +15,19 @@ PMID 36727461, [PMC9976904](https://europepmc.org/article/PMC/PMC9976904).
   at 0, 2, 4 and 8 h. "For all time points a biological quadruplet was generated."
 - Labels: TMTpro 16plex (kit A44522). SILAC heavy is a pulse inside every sample, not a separate
   sample channel. MaxQuant 1.6.14.0 searched with TMT16plex at the MS2 level, with SILAC Arg10 and Lys8 as
-  **variable modifications** (PRIDE `dataProcessingProtocol`; deposited `parameters.txt`).
+  **variable modifications** (PRIDE `dataProcessingProtocol`). The deposited `parameters.txt` holds only
+  MaxQuant global settings; it confirms version 1.6.14.0 and MS/MS tolerance 20 ppm, and implies the Arg10 /
+  Lys8 search through its `SILAC Arg10Sites.txt;SILAC Lys8Sites.txt` site tables.
 - Two plexes, each high-pH reversed-phase fractionated into 21 fractions. There are 46 deposited RAW files:
   - `..._TMT16_pH10_Group1_*`: 25 RAW files. `20210611_*` f001–f016 (fraction 13 is deposited as
     `f013_b`) plus `20210708_*` f013–f021, so fractions 13–16 were acquired twice.
   - `..._TMT16_pH10_Group2_*`: 21 RAW files, `20210708_*` f001–f021.
 - Deposited `Light_IDs_out.txt` / `Heavy_IDs_out.txt` hold 32 reporter columns, `G1_..._1..16` and
   `G2_..._1..16`. All 32 carry non-zero summed intensity, which fits 4 time points × 2 treatments × 4
-  replicates = 32 samples. That count is consistent but **not** a map. Their `Raw file` column names
-  `20210611` f001–f012 and `20210708` f013–f021 of Group1 only.
+  replicates = 32 samples. That count is consistent but **not** a map. Their `Experiment` /
+  `Experiment_` columns read `Group1` / `Group2`, which confirms G1/G2 = the Group1/Group2 plexes. Their
+  `Raw file` column names `20210611` f001–f012 and `20210708` f013–f021 of Group1 only. No Group2
+  raw-file provenance is deposited.
 - Technical metadata confirmed from the record: Orbitrap Fusion Lumos (MS:1002732), DDA, HCD, Lys-C +
   trypsin, Carbamidomethyl C fixed (UNIMOD:4), Oxidation M (UNIMOD:35) and Acetyl protein N-term (UNIMOD:1)
   variable, Label:13C(6)15N(2) K (UNIMOD:259) and Label:13C(6)15N(4) R (UNIMOD:267) variable, TMTpro
@@ -46,11 +50,16 @@ written without inventing it. Sources checked (channel-map ladder):
    `Light_IDs_out.txt` / `Heavy_IDs_out.txt` (reporter channels numbered 1–16 per group, with no sample
    names), `Rscript.R` (aggregation only).
 4. Europe PMC `supplementaryFiles`: the same zip as in 2.
-5. External repositories in Data Availability: Zenodo 10.5281/zenodo.7515807 / GitHub
-   Bushell-lab Structure-seq2 repository. This is RNA Structure-seq2 code and data only, with no proteomics layout.
+5. External repositories in Data Availability: Zenodo 10.5281/zenodo.7515807. This is a snapshot of the
+   GitHub repository `Joseph-Waldron/Structure-seq2-with-hippuristanol-treatment-in-MCF7-cells`, also
+   cited as Bushell-lab. It holds RNA Structure-seq2 code and data only, with no proteomics layout.
+6. Not checkable or empty: the OUP article page returns HTTP 403 to automated access, and
+   `bigbio/proteomics-sample-metadata` has no PXD034343 annotation.
 
-Secondary open point: the time-0 samples may or may not be split by treatment. The 32 populated
-channels suggest they are, but no source states it.
+Secondary open point: no source says how the time-0 samples are distributed over treatments. The
+per-channel heavy/(heavy+light) fraction from the deposited tables is near 1% only in channels 1 and 8
+of each plex, and the per-channel pattern is nearly identical in G1 and G2. This is inference only. It
+cannot assign treatment or replicate and does not lift the block.
 
 ## Unblock
 

@@ -14,7 +14,10 @@ Evidence (all public):
   (Europe PMC has abstract only; no open full text there). The article is gold open access at
   https://doi.org/10.1016/j.celrep.2024.114456 and in MPG PuRe
   (https://pure.mpg.de/pubman/item/item_3635981_1/component/file_3635982/10.1016_j.celrep.2024.114456.pdf),
-  but it was not read for this note: automated retrieval was blocked.
+  (PDF also at https://pure.mpg.de/rest/items/item_3635981_1/component/file_3635982/content).
+  Its Methods say MaxQuant used "the Max LFQ algorithm for label-free data", with "label-free data
+  acquired on Q Exactive and Exploris mass spectrometers"; PXD045704 is the only one of the four
+  accessions acquired on an Exploris 480.
 
 The sister datasets PXD045694, PXD045636 and PXD045637 (same study, same submitter) are SILAC
 label-swap experiments and are annotated separately.
@@ -33,9 +36,10 @@ What a label-free annotation would look like (for whoever picks this up; not don
   `Rep07_00001792___P_EnhancerMAR_E1mt_gb05_02b.raw` (stands in for `gb05_02`).
 - MaxQuant settings: fixed Carbamidomethyl (C); variable Oxidation (M), Acetyl (Protein N-term),
   Deamidation (NQ).
-- Cell stage of 38B9 is unresolved: PRIDE says "preB", and the article reportedly calls it pro-B
-  (not verified here). The stage-neutral CL:0000817 "precursor B cell" (descendants include late
-  pro-B cells) avoids choosing. 38B9 has no Cellosaurus entry.
+- Cell stage of 38B9: PRIDE says "preB", but the article calls it "A-MuLV-transformed 38B9 pro-B
+  cells" and lists "38B9 pro B cell line (Alt et al., 1984)" in its key resources table. Follow the
+  article: CL:0000826 "pro-B cell" (CL:0000817 "precursor B cell" is a different, later stage).
+  38B9 has no Cellosaurus entry. Culture medium per the article: RPMI 1640, 10% FCS.
 - PRIDE lists disease "lymphoma" (DOID:0060058); this is a submitter field and needs confirming
   from the article before it is used.
 

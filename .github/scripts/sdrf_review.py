@@ -155,8 +155,20 @@ def _baseline_path(baseline, f):
 DROPPED_RUNS_BLOCK = 0.9
 DROPPED_RUNS_ADVISE = 0.25
 ARCHIVES = (".zip", ".tar", ".tar.gz", ".tgz", ".gz", ".7z", ".rar")
-# Tables, checksums and search results that some SDRFs list as data files; none is an MS run.
-NON_RUNS = (".txt", ".tsv", ".csv", ".xlsx", ".msf")
+# Search-engine output and companion files are not runs: re-pointing a row from one of
+# these to the run's spectrum file must not count as losing a run.
+NOT_RUNS = re.compile(r"\.(pep\.?xml|prot\.xml|mzid|tsv|txt|csv|out|dat|msf|md5|rawidx)(\.gz)?$", re.I)
+RUN_SUFFIX = re.compile(r"(\.(scan|raw|wiff2?|d|mzml|mzxml|mgf|mzdata|xml|gz|bz2|tar)|_(dta|out))$", re.I)
+
+
+def run_stem(name):
+    """`X.wiff.scan`, `interact-X.pep.xml` and `X.mzXML_dta.tar.bz2` all map to `x`."""
+    s = re.sub(r"^interact-", "", name.lower())
+    while True:
+        t = RUN_SUFFIX.sub("", s)
+        if t == s:
+            return s
+        s = t
 
 
 def run_stems(folder):
@@ -165,8 +177,7 @@ def run_stems(folder):
     The stem drops the extension so re-pointing a run (.mzML -> .raw) is not a lost run,
     and the whole folder counts so splitting one SDRF into several (per instrument) is not.
     An archive (.zip, .tar.gz, ...) holds runs rather than being one, so replacing it with
-    the runs inside it is not a lost run either. A table, checksum or search result is not
-    a run, so dropping its row is not a lost run.
+    the runs inside it is not a lost run either.
     """
     stems = set()
     for f in sorted(Path(folder).glob("*.sdrf*")):
@@ -181,8 +192,9 @@ def run_stems(folder):
             r = ln.split("\t")
             for i in idx:
                 v = r[i].strip() if i < len(r) else ""
-                if v and v.lower() not in SENTINELS and not v.lower().endswith(ARCHIVES + NON_RUNS):
-                    stems.add(Path(v).stem.lower())
+                if (v and v.lower() not in SENTINELS and not v.lower().endswith(ARCHIVES)
+                        and not NOT_RUNS.search(v)):
+                    stems.add(run_stem(v))
     return stems
 
 

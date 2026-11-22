@@ -46,7 +46,13 @@ PMID 34715012, PMC8664086, doi:10.1016/j.devcel.2021.10.008.
 2. **Supplementary Tables S1 and S2** (NIHMS1753680-supplement-3/4.xlsx). By their captions they
    hold "mass spectrometry data" per fraction and per gel band. They were not read: the PMC download
    is behind a reCAPTCHA, and Europe PMC `supplementaryFiles` refuses the article as not open
-   access. They are protein-level result tables, and whether they name MHSK IDs is unverified.
+   access. Their captions (PMC article page) describe protein-level tables with columns
+   `Day 0-8_mean/SD/N`, alpha, Rsq and Thalf. The sheets are `Neu_AllFraction_Replicates`,
+   `Myo_WholeCell_Replicates`, `Myo_NucFraction_Replicates` and `Myo_MitoFraction_Replicates`, plus
+   Gel Bands 1-5 "pooled from 3 independent replicates". A per-run MHSK map is therefore unlikely,
+   though it is unverified. The neuron whole-cell values are fractions pooled in the analysis, not
+   separate runs. The supplementary figures PDF (NIHMS1753680-supplement-2.pdf) is behind the same
+   reCAPTCHA and was not read.
 3. **PRIDE files.** None of these headers names a sample: the Census `H` lines, the mzid headers,
    and the headers of all 398 mzXML files (`parentFile` is only `E:\mzid\<same name>.raw`). The mzid
    protein descriptions show the search database (for example, MHSK-136 is mouse), but give no day,
@@ -55,6 +61,8 @@ PMID 34715012, PMC8664086, doi:10.1016/j.devcel.2021.10.008.
    `MHSK-Day1-137`, `MHSK-Day2-138`, `MHSK-Day4-139`, `MHSK-Day6-140` and `MHSK-Day8-141`, in a
    folder named "Myotube Whole Cell". This maps only these 6 IDs (12 raw files) to C2C12 myotube
    whole cell, days 0 to 8. Even for these 6, it does not say which of the 3 replicates they are.
+   All 12 of these files were acquired on the Orbitrap Fusion Lumos. That is further evidence that
+   instrument does not separate whole-cell runs from gel-band runs.
 5. **PRIDE structured fields.** These disagree with the paper in three places. Follow the paper:
    - `diseases = Severe acute respiratory syndrome (DOID:2945)` is a submitter dropdown artefact.
      Nothing in the paper involves SARS or any disease: the samples are healthy cell lines (H9

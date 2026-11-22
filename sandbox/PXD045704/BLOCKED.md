@@ -27,7 +27,7 @@ What a label-free annotation would look like (for whoever picks this up; not don
 - 225 Thermo .raw files from an Orbitrap Exploris 480 (MS:1003028), trypsin, in-gel digest,
   8 gel slices (`gb01`-`gb08`) per lane, each slice injected twice (`_01`, `_02`).
 - 14 lanes = 7 replicates (`Rep01`-`Rep07`) x 2 baits: wild-type Emu enhancer+MARs (`WT`) vs.
-  E1-box-mutant (`E1mt`). Nuclear extract from the 38B9 mouse pre-B cell line (Mus musculus).
+  E1-box-mutant (`E1mt`). Nuclear extract from the A-MuLV-transformed 38B9 mouse pro-B cell line (per the article) (Mus musculus).
 - The lane -> bait map is in the `proteinGroups.txt` experiment names
   (`WT_Rep{n}_{A,C,E,G,I,L,O}`, `E1mt_Rep{n}_{B,D,F,H,K,M,P}`). Note that the Rep06 control lane is
   named `M_EnhancerMAR_WT_E1mt` in its raw files but is `E1mt_Rep6_M` in the search output.

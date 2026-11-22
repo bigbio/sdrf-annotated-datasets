@@ -12,7 +12,8 @@ PMID 36271312, PMC9902419.
   seven pairs: 1 = A-D, 2 = A-E, 3 = B-D, 4 = B-E, 5 = C-E, 6 = C-F, 7 = F-B.
   A = mdMSC + TNFa/IL-1b; B = mdMSC + cartilage; C = cartilage + TNFa/IL-1b;
   D = mdMSC; E = mdMSC + cartilage + TNFa/IL-1b; F = cartilage. The cartilage explants are
-  unlabelled (light).
+  not pre-labelled (light in Fig. 5A). During the 24 h exposure they can incorporate labelled amino
+  acids, and the paper reports labelled cartilage-derived proteins (supplementary Table 5).
 - A label swap: "the same experiments were performed with mdMSCs at passages 4 and 5 but with
   swapped labelling", for 3 mdMSC donors (Methods; supplementary Table 3). The footnote of Table 3
   counts passages in labelling medium: forward "after 2 passages", reverse "after 3 passages".
@@ -78,6 +79,6 @@ An author statement or a sample sheet naming, for each file group (`<none>`, `H`
 `NN`), its donor, whether A-C were heavy or medium, and which mix each file digit is, plus what the `totaux` lysates contain. With
 that, the build is mechanical: 85 secretome runs (42 + 43, incl. the third F5 injection) x 2 channels (templates ms-proteomics v1.1.0 +
 vertebrates v1.1.0; organism Equus caballus; cell type mesenchymal stem cell of skeletal muscle
-origin; disease osteoarthritis model).
+origin only for conditions with mdMSCs (A, B, D, E); C and F are cartilage explant only; disease osteoarthritis model).
 
 No SDRF is provided here.

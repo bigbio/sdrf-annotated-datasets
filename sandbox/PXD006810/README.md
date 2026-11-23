@@ -78,6 +78,9 @@ Then fill the three columns above and promote the folder to `datasets/`.
 - Mouse strain, sex and age, the digestion detail (a possible Lys-C/trypsin double digest) and the
   reduction/alkylation reagents are not in the deposit and the article is not open access, so they
   are left as reserved words rather than written from a summarised reading of the Methods.
+- `characteristics[enrichment process]` is `not applicable` on the runs the deposit names `input`
+  (unenriched proteomes) but `not available` on the PRM runs: the deposit does not say whether the
+  targeted measurements were made on antibody-enriched or unenriched material.
 - The strain infecting `Nsco_Arg_glycosylation_nleB_EPEC_rep1-3_20161004_EThcD` is not identifiable
   from the run name or the deposited search outputs (`characteristics[infection]` = `not available`).
 - Three runs named in the deposited summaries (both D4 cecum inputs and the D4 cecum PRM run) are

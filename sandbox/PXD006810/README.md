@@ -49,15 +49,25 @@ Then fill the three columns above and promote the folder to `datasets/`.
 
 ## Points a human reviewer should confirm
 
-- **Cell-line identities.** `HeLa` (ectopic-expression and SILAC runs) and `HT-29` (EPEC
-  infection runs) come from two sentences of the paper's Results — *"Using HeLa cell lines stably
-  expressing doxycycline-inducible FLAG-NleB1"* and *"within HT-29 cells during EPEC infection"* —
-  read through the PMC article page. Neither line is named in the PRIDE record, the deposited
-  MaxQuant files or the raw-file headers, and the article is not open access, so this cannot be
-  re-verified from a saved copy here. The split is corroborated by two verifiable facts: the runs
-  annotated HeLa are exactly those searched against `HUMAN.fasta;NleB.fasta` on the Q Exactive, and
-  the runs annotated HT-29 are exactly those searched against the EPEC E2348/69 FASTA on the Lumos.
-  All demographics hang off these identities via Cellosaurus (CVCL_0030, CVCL_0320).
+- **Cell-line identities — the one thing a curator with journal access should check.** `HeLa`
+  (ectopic-expression and SILAC runs) and `HT-29` (EPEC infection runs) come from fragments of the
+  paper's Results: *"Using HeLa cell lines stably expressing doxycycline-inducible FLAG-NleB1"*,
+  *"HeLa cells stably expressing catalytically inactive FLAG-NleB1DXD"*, *"…the presence of both
+  TRADD and FADD within HT-29 cells during EPEC infection"*, and Figure 3B's *"from 8-h infection of
+  HT-29 cells with EPEC E2348/69"*. Neither line is named in the PRIDE record, in any of the 45
+  deposited non-raw files, or in any of the 105 raw-file headers, and the article is not open
+  access, so none of this is machine-verifiable. Note also that the SILAC subsection itself names
+  no cell type — it says only "the stable inducible FLAG-NleB1 and FLAG-NleB1DXD cell lines", which
+  the fragments above identify as HeLa, so the SILAC assignment is a two-step reading.
+  The split is corroborated independently of the article: the runs annotated HeLa are exactly those
+  searched against `HUMAN.fasta;NleB.fasta` on the Q Exactive, and the runs annotated HT-29 exactly
+  those searched against the EPEC E2348/69 FASTA on the Lumos. Demographics (age, sex, ancestry,
+  tissue of origin) are the Cellosaurus records for CVCL_0030 and CVCL_0320. The least certain rows
+  are the two `arg_glycosylation_peptide_pulldown_160516` runs: a glycopeptide-bait pulldown is tied
+  to no named line, and `characteristics[cell line]` admits no reserved word.
+- `characteristics[disease]` uses MONDO (`cervical adenocarcinoma`, `colon adenocarcinoma`) because
+  that column takes MONDO/EFO/DOID/PATO; Cellosaurus's NCIt term for HeLa (C27677, *human
+  papillomavirus-related endocervical adenocarcinoma*) is one step more specific.
 - **Two user-defined characteristics columns.** `characteristics[infection]` is not in the spec's
   `TERMS.tsv`, and `characteristics[genotype]` is defined only by templates not declared here. They
   carry free text because `characteristics[organism]` is single-valued (so it cannot also hold the
@@ -89,6 +99,11 @@ Then fill the three columns above and promote the folder to `datasets/`.
   targeted measurements were made on antibody-enriched or unenriched material.
 - The strain infecting `Nsco_Arg_glycosylation_nleB_EPEC_rep1-3_20161004_EThcD` is not identifiable
   from the run name or the deposited search outputs (`characteristics[infection]` = `not available`).
+- Repeat injections of one SILAC fraction are numbered `comment[technical replicate]` 1, 2 by a
+  fixed rule — the injection present in a deposited search first, then the remaining ones by name —
+  so for fraction 5 of exp2/B3 the searched `_repeat` injection is 1 and the `_failed` one is 2,
+  while for fraction 6 of exp2/B2 (both injections searched) `_incomplete` is 1 and `_repeat` is 2.
+  The deposit records no acquisition order.
 - Three runs named in the deposited summaries (both D4 cecum inputs and the D4 cecum PRM run) are
   not in the PRIDE file list and are absent here; conversely
   `Nsco_NleB_SILAC_20160609_B3_exp2_fraction5_failed.raw` and the three `Arg_pulldown_input_*` runs

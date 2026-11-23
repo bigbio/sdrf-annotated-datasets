@@ -14,34 +14,34 @@ The SDRF specification lives in [`bigbio/proteomics-sample-metadata`](https://gi
 <!-- STATS:START -->
 ## Resource at a glance
 
-_Auto-generated from curated `datasets/` on 2026-11-22T09:40:38Z. Sandbox drafts are excluded._
+_Auto-generated from curated `datasets/` on 2026-11-23T10:53:01Z. Sandbox drafts are excluded._
 
 | Metric | Count |
 | --- | ---: |
-| Accessions | 16,807 |
-| SDRF files | 17,809 |
-| Accessions with a declared template | 16,783 |
-| Samples (unique `source name` per file) | 1,012,614 |
-| Runs (unique `comment[data file]` per file) | 1,288,461 |
-| Assay rows | 1,718,117 |
-| Merged PRs that changed curated datasets | 2,585 |
-| ... adding new datasets | 2,311 (89%) |
-| ... modifying existing datasets | 274 (11%) |
+| Accessions | 16,966 |
+| SDRF files | 18,055 |
+| Accessions with a declared template | 16,941 |
+| Samples (unique `source name` per file) | 1,018,771 |
+| Runs (unique `comment[data file]` per file) | 1,299,378 |
+| Assay rows | 1,739,209 |
+| Merged PRs that changed curated datasets | 2,724 |
+| ... adding new datasets | 2,448 (90%) |
+| ... modifying existing datasets | 276 (10%) |
 | Human contributors | 42 |
 | AI agents (named fingerprints) | 10 |
-| Foundation models identified | 23 |
-| AI-assisted accessions | 16,807 |
-| Unidentified agent | 1,199 |
-| Multi-agent accessions | 5,514 |
-| Distinct instruments | 235 |
+| Foundation models identified | 22 |
+| AI-assisted accessions | 16,966 |
+| Unidentified agent | 1,815 |
+| Multi-agent accessions | 5,397 |
+| Distinct instruments | 236 |
 | Median runs per accession | 16 |
-| Accessions with modification parameters | 10,566 |
-| ProteomeXchange coverage | 16,736 / 58,468 (28.6%) |
-| PRIDE coverage | 15,620 / 42,846 (36.5%) |
-| MassIVE coverage | 211 / 3,781 (5.6%) |
-| iProX coverage | 896 / 8,501 (10.5%) |
+| Accessions with modification parameters | 10,707 |
+| ProteomeXchange coverage | 16,895 / 58,545 (28.9%) |
+| PRIDE coverage | 15,670 / 42,902 (36.5%) |
+| MassIVE coverage | 211 / 3,784 (5.6%) |
+| iProX coverage | 1,004 / 8,516 (11.8%) |
 
-**Highlights:** most common organism is **Homo sapiens**; **268,592** DIA assay rows; **339,121** TMT and **1,127,833** LFQ assay rows; **84** single-cell, **2,356** cell-line, and **636** metaproteomics accessions; sample-field completeness (applicable samples): disease 36%, age 9%; all **16,807** accessions are AI-assisted (**42** human contributors, **10** named AI agents); identified fingerprints are mostly **Cursor**; **1,199** accessions have no vendor fingerprint (typical of Claude Code committed as the reviewer); **547** accessions have Codex evidence (`codex/` PR branches); **5,514** accessions were touched by more than one agent (most common handoff **Cursor → Codex**); **2,585** merged PRs have changed curated datasets — **2,311** (89%) added brand-new datasets and **274** (11%) refined existing annotations; most common instrument is **Q Exactive**; most common modification is **Carbamidomethyl**; **28.6%** of public ProteomeXchange datasets have a curated SDRF here; **36.5%** of PRIDE projects are annotated.
+**Highlights:** most common organism is **Homo sapiens**; **270,386** DIA assay rows; **343,299** TMT and **1,133,471** LFQ assay rows; **85** single-cell, **2,418** cell-line, and **637** metaproteomics accessions; sample-field completeness (applicable samples): disease 36%, age 9%; all **16,966** accessions are AI-assisted (**42** human contributors, **10** named AI agents); identified fingerprints are mostly **Cursor**; **1,815** accessions have no vendor fingerprint (typical of Claude Code committed as the reviewer); **527** accessions have Codex evidence (`codex/` PR branches); **5,397** accessions were touched by more than one agent (most common handoff **Cursor → Codex**); **2,724** merged PRs have changed curated datasets — **2,448** (90%) added brand-new datasets and **276** (10%) refined existing annotations; most common instrument is **Q Exactive**; most common modification is **Carbamidomethyl**; **28.9%** of public ProteomeXchange datasets have a curated SDRF here; **36.5%** of PRIDE projects are annotated.
 
 ![How much of public proteomics is annotated](docs/stats/plots/coverage.png)
 

@@ -78,6 +78,12 @@ Then fill the three columns above and promote the folder to `datasets/`.
 - Mouse strain, sex and age, the digestion detail (a possible Lys-C/trypsin double digest) and the
   reduction/alkylation reagents are not in the deposit and the article is not open access, so they
   are left as reserved words rather than written from a summarised reading of the Methods.
+- Only the three `*_input_*` runs name their NleB1 construct (`WT` / `DXD`). The three
+  `NleB_Arg_pulldown_sample*` runs say only that FLAG-NleB1 was ectopically expressed, and the two
+  `arg_glycosylation_peptide_pulldown_160516` runs name neither construct nor cell line (a
+  glycopeptide-bait pulldown need not use an NleB-expressing line), so their genotype is
+  `not available`. The batch-wide `HUMAN.fasta;NleB.fasta` search database cannot tell wild type
+  from DXD and is not used to.
 - `characteristics[enrichment process]` is `not applicable` on the runs the deposit names `input`
   (unenriched proteomes) but `not available` on the PRM runs: the deposit does not say whether the
   targeted measurements were made on antibody-enriched or unenriched material.

@@ -85,9 +85,10 @@ Then fill the three columns above and promote the folder to `datasets/`.
 - UNIMOD has no arginine-specific GlcNAc entry. MaxQuant's custom `Arg_GlcNAc` is written as
   `NT=HexNAc;AC=UNIMOD:43;TA=R;MT=Variable` — correct composition and mass (+203.0794) with a
   target amino acid Unimod does not list for that term.
-- Mouse strain, sex and age, the digestion detail (a possible Lys-C/trypsin double digest) and the
-  reduction/alkylation reagents are not in the deposit and the article is not open access, so they
-  are left as reserved words rather than written from a summarised reading of the Methods.
+- Mouse strain, sex and age are `not available`, and the digestion detail (a possible Lys-C/trypsin
+  double digest) and the reduction/alkylation reagents are left out altogether: they are not in the
+  deposit, and the article is not open access, so nothing is written from a summarised reading of
+  the Methods. The enzyme recorded is the one the deposited searches state (`Trypsin/P`).
 - Only the three `*_input_*` runs name their NleB1 construct (`WT` / `DXD`). The three
   `NleB_Arg_pulldown_sample*` runs say only that FLAG-NleB1 was ectopically expressed, and the two
   `arg_glycosylation_peptide_pulldown_160516` runs name neither construct nor cell line (a

@@ -56,6 +56,8 @@ pairwise comparison.
   50 ppm, PeptideProphet 1 % FDR, quantification with OpenMS 1.7 + MSstats 2.3.7.
 - Instrument: LTQ FT (MS:1000448), confirmed in every mzXML header (`msModel` "LTQ FT",
   FTMS full scan 400-1600 m/z). Easy-nLC, 60 min 5-30 % B gradient, DDA.
+- Scope: PXD004284 holds only the shotgun LTQ-FT part of the study. A PRIDE and PASSEL search
+  found no deposit for the SRM or SWATH-MS parts.
 - Files: 216 `.c.mzXML` (converted with ReAdW 4.0.2 from `.RAW`; no RAW files are deposited).
 
 **Fraction of each file.** OFFGEL, 24 wells pooled into six fractions: A wells 1-2, B 3-4,

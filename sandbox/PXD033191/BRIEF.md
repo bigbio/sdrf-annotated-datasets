@@ -8,13 +8,12 @@ at 0/6/12/18 h (6-h intervals over 24 h); label-free, Orbitrap Fusion. Arch Inse
 (`{H,INS}{00,06,12,18}{WT,LGL,LGLM}_{1-3}.raw` = tissue × time × group × replicate; full 2×4×3×3
 factorial confirmed against the ProteomeCentral list).
 
-**Why it is not in `annotations/`:** `comment[cleavage agent details]` is `not available`, which the
-`ms-proteomics` template rejects — no reachable source states the enzyme (PRIDE protocol text was
-unreachable this session; the paper is closed; OmicsDI carries no protocol). Everything else
-validates.
+**Update (same day): enzyme and mods resolved.** The deposited MaxQuant `Head_summary.txt`
+(PRIDE FTP) lists, for every head run: Trypsin (specific, ≤2 missed cleavages), fixed
+Carbamidomethyl (C), variable Oxidation (M) and Acetyl (Protein N-term); each RAW is its own
+MaxQuant experiment (`00LGLM_1` … `18WT_3`), consistent with `_1–_3` being separate samples.
+`Intestine_parameters.txt` (MaxQuant 2.0.1.0) quantifies the same two variable mods. The file now
+passes `parse_sdrf validate-sdrf --use_ols_cache_only` and can be promoted to `datasets/`.
 
-To finish: read the PRIDE sample protocol, set the enzyme, and confirm
-1. `_1–_3` are biological replicates (inferred);
-2. fly stage / strain (`developmental stage`, `strain or breed` = `not available` for now);
-3. whether 0/6/12/18 are ZT hours;
-4. search modifications beyond Carbamidomethyl (PX lists only "iodoacetamide derivatized residue").
+Still to confirm: fly stage/strain (`not available`), whether 0/6/12/18 are ZT hours, and that the
+intestine search used the same fixed mod (only its parameters.txt, not its summary, was read).

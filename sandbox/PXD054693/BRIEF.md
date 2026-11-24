@@ -19,3 +19,8 @@ details]` = `not available`, forbidden by `ms-proteomics`). To finish: PRIDE sam
 enzyme; Cellosaurus → H6c7 accession and hTERT-HPNE donor age/sex; confirm R1–R3 are biological
 replicates and that the sample is conditioned medium (`material type` is set to `cell line`, the
 closest allowed value). Validates cleanly against `human` and `cell-lines` apart from that.
+
+## Update (PRIDE FTP listing, same day)
+
+Search output is only in `0H_txt.zip` … `18H_txt.zip` (MaxQuant txt folders, 274–300 MB each);
+`parameters.txt` / `summary.txt` inside them would give the enzyme. Not readable from a browser.

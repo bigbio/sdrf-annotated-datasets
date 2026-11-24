@@ -14,34 +14,34 @@ The SDRF specification lives in [`bigbio/proteomics-sample-metadata`](https://gi
 <!-- STATS:START -->
 ## Resource at a glance
 
-_Auto-generated from curated `datasets/` on 2026-11-24T15:14:52Z. Sandbox drafts are excluded._
+_Auto-generated from curated `datasets/` on 2026-11-24T17:51:32Z. Sandbox drafts are excluded._
 
 | Metric | Count |
 | --- | ---: |
-| Accessions | 17,651 |
-| SDRF files | 18,809 |
-| Accessions with a declared template | 17,626 |
-| Samples (unique `source name` per file) | 1,033,867 |
-| Runs (unique `comment[data file]` per file) | 1,323,311 |
-| Assay rows | 1,789,975 |
-| Merged PRs that changed curated datasets | 3,016 |
-| ... adding new datasets | 2,734 (91%) |
+| Accessions | 17,727 |
+| SDRF files | 18,888 |
+| Accessions with a declared template | 17,702 |
+| Samples (unique `source name` per file) | 1,034,527 |
+| Runs (unique `comment[data file]` per file) | 1,324,218 |
+| Assay rows | 1,791,593 |
+| Merged PRs that changed curated datasets | 3,048 |
+| ... adding new datasets | 2,766 (91%) |
 | ... modifying existing datasets | 282 (9%) |
 | Human contributors | 42 |
 | AI agents (named fingerprints) | 10 |
 | Foundation models identified | 23 |
-| AI-assisted accessions | 17,651 |
-| Unidentified agent | 1,226 |
-| Multi-agent accessions | 5,797 |
+| AI-assisted accessions | 17,727 |
+| Unidentified agent | 1,232 |
+| Multi-agent accessions | 5,812 |
 | Distinct instruments | 239 |
 | Median runs per accession | 15 |
-| Accessions with modification parameters | 11,327 |
-| ProteomeXchange coverage | 17,580 / 58,612 (30.0%) |
-| PRIDE coverage | 16,140 / 42,937 (37.6%) |
-| MassIVE coverage | 211 / 3,788 (5.6%) |
-| iProX coverage | 1,214 / 8,539 (14.2%) |
+| Accessions with modification parameters | 11,394 |
+| ProteomeXchange coverage | 17,656 / 58,616 (30.1%) |
+| PRIDE coverage | 16,149 / 42,940 (37.6%) |
+| MassIVE coverage | 211 / 3,789 (5.6%) |
+| iProX coverage | 1,281 / 8,539 (15.0%) |
 
-**Highlights:** most common organism is **Homo sapiens**; **277,956** DIA assay rows; **359,810** TMT and **1,148,683** LFQ assay rows; **85** single-cell, **2,601** cell-line, and **643** metaproteomics accessions; sample-field completeness (applicable samples): disease 37%, age 10%; all **17,651** accessions are AI-assisted (**42** human contributors, **10** named AI agents); identified fingerprints are mostly **Cursor**; **1,226** accessions have no vendor fingerprint (typical of Claude Code committed as the reviewer); **547** accessions have Codex evidence (`codex/` PR branches); **5,797** accessions were touched by more than one agent (most common handoff **Cursor → Codex**); **3,016** merged PRs have changed curated datasets — **2,734** (91%) added brand-new datasets and **282** (9%) refined existing annotations; most common instrument is **Q Exactive**; most common modification is **Carbamidomethyl**; **30.0%** of public ProteomeXchange datasets have a curated SDRF here; **37.6%** of PRIDE projects are annotated.
+**Highlights:** most common organism is **Homo sapiens**; **278,092** DIA assay rows; **360,284** TMT and **1,149,307** LFQ assay rows; **85** single-cell, **2,623** cell-line, and **644** metaproteomics accessions; sample-field completeness (applicable samples): disease 37%, age 10%; all **17,727** accessions are AI-assisted (**42** human contributors, **10** named AI agents); identified fingerprints are mostly **Cursor**; **1,232** accessions have no vendor fingerprint (typical of Claude Code committed as the reviewer); **547** accessions have Codex evidence (`codex/` PR branches); **5,812** accessions were touched by more than one agent (most common handoff **Cursor → Codex**); **3,048** merged PRs have changed curated datasets — **2,766** (91%) added brand-new datasets and **282** (9%) refined existing annotations; most common instrument is **Q Exactive**; most common modification is **Carbamidomethyl**; **30.1%** of public ProteomeXchange datasets have a curated SDRF here; **37.6%** of PRIDE projects are annotated.
 
 ![How much of public proteomics is annotated](docs/stats/plots/coverage.png)
 

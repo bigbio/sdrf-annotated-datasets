@@ -15,3 +15,10 @@ Inferences to confirm:
 **Why sandbox:** `comment[cleavage agent details]` is `not available` (no protocol text reachable;
 no paper yet), which `ms-proteomics` forbids. Instrument is PX's generic "LTQ Orbitrap"
 (MS:1000449) — read a RAW header to get the actual model. PX says "No PTMs" — search mods unknown.
+
+## Update (PRIDE FTP listing, same day)
+
+The deposit contains `KK1812.pg_matrix.tsv` and `KK1812.tsv` — **DIA-NN** outputs — plus an mzML per
+RAW. That strongly suggests **DIA** acquisition, while the draft says DDA (PRIDE:0000627). Confirm
+from an mzML header or the DIA-NN log before promoting, and switch to DIA (PRIDE:0000450) if so.
+No parameter file with the enzyme was deposited.

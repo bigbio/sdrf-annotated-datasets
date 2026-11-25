@@ -14,34 +14,34 @@ The SDRF specification lives in [`bigbio/proteomics-sample-metadata`](https://gi
 <!-- STATS:START -->
 ## Resource at a glance
 
-_Auto-generated from curated `datasets/` on 2026-11-25T16:47:09Z. Sandbox drafts are excluded._
+_Auto-generated from curated `datasets/` on 2026-11-25T18:33:36Z. Sandbox drafts are excluded._
 
 | Metric | Count |
 | --- | ---: |
-| Accessions | 18,467 |
-| SDRF files | 19,668 |
-| Accessions with a declared template | 18,442 |
-| Samples (unique `source name` per file) | 1,046,394 |
-| Runs (unique `comment[data file]` per file) | 1,339,140 |
-| Assay rows | 1,812,978 |
-| Merged PRs that changed curated datasets | 3,272 |
-| ... adding new datasets | 2,988 (91%) |
+| Accessions | 18,521 |
+| SDRF files | 19,726 |
+| Accessions with a declared template | 18,496 |
+| Samples (unique `source name` per file) | 1,047,206 |
+| Runs (unique `comment[data file]` per file) | 1,340,110 |
+| Assay rows | 1,814,527 |
+| Merged PRs that changed curated datasets | 3,310 |
+| ... adding new datasets | 3,026 (91%) |
 | ... modifying existing datasets | 284 (9%) |
 | Human contributors | 44 |
 | AI agents (named fingerprints) | 10 |
 | Foundation models identified | 23 |
-| AI-assisted accessions | 18,467 |
-| Unidentified agent | 1,268 |
-| Multi-agent accessions | 5,912 |
+| AI-assisted accessions | 18,521 |
+| Unidentified agent | 1,291 |
+| Multi-agent accessions | 5,930 |
 | Distinct instruments | 241 |
 | Median runs per accession | 15 |
-| Accessions with modification parameters | 12,038 |
-| ProteomeXchange coverage | 18,396 / 58,659 (31.4%) |
+| Accessions with modification parameters | 12,061 |
+| ProteomeXchange coverage | 18,450 / 58,661 (31.5%) |
 | PRIDE coverage | 16,636 / 42,957 (38.7%) |
-| MassIVE coverage | 212 / 3,791 (5.6%) |
-| iProX coverage | 1,529 / 8,560 (17.9%) |
+| MassIVE coverage | 212 / 3,793 (5.6%) |
+| iProX coverage | 1,582 / 8,560 (18.5%) |
 
-**Highlights:** most common organism is **Homo sapiens**; **281,392** DIA assay rows; **365,309** TMT and **1,161,767** LFQ assay rows; **86** single-cell, **2,838** cell-line, and **647** metaproteomics accessions; sample-field completeness (applicable samples): disease 37%, age 10%; all **18,467** accessions are AI-assisted (**44** human contributors, **10** named AI agents); identified fingerprints are mostly **Cursor**; **1,268** accessions have no vendor fingerprint (typical of Claude Code committed as the reviewer); **549** accessions have Codex evidence (`codex/` PR branches); **5,912** accessions were touched by more than one agent (most common handoff **Cursor → Codex**); **3,272** merged PRs have changed curated datasets — **2,988** (91%) added brand-new datasets and **284** (9%) refined existing annotations; most common instrument is **Q Exactive**; most common modification is **Carbamidomethyl**; **31.4%** of public ProteomeXchange datasets have a curated SDRF here; **38.7%** of PRIDE projects are annotated.
+**Highlights:** most common organism is **Homo sapiens**; **281,975** DIA assay rows; **365,671** TMT and **1,162,900** LFQ assay rows; **86** single-cell, **2,848** cell-line, and **647** metaproteomics accessions; sample-field completeness (applicable samples): disease 37%, age 10%; all **18,521** accessions are AI-assisted (**44** human contributors, **10** named AI agents); identified fingerprints are mostly **Cursor**; **1,291** accessions have no vendor fingerprint (typical of Claude Code committed as the reviewer); **549** accessions have Codex evidence (`codex/` PR branches); **5,930** accessions were touched by more than one agent (most common handoff **Cursor → Codex**); **3,310** merged PRs have changed curated datasets — **3,026** (91%) added brand-new datasets and **284** (9%) refined existing annotations; most common instrument is **Q Exactive**; most common modification is **Carbamidomethyl**; **31.5%** of public ProteomeXchange datasets have a curated SDRF here; **38.7%** of PRIDE projects are annotated.
 
 ![How much of public proteomics is annotated](docs/stats/plots/coverage.png)
 

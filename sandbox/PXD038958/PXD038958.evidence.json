@@ -1,0 +1,273 @@
+{
+ "schema_version": 1,
+ "artifact": "sandbox/PXD038958/PXD038958.sdrf.tsv",
+ "dataset": "PXD038958",
+ "sources": [
+  {
+   "id": "pride",
+   "kind": "repository",
+   "location": "https://www.ebi.ac.uk/pride/ws/archive/v3/projects/PXD038958"
+  },
+  {
+   "id": "pride_files",
+   "kind": "repository",
+   "location": "https://www.ebi.ac.uk/pride/ws/archive/v3/projects/PXD038958/files/all"
+  },
+  {
+   "id": "mqpar",
+   "kind": "search-output",
+   "location": "https://ftp.pride.ebi.ac.uk/pride/data/archive/2024/08/PXD038958/05162022_duplex_regorafenib_spatial_SILAC_search_parameters.xml"
+  },
+  {
+   "id": "paper",
+   "kind": "publication",
+   "location": "PMC10676637 / PMID 37462741 / doi:10.1021/acs.analchem.3c00905; full text via https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=pmc&id=10676637"
+  },
+  {
+   "id": "cellosaurus",
+   "kind": "database",
+   "location": "https://www.cellosaurus.org/CVCL_0291"
+  },
+  {
+   "id": "ols",
+   "kind": "ontology",
+   "location": "https://www.ebi.ac.uk/ols4 (CLO:0003665, MONDO:0002032, UBERON:0001155, MS:1002416, MS:1001251, MS:1000422, MS:1000291, PRIDE:0000627, PRIDE:0000325, PRIDE:0000326, PRIDE:0000599, PRIDE:0000608, UNIMOD:4/35/1/7/267/259)"
+  }
+ ],
+ "claims": [
+  {
+   "location": "source name rows 1-6",
+   "value": "PXD038958-Sample-1..3 (Heavy1-3), PXD038958-Sample-4..6 (Light1-3)",
+   "source_ids": [
+    "pride_files",
+    "mqpar"
+   ],
+   "evidence": "Raw files 051122_Sample_Heavy1-3 / Light1-3; mqpar experiment names Heavy1-3, Light1-3. Source names are curator-chosen identifiers derived from these names."
+  },
+  {
+   "location": "assay name rows 1-6; comment[data file] rows 1-6",
+   "value": "051122_Sample_{Heavy,Light}{1,2,3}(.raw)",
+   "source_ids": [
+    "pride_files",
+    "mqpar"
+   ],
+   "evidence": "Exact raw file names in PRIDE files API and mqpar filePaths."
+  },
+  {
+   "location": "comment[label] rows 1-3 (Heavy1-3) / rows 4-6 (Light1-3)",
+   "value": "SILAC heavy / SILAC light (one channel per file)",
+   "source_ids": [
+    "pride_files",
+    "mqpar",
+    "paper"
+   ],
+   "evidence": "File/experiment names carry Heavy or Light; paper: cells grown 'with either heavy labeled arginine and lysine (Arg, Lys 13C15N) or light/unlabeled' medium; singly labeled populations carry one label. The unoccupied channel has no row (no sample asserted)."
+  },
+  {
+   "location": "characteristics[biological replicate] rows 1-6",
+   "value": "1,2,3 per label",
+   "source_ids": [
+    "pride_files",
+    "mqpar"
+   ],
+   "evidence": "Numeric suffix of Heavy1-3 / Light1-3 file names; paper states biological triplicate."
+  },
+  {
+   "location": "characteristics[organism] rows 1-6",
+   "value": "Homo sapiens",
+   "source_ids": [
+    "pride",
+    "paper",
+    "cellosaurus"
+   ],
+   "evidence": "PRIDE organisms Homo sapiens; HCT 116 is a human cell line."
+  },
+  {
+   "location": "characteristics[cell line] rows 1-6; characteristics[cellosaurus accession]; characteristics[cellosaurus name]",
+   "value": "HCT 116 cell (CLO:0003665); CVCL_0291; HCT 116",
+   "source_ids": [
+    "paper",
+    "cellosaurus",
+    "ols"
+   ],
+   "evidence": "Paper: 'All experiments utilized the human colon cancer cell line HCT 116, purchased through ATCC'."
+  },
+  {
+   "location": "characteristics[organism part] rows 1-6",
+   "value": "colon",
+   "source_ids": [
+    "pride",
+    "cellosaurus"
+   ],
+   "evidence": "PRIDE organismParts Colon (BTO:0000269); Cellosaurus derived-from site colon; UBERON:0001155."
+  },
+  {
+   "location": "characteristics[disease] rows 1-6",
+   "value": "colon carcinoma",
+   "source_ids": [
+    "pride",
+    "cellosaurus",
+    "paper"
+   ],
+   "evidence": "Cellosaurus disease for HCT 116: colon carcinoma (MONDO:0002032); PRIDE disease Colon cancer; paper 'colon carcinoma spheroid'."
+  },
+  {
+   "location": "characteristics[material type] rows 1-6",
+   "value": "cell line",
+   "source_ids": [
+    "paper"
+   ],
+   "evidence": "Cultured HCT 116 cells."
+  },
+  {
+   "location": "characteristics[age] rows 1-6",
+   "value": "48Y",
+   "source_ids": [
+    "cellosaurus"
+   ],
+   "evidence": "Cellosaurus donor age at sampling for HCT 116: 48Y."
+  },
+  {
+   "location": "characteristics[sex] rows 1-6",
+   "value": "male",
+   "source_ids": [
+    "cellosaurus"
+   ],
+   "evidence": "Cellosaurus sex of cell: Male."
+  },
+  {
+   "location": "comment[instrument] rows 1-6",
+   "value": "NT=Orbitrap Fusion;AC=MS:1002416",
+   "source_ids": [
+    "pride",
+    "paper"
+   ],
+   "evidence": "PRIDE instruments Orbitrap Fusion; paper 'Thermo Orbitrap-Fusion mass spectrometer'; raw header 'Orbitrap Fusion'."
+  },
+  {
+   "location": "comment[proteomics data acquisition method] rows 1-6",
+   "value": "NT=Data-dependent acquisition;AC=PRIDE:0000627",
+   "source_ids": [
+    "paper"
+   ],
+   "evidence": "'Analysis occurred in data dependent acquisition mode'."
+  },
+  {
+   "location": "comment[cleavage agent details] rows 1-6",
+   "value": "NT=Trypsin;AC=MS:1001251",
+   "source_ids": [
+    "paper",
+    "mqpar"
+   ],
+   "evidence": "'S-Trap filter sample preparation ending in tryptic digestion (Promega)'; MaxQuant searched as Trypsin/P."
+  },
+  {
+   "location": "comment[dissociation method] rows 1-6",
+   "value": "NT=beam-type collision-induced dissociation;AC=MS:1000422",
+   "source_ids": [
+    "paper"
+   ],
+   "evidence": "'Fragmentation occurred with HCD activation set to 32%'."
+  },
+  {
+   "location": "comment[collision energy] rows 1-6",
+   "value": "32% NCE",
+   "source_ids": [
+    "paper"
+   ],
+   "evidence": "'HCD activation set to 32%'."
+  },
+  {
+   "location": "comment[ms2 mass analyzer] rows 1-6",
+   "value": "NT=linear ion trap;AC=MS:1000291",
+   "source_ids": [
+    "paper"
+   ],
+   "evidence": "'fragment ion detection occurring in the linear ion trap'."
+  },
+  {
+   "location": "comment[precursor mass tolerance] rows 1-6",
+   "value": "4.5 ppm",
+   "source_ids": [
+    "mqpar",
+    "paper"
+   ],
+   "evidence": "mqpar mainSearchTol 4.5 ppm; paper 'main search peptide tolerance set to 4.5 ppm'."
+  },
+  {
+   "location": "comment[fragment mass tolerance] rows 1-6",
+   "value": "0.5 Da",
+   "source_ids": [
+    "mqpar"
+   ],
+   "evidence": "mqpar ITMS MatchTolerance 0.5 Da (MS2 in ion trap)."
+  },
+  {
+   "location": "comment[reduction reagent] rows 1-6",
+   "value": "NT=Dithiothreitol (DTT);AC=PRIDE:0000608",
+   "source_ids": [
+    "paper"
+   ],
+   "evidence": "'reduction with 1,4-Dithiothreitol'."
+  },
+  {
+   "location": "comment[alkylation reagent] rows 1-6",
+   "value": "NT=Iodoacetamide (IAA);AC=PRIDE:0000599",
+   "source_ids": [
+    "paper"
+   ],
+   "evidence": "'alkylation with iodoacetamide'."
+  },
+  {
+   "location": "comment[ms1 scan range] rows 1-6",
+   "value": "375m/z-1500m/z",
+   "source_ids": [
+    "paper"
+   ],
+   "evidence": "'scanning a mass range of 375-1500 m/z'."
+  },
+  {
+   "location": "comment[modification parameters] rows 1-6",
+   "value": "Carbamidomethyl C fixed; Oxidation M, Acetyl protein N-term, Deamidated N/Q variable; Label:13C(6)15N(4) R (UNIMOD:267), Label:13C(6)15N(2) K (UNIMOD:259)",
+   "source_ids": [
+    "mqpar",
+    "paper",
+    "ols"
+   ],
+   "evidence": "mqpar fixedModifications Carbamidomethyl (C); variableModifications Oxidation (M), Acetyl (Protein N-term), Deamidation (NQ); labelMods heavy 'Arg10;Lys8'. Paper Methods list the same."
+  },
+  {
+   "location": "comment[technical replicate] rows 1-6; comment[fraction identifier] rows 1-6",
+   "value": "1; 1",
+   "source_ids": [
+    "mqpar",
+    "paper"
+   ],
+   "evidence": "One injection per sample, no fractionation (mqpar fractions unset, one file per experiment)."
+  },
+  {
+   "location": "comment[sdrf version]; comment[sdrf template]; comment[sdrf annotation tool]; technology type",
+   "value": "v1.1.0; ms-proteomics/human/cell-lines v1.1.0; manual curation; proteomic profiling by mass spectrometry",
+   "source_ids": [
+    "ols"
+   ],
+   "evidence": "sdrf version and templates per spec v1.1.0 (template columns filled by sdrf-tools build); annotation performed by manual curation (agent-assisted), tables authored by hand."
+  },
+  {
+   "location": "characteristics[cell type] rows 1-6",
+   "value": "epithelial cell",
+   "source_ids": [
+    "pride",
+    "ols"
+   ],
+   "evidence": "PRIDE organismParts lists CL:0000066 Epithelial cell; HCT 116 is an epithelial colon carcinoma line."
+  }
+ ],
+ "limitations": [
+  "BLOCKED: the 24 numbered runs 051122_Sample_{1,2,3,7-12,16-21,25-30,34-36}.raw cannot be mapped to treatment (regorafenib vs control), labelling scheme (singly labeled vs duplex core/outer) or SILAC channel occupancy from public evidence; the mapping is in the paper's Supplementary Materials (Supp. Fig. 8 / Supp. Fig. 3, NIHMS1942467-supplement-Supp_Materials_1/2.docx), which could not be retrieved (Europe PMC: not open access; PMC/ACS behind bot challenge). These runs are omitted from the SDRF.",
+  "Heavy1-3 / Light1-3: whether these are 2D monolayer label-incorporation controls or singly labeled spheroids, and their treatment, is not stated per file; characteristics[treatment] is 'not available' and no factor value is declared.",
+  "Raw files were not opened beyond the header (techsdrf not run); instrument/settings come from the paper and mqpar.",
+  "characteristics[ancestry category] left 'not available'.",
+  "characteristics[biological replicate] 1-3 is taken from the Heavy/Light file-name suffix; Heavy n and Light n are separate cultures, not pairs (they differ in comment[label] and source name)."
+ ]
+}

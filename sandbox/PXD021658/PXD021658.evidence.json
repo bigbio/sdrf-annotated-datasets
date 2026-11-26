@@ -1,0 +1,153 @@
+{
+  "schema_version": 1,
+  "artifact": "annotations/PXD021658.sdrf.tsv",
+  "dataset": "PXD021658",
+  "sources": [
+    {
+      "id": "pride",
+      "kind": "repository",
+      "location": "https://www.ebi.ac.uk/pride/ws/archive/v2/projects/PXD021658"
+    },
+    {
+      "id": "files",
+      "kind": "repository",
+      "location": "https://www.ebi.ac.uk/pride/ws/archive/v2/projects/PXD021658/files (pageSize=100, pages 0-1; 5 files: Metadata.xlsx + 4 RAW zips)"
+    },
+    {
+      "id": "metadata",
+      "kind": "repository",
+      "location": "https://ftp.ebi.ac.uk/pride/data/archive/2020/10/PXD021658/Metadata.xlsx (sheets Figure 2/4/5/6: file name, sample id, MS/LC method, load)"
+    },
+    {
+      "id": "zips",
+      "kind": "repository",
+      "location": "ZIP central directories of the 4 RAW zips under https://ftp.ebi.ac.uk/pride/data/archive/2020/10/PXD021658/ (270 .raw folders)"
+    },
+    {
+      "id": "rawhdr",
+      "kind": "raw header",
+      "location": "_HEADER.TXT and _extern.inf inside the zips, read by HTTP range for 3 files per zip (12 files, all 4 groups, Oct 2019 and Jan 2020)"
+    },
+    {
+      "id": "paper",
+      "kind": "publication",
+      "location": "doi:10.1016/j.aca.2020.09.062 (PMID 33218478); closed access, not in Europe PMC full text, NOT read"
+    }
+  ],
+  "claims": [
+    {
+      "location": "comment[data file] / rows",
+      "value": "270 rows, one per .raw folder (stem.raw)",
+      "source_ids": [
+        "zips",
+        "metadata"
+      ],
+      "evidence": "The 270 .raw folders inside the 4 zips match the 270 file names in Metadata.xlsx one to one; stems are unique. PRIDE lists only the zips, so the .raw names come from the zip contents."
+    },
+    {
+      "location": "comment[instrument]",
+      "value": "Synapt G2 MS (MS:1001778)",
+      "source_ids": [
+        "rawhdr",
+        "pride"
+      ],
+      "evidence": "_HEADER.TXT 'Instrument: SYNAPT-G2' in all 12 inspected files, MassLynx 4.1, ES+, resolution mode. PRIDE lists generic Synapt MS (MS:1001782), overridden. HDMS vs MS variant is not distinguishable from the header."
+    },
+    {
+      "location": "source name / sample type",
+      "value": "5 groups: BK+Ang2 standard (141 runs), Blank (116), Hb tryptic digest (6), GluFib standard (4), Protein mixture (3)",
+      "source_ids": [
+        "metadata",
+        "rawhdr"
+      ],
+      "evidence": "Sample id text in Metadata.xlsx; _HEADER.TXT Sample Description agrees for the inspected files."
+    },
+    {
+      "location": "characteristics[organism] Hb tryptic digest",
+      "value": "Homo sapiens",
+      "source_ids": [
+        "metadata",
+        "pride"
+      ],
+      "evidence": "Figure 5 sheet lists in-silico tryptic Hb alpha/beta peptides (e.g. VLSPADK, VHLTPEEK) with human sequences; PRIDE organism Homo sapiens. This is INFERRED; the Hb source is not stated in the files read."
+    },
+    {
+      "location": "characteristics[organism] other groups",
+      "value": "not applicable",
+      "source_ids": [
+        "metadata"
+      ],
+      "evidence": "Peptide standards (BK, AngII, GluFib), solvent blanks; the protein mixture composition is not given in the files read."
+    },
+    {
+      "location": "characteristics[sample type] Blank",
+      "value": "negative control",
+      "source_ids": [
+        "metadata"
+      ],
+      "evidence": "Sample id 'Blank'. No digestion/reduction reagents or buffer claimed."
+    },
+    {
+      "location": "comment[cleavage agent details]",
+      "value": "Trypsin (MS:1001251) for Hb digest rows; not applicable elsewhere",
+      "source_ids": [
+        "pride",
+        "metadata"
+      ],
+      "evidence": "PRIDE sample protocol: only a single offline tryptic digestion of hemoglobin; other samples are untreated proteins/peptides."
+    },
+    {
+      "location": "comment[label]",
+      "value": "label free sample",
+      "source_ids": [
+        "pride",
+        "metadata"
+      ],
+      "evidence": "No labelling reported."
+    },
+    {
+      "location": "comment[proteomics data acquisition method]",
+      "value": "not available (VALIDATOR ERROR retained)",
+      "source_ids": [
+        "pride"
+      ],
+      "evidence": "PRIDE: data analysed solely in full scan MS only. No PRIDE:0000659 descendant (DDA, DIA, PRM, SRM) describes MS1-only acquisition; DDA would be false. Column is required with no reserved word allowed, so the validator reports an error."
+    },
+    {
+      "location": "dissociation / tolerances / modification parameters",
+      "value": "not applicable",
+      "source_ids": [
+        "pride"
+      ],
+      "evidence": "MS-only full scan, no search engine; PRIDE PTM field: No PTMs are included. Peptide mapping was done in GPMAW in-silico, not a deposited search."
+    },
+    {
+      "location": "characteristics[biological replicate] / comment[technical replicate]",
+      "value": "biological replicate 1; technical replicate = running index of run (sorted by file stem) within each source group",
+      "source_ids": [
+        "files"
+      ],
+      "evidence": "PLACEHOLDER numbering to make rows unique; the deposit does not define replicates."
+    },
+    {
+      "location": "comment[fraction identifier]",
+      "value": "1",
+      "source_ids": [
+        "files"
+      ],
+      "evidence": "No fractionation (single injection per file); build default."
+    }
+  ],
+  "limitations": [
+    "Paper (closed access) not read: Hb species, protein mixture composition, peptide standard source and amounts are taken only from Metadata.xlsx/PRIDE; Hb organism Homo sapiens is inferred from peptide sequences in Metadata.xlsx",
+    "comment[proteomics data acquisition method] cannot be expressed: no PRIDE term for MS1-only acquisition, written 'not available', validator error remains",
+    "Synapt G2 MS vs G2 HDMS undetermined from headers",
+    "Run-level conditions are NOT encoded: stationary phase (POROS R2/R3, LiChrosorb 5/10 um), flow rate (2-20 uL/min), injected volume, LC gradient/method names exist only in Metadata.xlsx",
+    "Source groups collapse all runs of a sample type; replicate numbers are placeholders",
+    "Raw headers inspected for 12 of 270 files (3 per zip); acquisition dates range Oct 2019 to Jan 2020 and were not written (optional column)",
+    "The reconcile 'cleavage_agent_contradicted' blocker is intentional: the record's tryptic digest applies only to the Hb rows",
+    "characteristics[sample type] 'study sample' fails the cache-only validator (cache artifact; PRIDE:0001013 verified live in OLS4); applied to analyte samples in this method-development study",
+    "Concentrations not encoded (BK/AngII 2.5 uM appears in some sample ids; protein mixture 0.25 uM; Hb/GluFib 25 pmol)",
+    "Metadata.xlsx sample ids and zip folders disagree for 191017_55-57 (labelled 10 um, in the 5 um date series); not used"
+  ]
+}

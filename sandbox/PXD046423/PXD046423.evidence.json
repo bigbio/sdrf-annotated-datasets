@@ -1,0 +1,112 @@
+{
+  "schema_version": 1,
+  "artifact": "annotations/PXD046423.sdrf.tsv",
+  "dataset": "PXD046423",
+  "sources": [
+    {
+      "id": "pride",
+      "kind": "repository",
+      "location": "https://www.ebi.ac.uk/pride/ws/archive/v2/projects/PXD046423"
+    },
+    {
+      "id": "files",
+      "kind": "repository",
+      "location": "https://www.ebi.ac.uk/pride/ws/archive/v2/projects/PXD046423/files?pageSize=100&page=0..1 (147 files)"
+    },
+    {
+      "id": "setup",
+      "kind": "repository",
+      "location": "ftp://ftp.pride.ebi.ac.uk/pride/data/archive/2025/02/PXD046423/Experimental_setup.docx"
+    },
+    {
+      "id": "msf",
+      "kind": "repository",
+      "location": "ftp://ftp.pride.ebi.ac.uk/pride/data/archive/2025/02/PXD046423/*.msf (all 72, first 700 kB, StudyDefinition XML; one full workflow node of 20230708-1343_..._T1.msf)"
+    },
+    {
+      "id": "raw",
+      "kind": "repository",
+      "location": "20230708-1343_EXP3_1005105_PH_DNL_RBD_WT_Sample_BRep1_T1.raw and 20230811-2001_EXP3_1005491_20230808_DNL_RBD_Delta_Control_BRep3_T6.raw, first 3 MB (method summary)"
+    },
+    {
+      "id": "paper",
+      "kind": "publication",
+      "location": "doi:10.1016/j.bbapap.2024.141011 (PMID 38499233); full text unavailable (not in Europe PMC); only the PRIDE protocol text was used"
+    }
+  ],
+  "claims": [
+    {
+      "location": "label / sample composition / antibody / sampling time per channel",
+      "value": "126 common, 127N Ab 3, 127C Ab 9, 128N Ag 0, 128C Ag 3, 129N Ag 9, 129C Mix 0, 130N Mix 3, 130C Mix 9, 131 Ab 0",
+      "source_ids": [
+        "msf",
+        "pride"
+      ],
+      "evidence": "msf StudyDefinition samples with Sample_Type_Mix/Time_Incubation factors identical in all 72 files; PRIDE protocol: 10 tags, one common channel"
+    },
+    {
+      "location": "characteristics[biological replicate], antibody, RBD variant, comment[technical replicate]",
+      "value": "from file name BRep/Sample|Control/WT|Delta/T#",
+      "source_ids": [
+        "files",
+        "msf"
+      ],
+      "evidence": "msf BioRep factor and sample name agree with every file name; T number from file name"
+    },
+    {
+      "location": "comment[instrument], dissociation, collision energy, ms1 scan range, ms2 analyzer",
+      "value": "Orbitrap Exploris 480; HCD; 30 NCE; 350-1500; Orbitrap",
+      "source_ids": [
+        "raw",
+        "pride"
+      ],
+      "evidence": "RAW method summary of one WT and one Delta file; PRIDE protocol names Exploris 480; PRIDE structured Q Exactive HF overridden"
+    },
+    {
+      "location": "comment[modification parameters]",
+      "value": "Carbamidomethyl C; TMT6plex K/N-term; Deamidated, Oxidation, Dioxidation, Trioxidation, Carbonyl variable with listed residues",
+      "source_ids": [
+        "pride",
+        "msf"
+      ],
+      "evidence": "PRIDE data processing protocol (Mascot x2, Sequest HT); TMT6plex from msf quan method; union over search rounds"
+    },
+    {
+      "location": "comment[precursor mass tolerance], comment[fragment mass tolerance]",
+      "value": "10 ppm; 0.1 Da",
+      "source_ids": [
+        "pride"
+      ],
+      "evidence": "PRIDE protocol; msf first readable node shows 20 ppm / 0.5 Da (conflict, PRIDE used)"
+    },
+    {
+      "location": "comment[cleavage agent details], reduction, alkylation",
+      "value": "Trypsin; DTT; iodoacetamide",
+      "source_ids": [
+        "pride",
+        "msf"
+      ],
+      "evidence": "PRIDE sample protocol (LysC then methylated trypsin; DTT 20 mM; IAA 54 mM); msf enzyme Trypsin (Full)"
+    },
+    {
+      "location": "characteristics[organism]",
+      "value": "Mus musculus (antibody alone); SARS-CoV-2 (RBD alone and RBD+antibody)",
+      "source_ids": [
+        "pride"
+      ],
+      "evidence": "PRIDE organism list and protocol"
+    }
+  ],
+  "limitations": [
+    "Paper full text not accessible (not in Europe PMC, not open access); paper methods and supplement not read, only PRIDE text and deposited files",
+    "Channel 126 as common channel is inferred: msf labels it Sample_Type_Mix 'Control' with an unnamed time option",
+    "Common-channel source granularity (one per variant/arm/replicate tube) and whether the pool is shared across the two arms are not stated",
+    "WT Sample BRep2 T7 has no deposited .msf; its channel map is assumed equal to T1-T6 of the same tube; the Delta Sample BRep3 T7 .msf has no deposited RAW",
+    "Channel 131 lacks the BioRep factor in the msf; replicate taken from the file name",
+    "Mixed samples carry a single organism (SARS-CoV-2) although they also contain mouse antibody",
+    "Modifications are the union over search rounds; the full msf workflow (all nodes) was not read, only the first 700 kB; msf tolerance 20 ppm / 0.5 Da conflicts with PRIDE 10 ppm / 0.1 Da",
+    "PRIDE protocol says RBD Alpha while file names and paper title say wild type; written as wild type",
+    "Acquisition dates not annotated; Lys-C is encoded as a second cleavage agent column (PRIDE protocol: 2% LysC 1 h, then methylated trypsin 10 h); PNGaseF deglycosylation is not captured. RBD variant: file names and the PRIDE project description say wild type, while the PRIDE sample protocol, Experimental_setup.docx and the abstract say Alpha; annotated as `wild type` (no source cites a lineage such as B.1.1.7)",
+    "Validator error 'study sample not found in pride' is a cache artifact (PRIDE:0001013 valid live); reconcile cleavage_agent_unsupported flags methylated trypsin wording (false positive)"
+  ]
+}

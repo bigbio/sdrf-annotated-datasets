@@ -86,12 +86,9 @@ jobs:
               continue
             fi
             echo "::group::parse_sdrf validate-sdrf --sdrf_file $f"
-            # Options aligned with current sdrf-pipelines main (see parse_sdrf validate-sdrf -h).
-            # Files named PAD* are affinity-proteomics SDRFs; validate them with that template.
-            if [[ "$(basename "$f")" == PAD* ]]; then
-              parse_sdrf validate-sdrf --sdrf_file "$f" --use_ols_cache_only -t affinity-proteomics
-            else
-              parse_sdrf validate-sdrf --sdrf_file "$f" --use_ols_cache_only
-            fi
+            # Read every declared template column; preserve historical defaults when absent.
+            template_args=$(python .github/scripts/sdrf_template_args.py "$f")
+            mapfile -t args <<< "$template_args"
+            parse_sdrf validate-sdrf --sdrf_file "$f" --use_ols_cache_only "${args[@]}"
             echo "::endgroup::"
           done

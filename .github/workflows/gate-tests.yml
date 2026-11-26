@@ -8,11 +8,13 @@ on:
     paths:
       - '.github/scripts/**'
       - '.github/workflows/gate-tests.yml'
+      - '.github/workflows/validate-on-sdrf-pipelines-release.yml'
       - 'tests/**'
   push:
     branches: [main]
     paths:
       - '.github/scripts/**'
+      - '.github/workflows/validate-on-sdrf-pipelines-release.yml'
       - 'tests/**'
 
 jobs:

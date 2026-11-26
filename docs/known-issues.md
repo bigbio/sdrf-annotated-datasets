@@ -46,6 +46,14 @@ sample. Each needs one row per label channel, with its channel-to-sample map.
 |---|---|---|
 | PXD027232 | TMT10plex, 6 samples | Raw header method `Fusion_TMT10_PTM_60min...`; deposited `LC-MS data.xlsx` quantifies Sirt7KD1-3 and Sirt7ctr1-3. Which channel carries which sample is not stated anywhere |
 | PXD044020 | TMTpro, plex not stated | Protocol sets TMTpro on K and peptide N-termini; the paper (Cell 2024, PMC11145561) pools three conditions (empty vector, MBC-TurboID, BCAT2-TurboID) in one run. No sample sheet or channel map is deposited or published |
+| PXD005894 | TMT6plex, 6 final pooled samples | Protocol pools biological replicates into 6 TMT sixplex-labelled samples but assigns **no reporter channel to any sample**; the SDRF keeps run-level sources (`Gustavo-Vega_TMT_TPV1A/B` … CID/HCD pairs) with no per-channel map. c-di-GMP/BCG pellicle strains WT, ΔPDE, ΔDGC are never tied to a channel |
+| PXD055203 | TMTpro 16-plex, cervical cancer | Protocol labels 16-plex TMTpro and pools each TMT set for high-pH fractionation; the SDRF source names are acquired `_GroupNN.tar`/DIA archive names, not samples, and assign **no channel to any of the 139 patients**. Channel→patient map appears only in the paper's extended data, not in the deposit |
+| IPX0002466000 | iTRAQ (phospho + proteome), OSCC | One row per pooled iTRAQ run: sources are pool names (`OSCC_7779TPSY01` …) each spanning up to 24 fraction files, with **no channel/reporter column** and no per-channel sample map anywhere |
+| PXD000752 | iTRAQ 8-plex, 2 pools × 36 IPG fractions | PRIDE `sampleProcessingProtocol` labels samples with 8plex iTRAQ then separates by IEF; each `.raw` fraction is one slice of a pooled 8-plex, so it holds all 8 channels. The only source names are the pools (`alveolar macrophage iTRAQ plex 1/2`); which reporter carries which subject is not recorded |
+| PXD000928 | iTRAQ 8-plex, 2 pools × IPG fractions | PRIDE `sampleProcessingProtocol` labels with 8plex iTRAQ and isoelectric focusing; each `.raw` is a pooled 8-plex slice. Source names collapse to `melanoma lymph-node metastasis iTRAQ plex I/II` with no per-channel sample map |
+| PXD000996 | iTRAQ 8-plex, 2 pools × 72 IPG fractions | Same Karolinska HiRIEF iTRAQ 8-plex design; PRIDE `sampleProcessingProtocol` states 8plex iTRAQ + isoelectric focusing. Rows use only pool-level sources (`thyroid cyst fluid iTRAQ plex 1/2`), no channel map |
+| PXD001808 | iTRAQ 8-plex, 3 pools (15 cases + 5 controls) | `sampleProcessingProtocol` describes three 8-plex experiments "each with one reference pool (113 reporter), two controls … and five cases", but the SDRF keeps only pool-level sources (`BALF exosome iTRAQ plex 1-3`); the exact channel→subject assignment is not recorded and not recoverable from file names |
+| PXD003702 | iTRAQ 8-plex, 6 pools × IPG fractions | PRIDE `sampleProcessingProtocol`: "processed using FASP with trypsin, iTRAQ and HiRIEF". Each fraction `.raw` is a pooled 8-plex slice; sources are named only by pool (`ascending aorta tissue iTRAQ 2013apr23_pool1_pool1` …), no channel map |
 
 How this was checked: each SDRF's `comment[label]` was compared with PRIDE's
 quantification method, the sample and data processing protocols, and the deposited
@@ -71,6 +79,34 @@ file header.
 
 Resolution: correct PRIDE's instrument field, or confirm with the submitter where
 the header and the paper disagree.
+
+## Moderate: SCIEX run deposited without its `.wiff`
+
+Category: `wiff-scan-without-wiff`. A SCIEX run is written as a `.wiff` file plus a
+`.wiff.scan` companion holding the scan data. The companion cannot be read without the
+`.wiff`. In these deposits some runs have only the `.wiff.scan`, so the SDRF lists the
+complete runs and leaves these out.
+
+| Dataset | Runs without `.wiff` | `.wiff` in deposit | Example |
+|---|---|---|---|
+| PXD028310 | 42 | 125 | `PVJ11_R2.wiff.scan`: every `PVJ*_R2` run |
+| PXD023168 | 6 | 184 | `20150516_ZT_IDA_059.wiff.scan` |
+| PXD017052 | 5 | 3,322 | `EXP19072_2019v1ms068X1_A.wiff.scan` |
+| PXD011198 | 1 | 126 | `171205_LDC_Hist_SWATH_blanco_14.wiff.scan` |
+| PXD014800 | 1 | 316 | `RCB_SALSW_TB_E00193_V2.3.wiff.scan` |
+| PXD028078 | 1 | 57 | `20200628_SWATH_LC172.wiff.scan` |
+| PXD030354 | 1 | 88 | `IDA_PreIP_APP23_5.wiff.scan` |
+| PXD030947 | 1 | 64 | `Bobby_masto_18bobby_masto_18_2_10.wiff.scan` |
+| PXD032299 | 1 | 448 | `20200128_OvCa_Lemba_ECA_PosControl_2.wiff.scan` |
+| PXD038003 | 1 | 72 | `Pool_neuron-derived_EVs_from_rheumatoid_arthritid_patients_1..wiff.scan` |
+| PXD050920 | 1 | 58 | `200403DDA-HC8-5uL-150min-50msec.wiff.scan` |
+| PXD061811 | 1 | 65 | `HippocampalProteomics_WT_uncond_2.wiff.scan` |
+
+How this was checked: every `.wiff.scan` in the PRIDE Archive file listing
+(`/pride/ws/archive/v3/projects/<PXD>/files/all`) was matched to a `.wiff` with the same
+name, without the `.scan` suffix.
+
+Resolution: the submitters deposit the missing `.wiff` files.
 
 ## Moderate: deposited SDRF is internally inconsistent
 

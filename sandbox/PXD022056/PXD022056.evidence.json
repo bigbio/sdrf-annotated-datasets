@@ -1,0 +1,118 @@
+{
+  "schema_version": 1,
+  "artifact": "annotations/PXD022056.sdrf.tsv",
+  "dataset": "PXD022056",
+  "sources": [
+    {
+      "id": "pride",
+      "kind": "repository",
+      "location": "https://www.ebi.ac.uk/pride/ws/archive/v2/projects/PXD022056"
+    },
+    {
+      "id": "files",
+      "kind": "repository",
+      "location": "https://www.ebi.ac.uk/pride/ws/archive/v2/projects/PXD022056/files?pageSize=100&page=0 (34 files; page 1 empty)"
+    },
+    {
+      "id": "paper",
+      "kind": "publication",
+      "location": "https://europepmc.org/article/PMC/PMC6260226 (doi:10.1016/j.redox.2018.10.022)"
+    },
+    {
+      "id": "map",
+      "kind": "repository",
+      "location": "ftp://ftp.pride.ebi.ac.uk/pride/data/archive/2025/11/PXD022056/PRIDE_files_Lamini.xlsx"
+    },
+    {
+      "id": "msf",
+      "kind": "repository",
+      "location": "ftp://ftp.pride.ebi.ac.uk/pride/data/archive/2025/11/PXD022056/P03_E04-_2_.msf (search-params)"
+    },
+    {
+      "id": "raw",
+      "kind": "repository",
+      "location": "RAW header range reads (first 3 MB) of QEHF3_02443_TN_0, QEHF3_02453_TN, QHF2_03505_TN, QHF2_03508_TN"
+    }
+  ],
+  "claims": [
+    {
+      "location": "source name / characteristics[treatment] / factor value[treatment] / biological replicate / data file",
+      "value": "27 RAW runs mapped to 8 conditions (HOCl 0/100/500 uM x4; MPO complete, no H2O2, no MPO, no NaCl, untreated x3)",
+      "source_ids": [
+        "map",
+        "files",
+        "paper"
+      ],
+      "evidence": "xlsx maps each RAW to treatment and replicate; conditions match paper section 2.2 and PRIDE protocol"
+    },
+    {
+      "location": "characteristics[organism]",
+      "value": "Mus musculus",
+      "source_ids": [
+        "pride",
+        "paper"
+      ],
+      "evidence": "Murine laminin-111 purchased from Sigma"
+    },
+    {
+      "location": "comment[instrument], dissociation, collision energy",
+      "value": "Q Exactive HF, HCD, 28 NCE",
+      "source_ids": [
+        "raw",
+        "paper",
+        "pride"
+      ],
+      "evidence": "RAW headers: Q Exactive HF - Orbitrap MS, methods 73min_Top12_MS1_120res_NCE28, HCD normalized 28"
+    },
+    {
+      "location": "comment[modification parameters]",
+      "value": "Oxidation C/M/W, Dioxidation C/M, Trioxidation C, Chlorination Y, dichlorination Y, Deamidated N/Q (all variable)",
+      "source_ids": [
+        "msf",
+        "paper"
+      ],
+      "evidence": "P03 msf custom mods mapped by delta mass to Unimod; paper lists similar set"
+    },
+    {
+      "location": "tolerances",
+      "value": "4 ppm / 0.1 Da",
+      "source_ids": [
+        "msf",
+        "paper",
+        "pride"
+      ],
+      "evidence": "msf and protocol"
+    },
+    {
+      "location": "comment[cleavage agent details]",
+      "value": "Trypsin",
+      "source_ids": [
+        "paper",
+        "pride",
+        "msf"
+      ],
+      "evidence": "paper/PRIDE trypsin 2 missed cleavages; msf semiTrypsin; Lys-C step not expressible in single-valued column"
+    },
+    {
+      "location": "reduction/alkylation reagent",
+      "value": "not applicable",
+      "source_ids": [
+        "paper",
+        "pride"
+      ],
+      "evidence": "digestion without reduction and alkylation"
+    }
+  ],
+  "limitations": [
+    "organism part and strain not available: Sigma laminin-111 tissue source/strain not stated in PRIDE record or paper methods checked",
+    "Lys-C step omitted from cleavage agent (column single-valued); reconcile flags cleavage_agent_incomplete",
+    "Only the HOCl msf (P03_E04) was parsed for modifications; the MPO msf (P07_E01) was not opened; modifications applied to all rows",
+    "Paper lists chlorination on W and oxidation on H, absent from the parsed msf; msf followed",
+    "MPO incubation time for MS samples not found in the paper sections read; no sampling time column",
+    "HCD and Orbitrap MS2 analyser partly inferred (RAW header shows HCD NCE 28; analyser from QE HF 15,000 resolution)",
+    "sample type 'study sample' used for control rows too; validator error is a cache artifact (PRIDE:0001013 valid live)",
+    "Fraction 1 and technical replicate 1 are placeholders for single unfractionated injections",
+    "RAW acquisition dates not extracted; xlsx RAW names lacked the _0 suffix present in the archive and were matched by stem",
+    "characteristics[treatment] free text is not in NCIT/EFO (validator warnings)"
+  ]
+}

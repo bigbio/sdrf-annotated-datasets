@@ -14,34 +14,34 @@ The SDRF specification lives in [`bigbio/proteomics-sample-metadata`](https://gi
 <!-- STATS:START -->
 ## Resource at a glance
 
-_Auto-generated from curated `datasets/` on 2026-11-26T17:05:11Z. Sandbox drafts are excluded._
+_Auto-generated from curated `datasets/` on 2026-11-26T20:22:05Z. Sandbox drafts are excluded._
 
 | Metric | Count |
 | --- | ---: |
-| Accessions | 19,713 |
-| SDRF files | 20,944 |
-| Accessions with a declared template | 19,688 |
-| Samples (unique `source name` per file) | 1,060,970 |
-| Runs (unique `comment[data file]` per file) | 1,363,840 |
-| Assay rows | 1,854,519 |
-| Merged PRs that changed curated datasets | 3,458 |
-| ... adding new datasets | 3,174 (92%) |
+| Accessions | 20,005 |
+| SDRF files | 21,237 |
+| Accessions with a declared template | 19,980 |
+| Samples (unique `source name` per file) | 1,065,816 |
+| Runs (unique `comment[data file]` per file) | 1,375,316 |
+| Assay rows | 1,872,232 |
+| Merged PRs that changed curated datasets | 3,467 |
+| ... adding new datasets | 3,183 (92%) |
 | ... modifying existing datasets | 284 (8%) |
 | Human contributors | 44 |
 | AI agents (named fingerprints) | 10 |
 | Foundation models identified | 23 |
-| AI-assisted accessions | 19,713 |
-| Unidentified agent | 1,343 |
-| Multi-agent accessions | 6,023 |
+| AI-assisted accessions | 20,005 |
+| Unidentified agent | 1,356 |
+| Multi-agent accessions | 6,025 |
 | Distinct instruments | 242 |
 | Median runs per accession | 14 |
-| Accessions with modification parameters | 13,162 |
-| ProteomeXchange coverage | 19,642 / 58,677 (33.5%) |
-| PRIDE coverage | 17,660 / 42,969 (41.1%) |
+| Accessions with modification parameters | 13,436 |
+| ProteomeXchange coverage | 19,934 / 58,677 (34.0%) |
+| PRIDE coverage | 17,937 / 42,969 (41.7%) |
 | MassIVE coverage | 212 / 3,795 (5.6%) |
-| iProX coverage | 1,749 / 8,561 (20.4%) |
+| iProX coverage | 1,764 / 8,561 (20.6%) |
 
-**Highlights:** most common organism is **Homo sapiens**; **284,476** DIA assay rows; **379,352** TMT and **1,182,652** LFQ assay rows; **86** single-cell, **3,210** cell-line, and **655** metaproteomics accessions; sample-field completeness (applicable samples): disease 38%, age 10%; all **19,713** accessions are AI-assisted (**44** human contributors, **10** named AI agents); identified fingerprints are mostly **Cursor**; **1,343** accessions have no vendor fingerprint (typical of Claude Code committed as the reviewer); **552** accessions have Codex evidence (`codex/` PR branches); **6,023** accessions were touched by more than one agent (most common handoff **Cursor → Codex**); **3,458** merged PRs have changed curated datasets — **3,174** (92%) added brand-new datasets and **284** (8%) refined existing annotations; most common instrument is **Q Exactive**; most common modification is **Carbamidomethyl**; **33.5%** of public ProteomeXchange datasets have a curated SDRF here; **41.1%** of PRIDE projects are annotated.
+**Highlights:** most common organism is **Homo sapiens**; **284,714** DIA assay rows; **384,495** TMT and **1,190,124** LFQ assay rows; **86** single-cell, **3,283** cell-line, and **656** metaproteomics accessions; sample-field completeness (applicable samples): disease 38%, age 10%; all **20,005** accessions are AI-assisted (**44** human contributors, **10** named AI agents); identified fingerprints are mostly **Cursor**; **1,356** accessions have no vendor fingerprint (typical of Claude Code committed as the reviewer); **552** accessions have Codex evidence (`codex/` PR branches); **6,025** accessions were touched by more than one agent (most common handoff **Cursor → Codex**); **3,467** merged PRs have changed curated datasets — **3,183** (92%) added brand-new datasets and **284** (8%) refined existing annotations; most common instrument is **Q Exactive**; most common modification is **Carbamidomethyl**; **34.0%** of public ProteomeXchange datasets have a curated SDRF here; **41.7%** of PRIDE projects are annotated.
 
 ![How much of public proteomics is annotated](docs/stats/plots/coverage.png)
 

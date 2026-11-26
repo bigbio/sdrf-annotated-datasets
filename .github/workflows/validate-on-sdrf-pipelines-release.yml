@@ -111,8 +111,7 @@ jobs:
         id: validate
         shell: bash
         run: |
-          # Do NOT `set -e`: we must keep going past a failing file to collect all of them.
-          set -uo pipefail
+          set -euo pipefail
           mapfile -t files < <(git ls-files | grep -E '^datasets/.+\.sdrf\.tsv$' | sort -u)
           total="${#files[@]}"
           echo "Validating ${total} datasets/**/*.sdrf.tsv against sdrf-pipelines ${{ steps.ver.outputs.version }}"
@@ -120,21 +119,32 @@ jobs:
           : > .ci-artifacts/failures.md
           fail_count=0
           for f in "${files[@]}"; do
-            # Same invocation as validate-sdrf.yml / CONTRIBUTING.md, so results match PR CI.
+            echo "Validating: $f"
+            # Match the CLI options and template selection in validate-sdrf.yml.
+            args=(parse_sdrf validate-sdrf --sdrf_file "$f" --use_ols_cache_only)
+            if [[ "${f##*/}" == PAD* ]]; then
+              args+=(-t affinity-proteomics)
+            fi
+            log=".ci-artifacts/logs/${f}.log"
+            mkdir -p "${log%/*}"
             # Cap each file at 300s (matches scripts/validate_all_datasets.py) so one
             # hanging file can't stall the run; timeout exits 124 -> counted as a failure.
-            out="$(timeout 300 parse_sdrf validate-sdrf --sdrf_file "$f" --use_ols_cache_only 2>&1)"
-            rc=$?
+            # Handle failures explicitly: Actions starts Bash with -e enabled.
+            rc=0
+            timeout 300 "${args[@]}" > "$log" 2>&1 || rc=$?
             if [ "$rc" -ne 0 ]; then
               fail_count=$((fail_count + 1))
               echo "FAIL (exit $rc): $f"
               # Prefer the explicit ERROR/traceback lines; fall back to the tail of the output.
-              errs="$(printf '%s\n' "$out" | grep -E '^ERROR|Traceback|Error|does not match' | head -25 || true)"
+              errs="$(grep -E '^ERROR|Traceback|Error|does not match' "$log" | head -25 || true)"
               if [ -z "$errs" ]; then
-                errs="$(printf '%s\n' "$out" | tail -25)"
+                errs="$(tail -25 "$log")"
               fi
+              printf '%s\n' "$errs"
               {
                 echo "### \`$f\`"
+                echo ""
+                echo "Exit code: $rc"
                 echo ""
                 echo '```'
                 printf '%s\n' "$errs"
@@ -148,6 +158,15 @@ jobs:
             echo "fail_count=${fail_count}"
             echo "total=${total}"
           } >> "$GITHUB_OUTPUT"
+
+      - name: Upload validation diagnostics
+        if: ${{ always() && steps.gate.outputs.run == 'true' }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: sdrf-release-validation-${{ steps.ver.outputs.version }}
+          path: .ci-artifacts/
+          include-hidden-files: true
+          if-no-files-found: ignore
 
       - name: Record checked version (persisted via cache)
         if: steps.gate.outputs.run == 'true'

@@ -298,6 +298,15 @@ class TestDroppedRuns:
         head = write_sdrf(BASE_HEADER, self._rows(3), root=tmp_path / "head")
         assert self._lost(gate, head, tmp_path, monkeypatch) == (0, 0)
 
+    def test_dropping_non_run_files_is_not_a_lost_run(
+            self, gate, write_sdrf, tmp_path, monkeypatch):
+        extras = ["checksum.txt", "library.tsv", "search.msf"]
+        write_sdrf(BASE_HEADER, self._rows(2) + [row(src=f"x{i}", assay=f"x{i}", data=d)
+                                                 for i, d in enumerate(extras)],
+                   root=tmp_path / "base")
+        head = write_sdrf(BASE_HEADER, self._rows(2), root=tmp_path / "head")
+        assert self._lost(gate, head, tmp_path, monkeypatch) == (0, 2)
+
     def test_new_dataset_has_no_baseline(self, gate, write_sdrf, tmp_path, monkeypatch):
         (tmp_path / "base").mkdir()
         head = write_sdrf(BASE_HEADER, self._rows(3), root=tmp_path / "head")

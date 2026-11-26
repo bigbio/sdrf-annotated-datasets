@@ -9,6 +9,15 @@ on:
     - cron: "20 5 * * *"
   workflow_dispatch:
 
+# Annotation merges often land in a burst. Each push used to commit badge
+# JSON from the triggering SHA, then `git push` was rejected once main had
+# moved (non-fast-forward). Keep a single in-flight run, recompute from the
+# latest main, and retry the push. Replaying the old commit with
+# `git pull --rebase` would publish a count from the pre-merge tree.
+concurrency:
+  group: refresh-badges
+  cancel-in-progress: true
+
 permissions:
   contents: write
 
@@ -20,10 +29,22 @@ jobs:
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
+          ref: main
 
-      - name: Recompute badge JSON
+      - name: Commit badge updates
         run: |
-          python - <<'PY'
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+          for attempt in 1 2 3 4 5; do
+            git fetch origin main
+            git checkout main
+            git reset --hard origin/main
+            base="$(git rev-parse HEAD)"
+            echo "Refreshing badges from ${base} (attempt ${attempt})"
+
+            python - <<'PY'
           import json
           from pathlib import Path
 
@@ -74,15 +95,24 @@ jobs:
           print(f"  sandbox: {sandbox_count}")
           PY
 
-      - name: Commit badge updates
-        run: |
-          if git diff --quiet -- .github/badges; then
-            echo "Badge JSON already up to date."
-            exit 0
-          fi
+            if git diff --quiet -- .github/badges; then
+              echo "Badge JSON already up to date."
+              exit 0
+            fi
 
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add .github/badges
-          git commit -m "chore: refresh README badge metrics"
-          git push
+            git add .github/badges
+            git commit -m "chore: refresh README badge metrics"
+            git fetch origin main
+            if [ "$(git rev-parse origin/main)" != "${base}" ]; then
+              echo "main moved to $(git rev-parse origin/main) during the refresh; retrying."
+              continue
+            fi
+            if git push origin HEAD:main; then
+              echo "Pushed badge metrics."
+              exit 0
+            fi
+            echo "Push rejected (attempt ${attempt}); retrying on latest main."
+          done
+
+          echo "Failed to push badge metrics after 5 attempts." >&2
+          exit 1

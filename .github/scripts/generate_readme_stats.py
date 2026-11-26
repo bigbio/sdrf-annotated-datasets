@@ -148,6 +148,7 @@ AGENT_NAME_PATTERNS = (
     (re.compile(r"\bcodex\b", re.I), "Codex"),
     (re.compile(r"chatgpt", re.I), "ChatGPT"),
     (re.compile(r"gemini(?![- ]code[- ]assist)|antigravity", re.I), GEMINI_LABEL),
+    (re.compile(r"deepseek", re.I), "DeepSeek"),
 )
 
 HUMAN_NAME_ALIASES = {
@@ -173,7 +174,7 @@ _AGENT_TEXT_PATTERNS = (
     ),
     (
         re.compile(
-            r"generated with \[claude|generated with claude|"
+            r"(?:generated|annotated|made) with \[?claude|"
             r"claude\.com/claude-code|co-authored-by:\s*claude\b",
             re.I,
         ),
@@ -189,10 +190,17 @@ _AGENT_TEXT_PATTERNS = (
     ),
     (
         re.compile(
-            r"sdrf annotator|annotator@sdrf-skills",
+            r"sdrf annotator|annotator@sdrf-skills|sdrf-skills",
             re.I,
         ),
         "SDRF Annotator",
+    ),
+    (
+        re.compile(
+            r"crosslinking-datasets|crosslinking proteomics sdrf annotation effort",
+            re.I,
+        ),
+        "Community import (XL-MS)",
     ),
     (
         re.compile(r"made with chatgpt|generated with chatgpt", re.I),
@@ -215,7 +223,81 @@ _AGENT_TEXT_PATTERNS = (
         ),
         GEMINI_LABEL,
     ),
+    (
+        re.compile(
+            r"deepseek|sdrf-agentic-annotator|"
+            r"co-authored-by:\s*deepseek\b",
+            re.I,
+        ),
+        "DeepSeek",
+    ),
 )
+
+# Ordered model patterns for foundation model detection.
+# More specific variants must be checked before generic family names.
+MODEL_PATTERNS = (
+    # DeepSeek family
+    (re.compile(r"deepseek[- ]pro\s*4\.1", re.I), "DeepSeek Pro 4.1"),
+    (re.compile(r"deepseek[- ](?:v?4[- ]flash(?:[- ]0731)?|flash)", re.I), "DeepSeek V4 Flash"),
+    (re.compile(r"deepseek[- ](?:v?4[- ]pro|pro\s*4(?![\.\d]))\b", re.I), "DeepSeek V4 Pro"),
+    (re.compile(r"\bdeepseek\b", re.I), "DeepSeek (unspecified)"),
+
+    # Claude Opus
+    (re.compile(r"claude[- ]opus[- ]5[- .]5|opus[- ]5\.5|opus\s*5\.5", re.I), "Claude Opus 5.5"),
+    (re.compile(r"claude[- ]opus[- ]5(?![- .]\d)|opus[- ]5(?![- .]\d)", re.I), "Claude Opus 5"),
+    (re.compile(r"claude[- ]opus[- ]4[- .]8|opus[- ]4\.8", re.I), "Claude Opus 4.8"),
+
+    # Claude Sonnet
+    (re.compile(r"claude[- ]sonnet[- ]5[- .]5|sonnet[- ]5\.5", re.I), "Claude Sonnet 5.5"),
+    (re.compile(r"claude[- ]sonnet[- ]5(?![- .]\d)|sonnet[- ]5(?![- .]\d)", re.I), "Claude Sonnet 5"),
+    (re.compile(r"claude[- ]3[- .]5[- ]sonnet|sonnet[- ]3\.5", re.I), "Claude 3.5 Sonnet"),
+
+    # Claude Haiku
+    (re.compile(r"claude[- ]haiku[- ]5[- .]5|haiku[- ]5\.5", re.I), "Claude Haiku 5.5"),
+    (re.compile(r"claude[- ]3[- .]5[- ]haiku|haiku[- ]3\.5", re.I), "Claude 3.5 Haiku"),
+
+    # Claude generic
+    (re.compile(r"\bclaude\b", re.I), "Claude (unspecified model)"),
+
+    # Gemma / Qwen
+    (re.compile(r"\bgemma[- ]?2(?::9b)?\b", re.I), "Gemma 2 (9B)"),
+    (re.compile(r"\bqwen[- ]?2\.5:?3b\b", re.I), "Qwen 2.5 (3B)"),
+    (re.compile(r"\bqwen[- ]?2\.5:?1\.5b\b", re.I), "Qwen 2.5 (1.5B)"),
+
+    # Gemini
+    (re.compile(r"\bgemini[- ]2(?:\.5)?\b", re.I), "Gemini 2"),
+    (re.compile(r"\bgemini[- ]1\.5\b", re.I), "Gemini 1.5"),
+    (re.compile(r"\bgemini(?![- ]code[- ]assist)|antigravity\b", re.I), "Gemini (unspecified model)"),
+
+    # xAI Grok
+    (re.compile(r"grok[- ]?4(?:\.7)?\b", re.I), "Grok 4.7"),
+    (re.compile(r"\bgrok\b", re.I), "Grok (unspecified)"),
+
+    # Community import & workflow models
+    (re.compile(r"crosslinking-datasets|crosslinking proteomics sdrf annotation effort", re.I), "Community import (XL-MS)"),
+    (re.compile(r"sdrf-skills workflow", re.I), "Claude (sdrf-skills)"),
+)
+
+
+def parse_model_text(text: str) -> set[str]:
+    """Extract foundation model names declared in free text."""
+    if not text:
+        return set()
+    found: set[str] = set()
+    for pat, label in MODEL_PATTERNS:
+        if pat.search(text):
+            found.add(label)
+    if any(m.startswith("Claude ") and m != "Claude (unspecified model)" for m in found):
+        found.discard("Claude (unspecified model)")
+    if any(m.startswith("DeepSeek ") and m != "DeepSeek (unspecified)" for m in found):
+        found.discard("DeepSeek (unspecified)")
+    if "DeepSeek Pro 4.1" in found and "DeepSeek V4 Pro" in found:
+        found.discard("DeepSeek V4 Pro")
+    if any(m.startswith("Gemini ") and m != "Gemini (unspecified model)" for m in found):
+        found.discard("Gemini (unspecified model)")
+    if any(m.startswith("Grok ") and m != "Grok (unspecified)" for m in found):
+        found.discard("Grok (unspecified)")
+    return found
 
 # LLM-drafted annotation prose that does not name a vendor. Use only as an
 # AI-assisted signal; never map these to Claude vs Cursor vs Codex.
@@ -274,6 +356,7 @@ _AGENT_LOGINS = {
     "copilot-swe-agent": "Copilot",
     "chatgpt-codex": "Codex",
     "chatgpt-codex-connector": "Codex",
+    "deepseek": "DeepSeek",
 }
 _BRANCH_PREFIX_AGENTS = (
     ("codex/", "Codex"),
@@ -281,6 +364,7 @@ _BRANCH_PREFIX_AGENTS = (
     ("copilot/", "Copilot"),
     ("gemini/", GEMINI_LABEL),
     ("antigravity/", GEMINI_LABEL),
+    ("deepseek/", "DeepSeek"),
 )
 _REVIEW_BOT_LOGINS = {
     "copilot-pull-request-reviewer",
@@ -703,6 +787,10 @@ def fetch_repository_coverage(accessions: set[str]) -> dict:
         "pride_annotated": int(previous.get("pride_annotated") or 0),
         "pride_match": previous.get("pride_match") or "prefix",
         "fetched_at": previous.get("fetched_at") or "",
+        "massive_public": int(previous.get("massive_public") or 0),
+        "massive_annotated": int(previous.get("massive_annotated") or 0),
+        "iprox_public": int(previous.get("iprox_public") or 0),
+        "iprox_annotated": int(previous.get("iprox_annotated") or 0),
         "source_px": PROXI_DATASETS_URL,
         "source_pride": PRIDE_COUNT_URL,
     }
@@ -754,6 +842,33 @@ def fetch_repository_coverage(accessions: set[str]) -> dict:
             {name for name in local if name.startswith(("PXD", "PAD"))}
         )
         coverage["pride_match"] = "prefix"
+
+    for key, repo, prefixes in (
+        ("massive", "MassIVE", ("MSV",)),
+        ("iprox", "iProX", ("IPX",)),
+    ):
+        native = {name for name in local if name.startswith(prefixes)}
+        try:
+            payload = json.loads(
+                _http_get(
+                    f"{PROXI_DATASETS_URL}?repository={repo}&pageSize=100000",
+                    timeout=180,
+                )
+            )
+            ids = {
+                str(row[0]).upper()
+                for row in payload.get("datasets") or []
+                if row
+            }
+            print(f"  ProteomeCentral {repo} datasets: {len(ids):,}")
+            if ids:
+                coverage[f"{key}_public"] = len(ids)
+                coverage[f"{key}_annotated"] = len((local & ids) | native)
+                coverage["fetched_at"] = fetched_at
+        except (OSError, urllib.error.URLError, json.JSONDecodeError, KeyError, TypeError, ValueError) as exc:
+            print(f"  warning: could not fetch {repo} accessions from ProteomeCentral ({exc})")
+            if not coverage[f"{key}_annotated"]:
+                coverage[f"{key}_annotated"] = len(native)
 
     return coverage
 
@@ -862,7 +977,7 @@ def _agent_from_branch(ref: str) -> str | None:
     if name.startswith("origin/"):
         name = name[len("origin/") :]
     parts = [p for p in name.split("/") if p]
-    if len(parts) >= 2 and parts[0] not in {"codex", "cursor", "copilot", "gemini", "antigravity"}:
+    if len(parts) >= 2 and parts[0] not in {"codex", "cursor", "copilot", "gemini", "antigravity", "deepseek"}:
         name = "/".join(parts[1:])
     for prefix, label in _BRANCH_PREFIX_AGENTS:
         if name.startswith(prefix):
@@ -892,18 +1007,22 @@ def _is_annotation_pr(title: str) -> bool:
 def _parse_commit_identities(author_name: str, author_email: str, body: str):
     agents: set[str] = set()
     humans: set[str] = set()
+    models: set[str] = set()
     _add_identity(author_name, author_email, agents, humans)
+    models.update(parse_model_text(f"{author_name} {author_email}\n{body}"))
     for line in body.splitlines():
         match = _COAUTHOR_RE.match(line.strip())
         if not match:
             continue
-        _add_identity(match.group(1), match.group(2), agents, humans)
+        c_name, c_email = match.group(1), match.group(2)
+        _add_identity(c_name, c_email, agents, humans)
+        models.update(parse_model_text(f"{c_name} {c_email}"))
     agents.update(_parse_agent_text(body))
     subject = body.splitlines()[0] if body.strip() else ""
     campaign = _campaign_agent(subject, body)
     if campaign:
         agents.add(campaign)
-    return agents, humans
+    return agents, humans, models
 
 
 def _git_output(args: list[str], *, timeout: int) -> str:
@@ -918,13 +1037,13 @@ def _git_output(args: list[str], *, timeout: int) -> str:
         return ""
 
 
-def _git_commit_identities() -> dict[str, tuple[frozenset[str], frozenset[str]]]:
-    """Map commit SHA to agent labels and human identities (for counts only)."""
+def _git_commit_identities() -> dict[str, tuple[frozenset[str], frozenset[str], frozenset[str]]]:
+    """Map commit SHA to agent labels, human identities, and foundation models."""
     raw = _git_output(
         ["log", "--pretty=format:%H%x00%an%x00%ae%x00%s%x00%B%x1e"],
         timeout=120,
     )
-    identities: dict[str, tuple[frozenset[str], frozenset[str]]] = {}
+    identities: dict[str, tuple[frozenset[str], frozenset[str], frozenset[str]]] = {}
     for record in raw.split("\x1e"):
         record = record.strip("\n")
         if not record:
@@ -933,11 +1052,11 @@ def _git_commit_identities() -> dict[str, tuple[frozenset[str], frozenset[str]]]
         if len(parts) != 5:
             continue
         sha, name, email, subject, body = parts
-        agents, humans = _parse_commit_identities(name, email, body)
+        agents, humans, models = _parse_commit_identities(name, email, body)
         campaign = _campaign_agent(subject, body)
         if campaign:
             agents.add(campaign)
-        identities[sha] = (frozenset(agents), frozenset(humans))
+        identities[sha] = (frozenset(agents), frozenset(humans), frozenset(models))
     return identities
 
 
@@ -1116,7 +1235,7 @@ def _fetch_merged_pull_requests() -> tuple[list[dict], str]:
       repository(owner: $owner, name: $name) {
         pullRequests(
           states: MERGED
-          first: 25
+          first: 50
           after: $cursor
           orderBy: {field: CREATED_AT, direction: ASC}
         ) {
@@ -1243,6 +1362,29 @@ def _classify_pull_request_agents(pr: dict) -> set[str]:
     return labels
 
 
+def _classify_pull_request_models(pr: dict) -> set[str]:
+    """Foundation models declared across title, body, commits, and comments."""
+    title = pr.get("title") or ""
+    if _MIGRATION_TITLE_RE.search(title):
+        return set()
+
+    texts: list[str] = [title, pr.get("body") or ""]
+    for node in (pr.get("commits") or {}).get("nodes") or []:
+        commit = node.get("commit") or {}
+        message = commit.get("message") or ""
+        texts.append(message)
+        for actor in (commit.get("authors") or {}).get("nodes") or []:
+            texts.append(f"{actor.get('name') or ''} {actor.get('email') or ''}")
+
+    for comment in _walk_pr_comment_nodes(pr):
+        login = ((comment.get("author") or {}) or {}).get("login") or ""
+        if _normalize_github_login(login) in _REVIEW_BOT_LOGINS:
+            continue
+        texts.append(_strip_bot_boilerplate(comment.get("body") or ""))
+
+    return parse_model_text("\n".join(texts))
+
+
 def _union_pr_paths(
     squash: dict[int, set[str]], merges: dict[int, set[str]]
 ) -> dict[int, set[str]]:
@@ -1254,17 +1396,43 @@ def _union_pr_paths(
     return combined
 
 
+def _read_sdrf_annotation_tool(path: Path) -> str:
+    """Read comment[sdrf annotation tool] from an SDRF file if present."""
+    try:
+        with path.open(newline="", encoding="utf-8", errors="replace") as handle:
+            reader = csv.reader(handle, delimiter="\t")
+            headers = next(reader, None)
+            if not headers:
+                return ""
+            indices = [i for i, c in enumerate(headers) if c.strip().lower() == "comment[sdrf annotation tool]"]
+            if not indices:
+                return ""
+            for row in reader:
+                for idx in indices:
+                    if idx < len(row):
+                        val = row[idx].strip()
+                        if val and val.lower() not in {"not available", "not applicable", "manual curation"}:
+                            return val
+                break
+    except Exception:
+        pass
+    return ""
+
+
 def collect_contributions(current_files: list[Path]) -> dict:
     """Attribute current datasets/ SDRFs using first-add git history and PRs.
 
     A file has a *named* agent if the commit that first added it, or a merged
     annotation PR (title, description, commits, comments, or agent branch
-    prefix such as codex/), shows Cursor, Claude, Codex, Copilot, or similar.
-    Review-loop prose (adversarial review, hash-bound PASS, sdrf-skills) can
-    corroborate that a human-authored commit is still AI-assisted, but is never
+    prefix such as codex/), shows Cursor, Claude, Codex, Copilot, DeepSeek,
+    or similar. Review-loop prose (adversarial review, hash-bound PASS, sdrf-skills)
+    can corroborate that a human-authored commit is still AI-assisted, but is never
     used to pick which vendor. Review bots and corpus-wide mechanical cleanups
     are ignored. First-add is the originating agent; later annotation PRs are
     refinements (one agent, then another).
+
+    In addition, foundation models (e.g. DeepSeek V4 Flash, Claude Opus 5.5,
+    DeepSeek V4 Pro) are identified and tracked across all accessions.
     """
     current = {p.resolve().relative_to(REPO_ROOT).as_posix() for p in current_files}
     file_agents: dict[str, set[str]] = defaultdict(set)
@@ -1272,28 +1440,77 @@ def collect_contributions(current_files: list[Path]) -> dict:
     file_refine_agents: dict[str, set[str]] = defaultdict(set)
     file_humans: dict[str, set[str]] = defaultdict(set)
 
+    file_models: dict[str, set[str]] = defaultdict(set)
+    file_origin_models: dict[str, set[str]] = defaultdict(set)
+    file_refine_models: dict[str, set[str]] = defaultdict(set)
+
     identities = _git_commit_identities()
     added = _git_first_add_paths()
 
     for path in current:
         sha = added.get(path)
         if sha and sha in identities:
-            agents, humans = identities[sha]
+            agents, humans, models = identities[sha]
             file_origin_agents[path].update(agents)
             file_agents[path].update(agents)
             file_humans[path].update(humans)
+            file_origin_models[path].update(models)
+            file_models[path].update(models)
+        if sha and sha.startswith("293b5b833"):
+            file_humans[path].add("Specification community")
+            file_origin_agents[path].add("Human curation (specification)")
+            file_agents[path].add("Human curation (specification)")
+            file_origin_models[path].add("Human curation (specification)")
+            file_models[path].add("Human curation (specification)")
 
     for path in sorted(current):
-        if path in file_agents or path in file_humans:
+        if path in file_agents or path in file_humans or path in file_models:
             continue
         ident = _git_first_add_for_path(path)
         if not ident:
             continue
         name, email, body = ident
-        agents, humans = _parse_commit_identities(name, email, body)
+        agents, humans, models = _parse_commit_identities(name, email, body)
         file_origin_agents[path].update(agents)
         file_agents[path].update(agents)
         file_humans[path].update(humans)
+        file_origin_models[path].update(models)
+        file_models[path].update(models)
+
+    # Inspect in-file comment[sdrf annotation tool] declarations
+    for p in current_files:
+        rel = p.resolve().relative_to(REPO_ROOT).as_posix()
+        tool = _read_sdrf_annotation_tool(p)
+        if not tool:
+            continue
+        if "sdrf-skeleton-gen" in tool:
+            file_origin_agents[rel].add("Claude")
+            file_agents[rel].add("Claude")
+            file_origin_models[rel].add("Claude Opus 5")
+            file_models[rel].add("Claude Opus 5")
+        elif "sdrf-skills" in tool:
+            file_origin_agents[rel].add("SDRF Annotator")
+            file_agents[rel].add("SDRF Annotator")
+            file_origin_models[rel].add("Claude (sdrf-skills)")
+            file_models[rel].add("Claude (sdrf-skills)")
+        elif "sonnet-5-ollama-gemma2-9b" in tool:
+            file_origin_agents[rel].add("Claude")
+            file_agents[rel].add("Claude")
+            file_origin_models[rel].add("Claude Sonnet 5")
+            file_models[rel].add("Claude Sonnet 5")
+        elif "ollama-gemma2-9b" in tool:
+            file_origin_models[rel].add("Gemma 2 (9B)")
+            file_models[rel].add("Gemma 2 (9B)")
+        elif "sdrf-agentic-annotator" in tool:
+            file_origin_agents[rel].add("DeepSeek")
+            file_agents[rel].add("DeepSeek")
+            file_origin_models[rel].add("DeepSeek V4 Flash")
+            file_models[rel].add("DeepSeek V4 Flash")
+        elif "sdrf-annotation-pipeline" in tool:
+            file_origin_agents[rel].add("sdrf-annotation-pipeline")
+            file_agents[rel].add("sdrf-annotation-pipeline")
+            file_origin_models[rel].add("sdrf-annotation-pipeline")
+            file_models[rel].add("sdrf-annotation-pipeline")
 
     pr_added = _git_pr_file_map(diff_filter="A")
     pr_modified = _git_pr_file_map(diff_filter="M")
@@ -1301,21 +1518,34 @@ def collect_contributions(current_files: list[Path]) -> dict:
     pr_added = _union_pr_paths(pr_added, merge_added)
     pr_modified = _union_pr_paths(pr_modified, merge_modified)
 
+    # Living-resource activity: how many merged PRs grew the corpus vs refined
+    # existing annotations. "Modify existing" = a PR changed at least one file
+    # that already existed; "add only" = a PR introduced brand-new datasets and
+    # touched nothing that predated it. The two buckets are disjoint.
+    pr_all = set(pr_added) | set(pr_modified)
+    pr_add_only = set(pr_added) - set(pr_modified)
+    pr_modify_existing = set(pr_modified)
+
     pull_requests, pr_fetch = _fetch_merged_pull_requests()
     prs_with_agent = 0
+    prs_with_model = 0
     prs_ai_prose_only = 0
     for pr in pull_requests:
         number = int(pr.get("number") or 0)
         title = pr.get("title") or ""
         labels = _classify_pull_request_agents(pr)
         labels.update(merge_branch_agents.get(number, ()))
-        if not labels:
+        pr_mod_labels = _classify_pull_request_models(pr)
+        if not labels and not pr_mod_labels:
             if _looks_like_ai_prose(f"{title}\n{pr.get('body') or ''}"):
                 prs_ai_prose_only += 1
             continue
         if _MECHANICAL_PR_RE.search(title) or _MIGRATION_TITLE_RE.search(title):
             continue
-        prs_with_agent += 1
+        if labels:
+            prs_with_agent += 1
+        if pr_mod_labels:
+            prs_with_model += 1
         head_agent = _agent_from_branch(pr.get("headRefName") or "")
         overlay_modified = _is_annotation_pr(title) or bool(head_agent)
         for path in pr_added.get(number, ()):
@@ -1323,6 +1553,8 @@ def collect_contributions(current_files: list[Path]) -> dict:
                 continue
             file_origin_agents[path].update(labels)
             file_agents[path].update(labels)
+            file_origin_models[path].update(pr_mod_labels)
+            file_models[path].update(pr_mod_labels)
         if overlay_modified:
             for path in pr_modified.get(number, ()):
                 if path not in current:
@@ -1330,6 +1562,9 @@ def collect_contributions(current_files: list[Path]) -> dict:
                 new = labels - file_origin_agents[path]
                 file_refine_agents[path].update(new)
                 file_agents[path].update(labels)
+                new_m = pr_mod_labels - file_origin_models[path]
+                file_refine_models[path].update(new_m)
+                file_models[path].update(pr_mod_labels)
 
     # Merge-only PRs (no GitHub payload) still carry branch-prefix agents.
     seen_prs = {int(pr.get("number") or 0) for pr in pull_requests}
@@ -1352,6 +1587,12 @@ def collect_contributions(current_files: list[Path]) -> dict:
     acc_origin_agents: dict[str, set[str]] = defaultdict(set)
     acc_refine_agents: dict[str, set[str]] = defaultdict(set)
     file_agent_counts: Counter = Counter()
+
+    acc_models: dict[str, set[str]] = defaultdict(set)
+    acc_origin_models: dict[str, set[str]] = defaultdict(set)
+    acc_refine_models: dict[str, set[str]] = defaultdict(set)
+    file_model_counts: Counter = Counter()
+
     file_origin = Counter()
     acc_origin: dict[str, str] = {}
     all_humans: set[str] = set()
@@ -1360,13 +1601,28 @@ def collect_contributions(current_files: list[Path]) -> dict:
     for path in current:
         agents = file_agents.get(path, set())
         humans = file_humans.get(path, set())
-        if not agents and not humans:
+        models = file_models.get(path, set())
+        if not agents and not humans and not models:
             continue
         attributed += 1
         accession = Path(path).parent.name
         all_humans.update(humans)
         acc_origin_agents[accession].update(file_origin_agents.get(path, ()))
         acc_refine_agents[accession].update(file_refine_agents.get(path, ()))
+        acc_origin_models[accession].update(file_origin_models.get(path, ()))
+        acc_refine_models[accession].update(file_refine_models.get(path, ()))
+
+        if not models and agents:
+            proxy_models = set()
+            for a in agents:
+                if a == "Cursor":
+                    proxy_models.add("Grok 4.7 (Cursor)")
+                else:
+                    proxy_models.add(f"{a} (unspecified model)")
+            models = proxy_models
+            file_models[path].update(models)
+            acc_origin_models[accession].update(models)
+
         if agents:
             file_origin["Agent-assisted"] += 1
             acc_origin[accession] = "Agent-assisted"
@@ -1377,10 +1633,19 @@ def collect_contributions(current_files: list[Path]) -> dict:
             file_origin["Human-only"] += 1
             acc_origin.setdefault(accession, "Human-only")
 
+        if models:
+            for model in models:
+                file_model_counts[model] += 1
+                acc_models[accession].add(model)
+
     origin_acc = Counter(acc_origin.values())
     agent_acc: Counter = Counter()
     for agents in acc_agents.values():
         agent_acc.update(agents)
+
+    model_acc: Counter = Counter()
+    for mset in acc_models.values():
+        model_acc.update(mset)
 
     current_acc = {Path(path).parent.name for path in current}
     unidentified_acc = len(current_acc - set(acc_agents))
@@ -1401,12 +1666,25 @@ def collect_contributions(current_files: list[Path]) -> dict:
                 if source != dest:
                     handoff[f"{source} → {dest}"] += 1
 
+    first_model_acc: Counter = Counter()
+    refine_model_acc: Counter = Counter()
+    multi_model = 0
+    for accession, mset in acc_models.items():
+        if len(mset) >= 2:
+            multi_model += 1
+        first_m = acc_origin_models.get(accession) or set()
+        later_m = acc_refine_models.get(accession) or set()
+        first_model_acc.update(first_m)
+        refine_model_acc.update(later_m)
+
     print(
         "  contributions: "
         f"{int(origin_acc.get('Agent-assisted', 0)):,} agent-assisted / "
         f"{int(origin_acc.get('Human-only', 0)):,} human-only accessions "
         f"({pr_fetch} PR scan, {prs_with_agent} PRs with agent evidence, "
-        f"{multi_agent} multi-agent, {unidentified_acc} unidentified vendor, "
+        f"{prs_with_model} PRs with model evidence, "
+        f"{multi_agent} multi-agent, {multi_model} multi-model, "
+        f"{len(model_acc)} models, {unidentified_acc} unidentified vendor, "
         f"{prs_ai_prose_only} PRs with AI prose and no vendor fingerprint)"
     )
 
@@ -1415,12 +1693,18 @@ def collect_contributions(current_files: list[Path]) -> dict:
         "unattributed_files": len(current) - attributed,
         "human_contributors": len(all_humans),
         "ai_agents": len(agent_acc),
+        "ai_models": len(model_acc),
         "multi_agent_accessions": multi_agent,
+        "multi_model_accessions": multi_model,
         "unidentified_accessions": unidentified_acc,
         "github_prs_ai_prose_only": prs_ai_prose_only,
         "github_prs_scanned": len(pull_requests),
         "github_prs_with_agent": prs_with_agent,
+        "github_prs_with_model": prs_with_model,
         "github_pr_fetch": pr_fetch,
+        "prs_total": len(pr_all),
+        "prs_add_only": len(pr_add_only),
+        "prs_modify_existing": len(pr_modify_existing),
         "origin": [
             {
                 "name": "Human-only",
@@ -1452,6 +1736,22 @@ def collect_contributions(current_files: list[Path]) -> dict:
         "handoffs": [
             {"name": name, "accessions": count}
             for name, count in handoff.most_common()
+        ],
+        "models": [
+            {
+                "name": name,
+                "accessions": count,
+                "files": int(file_model_counts[name]),
+            }
+            for name, count in model_acc.most_common()
+        ],
+        "first_models": [
+            {"name": name, "accessions": count}
+            for name, count in first_model_acc.most_common()
+        ],
+        "refine_models": [
+            {"name": name, "accessions": count}
+            for name, count in refine_model_acc.most_common()
         ],
     }
 
@@ -2518,36 +2818,42 @@ def render_coverage_figure(path: Path, coverage: dict) -> None:
     fetched = str(coverage.get("fetched_at") or "")
     when = f" Catalogue totals fetched {fetched[:10]}." if fetched else ""
     fig, axes = _make_figure(
-        nrows=2,
+        nrows=4,
         ncols=1,
-        figsize=(10.4, 5.4),
+        figsize=(10.4, 9.0),
         title="How much of public proteomics is annotated?",
         subtitle=(
-            "Share of public ProteomeXchange and PRIDE datasets with a curated "
-            f"SDRF in this repository. Open a PR to move the bar.{when}"
+            "Share of public ProteomeXchange, PRIDE, MassIVE and iProX datasets "
+            f"with a curated SDRF in this repository. Open a PR to move the bar.{when}"
         ),
-        hspace=0.55,
+        hspace=0.75,
         left=0.06,
         right=0.97,
-        bottom=0.10,
-        header_ratio=0.28,
+        bottom=0.07,
+        header_ratio=0.18,
     )
-    _draw_coverage_bar(
-        axes[0],
-        letter="A",
-        title="ProteomeXchange",
-        annotated=px_ann,
-        total=px_tot,
-        color="#1F4E79",
+    panels = (
+        ("A", "ProteomeXchange", px_ann, px_tot, "#1F4E79"),
+        ("B", "PRIDE", pride_ann, pride_tot, "#1A7F7A"),
+        (
+            "C",
+            "MassIVE",
+            int(coverage.get("massive_annotated") or 0),
+            int(coverage.get("massive_public") or 0),
+            "#8A4B9E",
+        ),
+        (
+            "D",
+            "iProX",
+            int(coverage.get("iprox_annotated") or 0),
+            int(coverage.get("iprox_public") or 0),
+            "#C2571A",
+        ),
     )
-    _draw_coverage_bar(
-        axes[1],
-        letter="B",
-        title="PRIDE",
-        annotated=pride_ann,
-        total=pride_tot,
-        color="#1A7F7A",
-    )
+    for ax, (letter, title, ann, tot, color) in zip(axes, panels, strict=True):
+        _draw_coverage_bar(
+            ax, letter=letter, title=title, annotated=ann, total=tot, color=color
+        )
     _save(fig, path)
 
 
@@ -2767,6 +3073,52 @@ AGENT_COLORS = {
     "ChatGPT": "#10A37F",
     "Codex": "#3D8B5C",
     GEMINI_LABEL: "#4285F4",
+    "DeepSeek": "#2563EB",
+    "Community import (XL-MS)": "#059669",
+    "Human curation (specification)": "#1F4E79",
+    "Specification community": "#1F4E79",
+    "sdrf-annotation-pipeline": "#0284C7",
+    "Unidentified": "#8A93A3",
+}
+
+MODEL_COLORS = {
+    # DeepSeek family (blues)
+    "DeepSeek V4 Pro": "#1E40AF",
+    "DeepSeek Pro 4.1": "#2563EB",
+    "DeepSeek V4 Flash": "#3B82F6",
+    "DeepSeek (unspecified)": "#60A5FA",
+    # Claude family (warm terracotta / corals)
+    "Claude Opus 5.5": "#C85A32",
+    "Claude Opus 5": "#D97757",
+    "Claude Opus 4.8": "#E58A6E",
+    "Claude Sonnet 5.5": "#C2410C",
+    "Claude Sonnet 5": "#EA580C",
+    "Claude 3.5 Sonnet": "#F97316",
+    "Claude Haiku 5.5": "#FB923C",
+    "Claude 3.5 Haiku": "#FDBA74",
+    "Claude (unspecified model)": "#E07A5F",
+    # Open-weights / other
+    "Gemma 2 (9B)": "#7C3AED",
+    "Qwen 2.5 (3B)": "#9333EA",
+    "Qwen 2.5 (1.5B)": "#A855F7",
+    "Gemini 2": "#4285F4",
+    "Gemini 1.5": "#60A5FA",
+    "Gemini (unspecified model)": "#38BDF8",
+    # xAI Grok
+    "Grok 4.7": "#E11D48",
+    "Grok 4.7 (Cursor)": "#E11D48",
+    "Grok (unspecified)": "#FB7185",
+    # Community and workflow provenance
+    "Claude (sdrf-skills)": "#D97757",
+    "Community import (XL-MS)": "#059669",
+    "Human curation (specification)": "#1F4E79",
+    "sdrf-annotation-pipeline": "#0284C7",
+    # Agent proxies (when tool declared without explicit model)
+    "Cursor (unspecified model)": "#F54E00",
+    "Codex (unspecified model)": "#3D8B5C",
+    "Copilot (unspecified model)": "#6E40C9",
+    "SDRF Annotator (unspecified model)": "#1A7F7A",
+    "ChatGPT (unspecified model)": "#10A37F",
     "Unidentified": "#8A93A3",
 }
 
@@ -3205,6 +3557,106 @@ def render_contributions_figure(
     _save(fig, path)
 
 
+def render_models_figure(
+    path: Path,
+    contributions: dict,
+    totals: dict | None = None,
+) -> None:
+    models = contributions.get("models") or []
+    n_acc = int((totals or {}).get("accessions") or 0)
+    if not n_acc:
+        n_acc = sum(int(row.get("accessions") or 0) for row in contributions.get("origin") or [])
+    if not models:
+        _empty_figure(path, "Foundation models")
+        return
+
+    n_models = int(contributions.get("ai_models") or len(models))
+    n_unidentified = _unidentified_accessions(contributions, totals)
+    attributed_models = sum(int(row["accessions"]) for row in models)
+
+    fig = plt.figure(figsize=(11.4, 11.5))
+    outer = fig.add_gridspec(
+        3,
+        1,
+        height_ratios=[0.16, 0.22, 0.62],
+        hspace=0.14,
+        left=0.10,
+        right=0.97,
+        top=0.97,
+        bottom=0.06,
+    )
+    header = fig.add_subplot(outer[0, 0])
+    header.set_axis_off()
+    header.set_xlim(0, 1)
+    header.set_ylim(0, 1)
+    header.text(
+        0.0,
+        0.78,
+        "Foundation models in annotation",
+        fontsize=16,
+        fontweight="bold",
+        va="center",
+        ha="left",
+        color=INK,
+    )
+    header.text(
+        0.0,
+        0.20,
+        textwrap.fill(
+            (
+                f"Foundation models identified across all {n_acc:,} accessions. "
+                "Models are extracted from commit trailers, PR titles, descriptions, "
+                "and model signatures (e.g. DeepSeek V4 Flash, Claude Opus 5.5). "
+                "Accessions where only the agent harness was declared without specifying "
+                "the underlying model are displayed as client proxies (e.g. Cursor unspecified)."
+            ),
+            width=108,
+        ),
+        fontsize=9.0,
+        color=MUTED,
+        va="center",
+        ha="left",
+        linespacing=1.35,
+    )
+
+    cards = outer[1, 0].subgridspec(1, 3, wspace=0.04)
+    card_axes = [fig.add_subplot(cards[0, i]) for i in range(3)]
+    card_axes[0].set_title(
+        "A   Model breakdown",
+        loc="left",
+        fontsize=12,
+        fontweight="bold",
+        color=INK,
+        pad=10,
+    )
+    _draw_stat_card(card_axes[0], "Identified models", n_models, "#2563EB")
+    _draw_stat_card(card_axes[1], "Attributed accessions", attributed_models, "#D36B2F")
+    _draw_stat_card(card_axes[2], "All accessions", n_acc, "#1A7F7A")
+
+    ax_models = fig.add_subplot(outer[2, 0])
+    _panel_title(ax_models, "B", "Models across accessions")
+    model_items = [
+        (row["name"], int(row["accessions"]))
+        for row in models
+        if int(row["accessions"])
+    ]
+    if n_unidentified:
+        model_items.append(("Unidentified", n_unidentified))
+    model_items.sort(key=lambda item: item[1], reverse=True)
+    model_colors = [
+        MODEL_COLORS.get(name, OTHER_COLOR) for name, _ in model_items
+    ]
+    _draw_hbar(
+        ax_models,
+        model_items,
+        colors=model_colors,
+        xlabel="Accessions",
+        preserve_order=True,
+    )
+
+    _save(fig, path)
+
+
 def _cleanup_stale_plots(keep: set[str]) -> None:
     if not PLOTS_DIR.exists():
         return
@@ -3225,6 +3677,7 @@ def render_plots(stats: dict) -> dict[str, str]:
         "completeness": "plots/completeness.png",
         "templates": "plots/templates.png",
         "contributions": "plots/contributions.png",
+        "models": "plots/models.png",
     }
 
     render_coverage_figure(
@@ -3263,6 +3716,11 @@ def render_plots(stats: dict) -> dict[str, str]:
     )
     render_contributions_figure(
         STATS_DIR / paths["contributions"],
+        stats.get("contributions") or {},
+        stats.get("totals") or {},
+    )
+    render_models_figure(
+        STATS_DIR / paths["models"],
         stats.get("contributions") or {},
         stats.get("totals") or {},
     )
@@ -3325,11 +3783,19 @@ def build_readme_section(stats: dict, plot_paths: dict[str, str]) -> str:
     n_ai_agents = int(
         contrib.get("ai_agents") or len(contrib.get("agents") or [])
     )
+    n_models = int(
+        contrib.get("ai_models") or len(contrib.get("models") or [])
+    )
     top_agent = (
         contrib.get("agents", [{}])[0].get("name") if contrib.get("agents") else None
     )
     n_multi = int(contrib.get("multi_agent_accessions") or 0)
     n_unidentified = _unidentified_accessions(contrib, totals)
+    prs_total = int(contrib.get("prs_total") or 0)
+    prs_add_only = int(contrib.get("prs_add_only") or 0)
+    prs_modify = int(contrib.get("prs_modify_existing") or 0)
+    prs_modify_pct = 100.0 * prs_modify / prs_total if prs_total else 0.0
+    prs_add_pct = 100.0 * prs_add_only / prs_total if prs_total else 0.0
     n_codex = 0
     for row in contrib.get("agents") or []:
         if row.get("name") == "Codex":
@@ -3405,6 +3871,13 @@ def build_readme_section(stats: dict, plot_paths: dict[str, str]) -> str:
         if top_handoff:
             handoff_bit += f" (most common handoff **{top_handoff}**)"
         highlight_parts.append(handoff_bit)
+    if prs_total:
+        highlight_parts.append(
+            f"**{fmt_int(prs_total)}** merged PRs have changed curated datasets "
+            f"— **{fmt_int(prs_add_only)}** ({prs_add_pct:.0f}%) added "
+            f"brand-new datasets and **{fmt_int(prs_modify)}** "
+            f"({prs_modify_pct:.0f}%) refined existing annotations"
+        )
     if top_inst:
         highlight_parts.append(f"most common instrument is **{top_inst}**")
     if top_mod:
@@ -3436,8 +3909,26 @@ def build_readme_section(stats: dict, plot_paths: dict[str, str]) -> str:
         f"| Runs (unique `comment[data file]` per file) | "
         f"{fmt_int(totals['runs'])} |",
         f"| Assay rows | {fmt_int(totals['assay_rows'])} |",
+        (
+            f"| Merged PRs that changed curated datasets | {fmt_int(prs_total)} |"
+            if prs_total
+            else ""
+        ),
+        (
+            f"| ... adding new datasets | {fmt_int(prs_add_only)} "
+            f"({prs_add_pct:.0f}%) |"
+            if prs_total
+            else ""
+        ),
+        (
+            f"| ... modifying existing datasets | {fmt_int(prs_modify)} "
+            f"({prs_modify_pct:.0f}%) |"
+            if prs_total
+            else ""
+        ),
         f"| Human contributors | {fmt_int(n_people)} |",
         f"| AI agents (named fingerprints) | {fmt_int(n_ai_agents)} |",
+        f"| Foundation models identified | {fmt_int(n_models)} |",
         f"| AI-assisted accessions | {fmt_int(int(totals['accessions']))} |",
         f"| Unidentified agent | {fmt_int(n_unidentified)} |",
         f"| Multi-agent accessions | {fmt_int(n_multi)} |",
@@ -3456,6 +3947,23 @@ def build_readme_section(stats: dict, plot_paths: dict[str, str]) -> str:
             if pride_tot
             else f"| PRIDE datasets annotated | {fmt_int(pride_ann)} |"
         ),
+        *[
+            f"| {label} coverage | {fmt_int(ann)} / {fmt_int(tot)} "
+            f"({100.0 * ann / tot:.1f}%) |"
+            for label, ann, tot in (
+                (
+                    "MassIVE",
+                    int(coverage.get("massive_annotated") or 0),
+                    int(coverage.get("massive_public") or 0),
+                ),
+                (
+                    "iProX",
+                    int(coverage.get("iprox_annotated") or 0),
+                    int(coverage.get("iprox_public") or 0),
+                ),
+            )
+            if tot
+        ],
         "",
         "**Highlights:** " + "; ".join(highlight_parts) + ".",
         "",
@@ -3482,6 +3990,9 @@ def build_readme_section(stats: dict, plot_paths: dict[str, str]) -> str:
         "",
         f"![AI-assisted annotation]"
         f"(docs/stats/{plot_paths['contributions']})",
+        "",
+        f"![Foundation models used in annotation]"
+        f"(docs/stats/{plot_paths['models']})",
         "",
         STATS_END,
     ]

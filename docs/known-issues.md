@@ -40,7 +40,10 @@ Resolution: the submitters re-deposit the instrument files.
 Category: `collapsed-multiplex`. Each SDRF has one row labelled `label free sample`,
 but the deposit is a multiplexed run: several labelled samples were pooled and measured
 in the one raw file. Quantification with these SDRFs would treat the pool as one
-sample. Each needs one row per label channel, with its channel-to-sample map.
+sample. Each needs one row per label channel, with its channel-to-sample map. The same
+problem arises when the row already carries a multiplex tag such as `TMT6PLEX` but still
+collapses the whole pooled `.raw` to a single source, with no reporter-channel column
+and no stated channel-to-sample assignment.
 
 | Dataset | Labelling | Evidence |
 |---|---|---|
@@ -54,6 +57,7 @@ sample. Each needs one row per label channel, with its channel-to-sample map.
 | PXD000996 | iTRAQ 8-plex, 2 pools × 72 IPG fractions | Same Karolinska HiRIEF iTRAQ 8-plex design; PRIDE `sampleProcessingProtocol` states 8plex iTRAQ + isoelectric focusing. Rows use only pool-level sources (`thyroid cyst fluid iTRAQ plex 1/2`), no channel map |
 | PXD001808 | iTRAQ 8-plex, 3 pools (15 cases + 5 controls) | `sampleProcessingProtocol` describes three 8-plex experiments "each with one reference pool (113 reporter), two controls … and five cases", but the SDRF keeps only pool-level sources (`BALF exosome iTRAQ plex 1-3`); the exact channel→subject assignment is not recorded and not recoverable from file names |
 | PXD003702 | iTRAQ 8-plex, 6 pools × IPG fractions | PRIDE `sampleProcessingProtocol`: "processed using FASP with trypsin, iTRAQ and HiRIEF". Each fraction `.raw` is a pooled 8-plex slice; sources are named only by pool (`ascending aorta tissue iTRAQ 2013apr23_pool1_pool1` …), no channel map |
+| PXD038663 | TMT6plex, 6 channels per `.raw`, channels unmapped | Immunopeptidomics of 4 AML lines ± AZA with 3 biological replicates (Leukemia 2024;38(5):1019–31, PMID 38627586). Methods label with TMT6-plex but give no channel→sample table ("all methods … reported in supplemental data"). The deposit (30 `.raw` + 30 `.mgf` + PEAKS `.mzid.gz`, names like `…_Ctl_Aza_TMT_3reps_separateinjections…`) holds no design sheet, and the submitted community SDRF — identical to this repo's copy — keeps one row per `.raw` labelled `TMT6PLEX` / `TMT`, each a single source, with no reporter-channel column |
 
 How this was checked: each SDRF's `comment[label]` was compared with PRIDE's
 quantification method, the sample and data processing protocols, and the deposited

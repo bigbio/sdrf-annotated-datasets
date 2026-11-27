@@ -1,0 +1,18 @@
+# PXD005239 annotation blocked
+
+PXD005239 ("iTRAQ experiment on Clostridium strain BOH3", NUS Civil & Environmental Engineering, lab head Jianzhong He; submitter Anindya Basu) is an iTRAQ 8-plex study. It compares *Clostridium* sp. strain BOH3 grown on glucose vs xylose (butanol and riboflavin production). It is a single 8-plex set, fractionated into `140911_Basu_8plex_RPRP_3ul_F1..F10`; F7 is not deposited. The PX record names a TripleTOF 5600, and PRIDE classes it "Unsupported dataset by repository" (partial submission).
+
+**Deposited files (PRIDE FTP listing, re-derived):** 9 `.mzml` (F1-F6, F8-F10; 660-710 MB each), 1 ProteinPilot `..._combinesearchallfractions.group.xml` (13 GB), and `README.txt`. There are no `.wiff`/`.wiff.scan` files and no sample-metadata file. The campaign cache count "9 RAW / 10 files" is correct: the 9 RAW are mzML, and the 10th file is the search output.
+
+The channel -> sample map is not available:
+- **PX/PRIDE record:** it gives only "glucose and xylose" in the description and keywords. There is no channel table, no sample-processing protocol, and the publication is listed as "pending".
+- **PRIDE FTP:** no submitter metadata or sample sheet. `README.txt` only maps the group.xml to mzML IDs 0-8 (`MAPPINGS -`, no samples).
+- **Paper:** most likely Basu et al., Biotechnol Bioeng 2017;114(9):1959-1969, doi:10.1002/bit.26332, PMID 28475235 (same authors, BOH3, iTRAQ). It has no PMCID and is closed access (Unpaywall: `closed`, no OA locations). The Wiley full text sits behind a Cloudflare bot check, which was not bypassed. The abstract gives only the glucose vs xylose design. The number of time points/replicates and the reagent per sample are not in the abstract. Because the full text could not be read, it is also not verified that the paper cites PXD005239.
+- **ProteinPilot group.xml:** it is 13 GB, and it cannot be range-read from this environment (the shell has no network; the browser cannot partially fetch it). ProteinPilot normally reports reporter ratios by channel number (e.g. 114:113) and not by sample name, so even this file would probably not give the conditions.
+- **Other sources:** OmicsDI (no publication or protocol). Two NUS PhD theses from the same lab on CORE (Xin Fengxue 2015, Yan Yu 2016) cover BOH3 but have no iTRAQ chapter. PMC4886415 turned up in search but is an unrelated *C. acetobutylicum* ATCC 824 lignin iTRAQ study (Sheffield). The Europe PMC REST API was rate-limited / upstream failure, and the PRIDE v3 API was down (one try).
+
+Partly recoverable without the map: organism (strain BOH3, NCBI taxon not checked, since nothing is emitted), iTRAQ8plex, TripleTOF 5600 (PX; no wiff to confirm), and 9 fractions. Modifications from PX: iTRAQ8plex and monohydroxylated residue (oxidation). With no channel identities (which of 113-121 are glucose vs xylose, and at which growth phase/replicate), no SDRF is emitted.
+
+**Evidence checked:** ProteomeCentral PROXI full record; PRIDE FTP directory listing and `README.txt`; PubMed 28475235; Crossref and Unpaywall for 10.1002/bit.26332; the Wiley page (bot wall); OmicsDI; CORE NUS theses 48813797 and 48820534; PMC4886415 (rejected). Payload notes are in `/home/claude/singapore2/scratch/PXD005239/`.
+
+**To unblock:** (1) the Methods of Basu et al. 2017 (institutional Wiley access), if they state the iTRAQ reagent -> sample (carbon source / time point / replicate) layout; or (2) the head of the deposited ProteinPilot `group.xml` (HTTP range read), if it carries sample names; or (3) the layout from the authors (jianzhong.he@nus.edu.sg lab). Re-check the instrument at the same time (mzML `instrumentConfiguration` header).

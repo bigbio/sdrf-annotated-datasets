@@ -1,0 +1,19 @@
+# PXD065824 annotation blocked
+
+PXD065824 (organoplatinum(II) photoaffinity target profiling, PTP1B; J Am Chem Soc 2026 148(2):2660-2672, doi:10.1021/jacs.5c18904, PMID 41432362, PMC12833861) is a single TMTpro-multiplexed chemoproteomics set. HCT116 cells were treated for 1 h with 15 uM of the photoaffinity probes P-1, P-2b or P-3, or with DMSO. They were then UV-crosslinked (365 nm), click-labelled with biotin-azide and enriched on neutravidin, with "three biological replicates". That implies 4 conditions x 3 = 12 channels, but the paper never gives this count. The deposit holds 7 high-pH fractions of one TMT set, `20240321_lumos_SG_NUSjiaoxia_F14/F18/F21/F24/F27/F32/F60.raw`. Alongside them are the PD 3.1 result `20240321_lumos_SG_NUSjiaoxia_7F.msf` (+ `.msfView`), the FASTA and checksum.txt: 7 RAW / 11 files, which matches the campaign cache. The acquisition was DDA on an Orbitrap Fusion Lumos (SI Methods, which agree with the PX record).
+
+The channel → sample map is not available:
+- **Paper and SI PDF (all Methods pages, Table S1, Figs S29-S30):** they say "TMTpro" (fixed on peptide N-term and K) and "three biological replicates". They give no plex size (16 vs 18), no channel count and no table assigning reporter channels to DMSO/P-1/P-2b/P-3 replicates.
+- **PX record:** it has no sample or data protocol text, no sample-metadata file and no SDRF.
+- **PRIDE FTP folder (listing verified 2026-11-27):** it holds 11 files and matches the PROXI list exactly. These are the FASTA (28M), `..._7F.msf` (1.3G), `..._7F.msfView` (149M), the 7 RAW (580M-1.0G) and `checksum.txt`. `checksum.txt` is only 15 bytes and contains just the `#Checksum File` header. The folder has no README, sample-metadata file, SDRF, PD text export or study-definition export.
+- **PD `.msf` (1.3 GB SQLite):** this is the only likely deposited source of the map (StudyDefinition / sample names) and of the search modifications. A binary file like this cannot be read in the cloud browser, and the shell has no network for an HTTP-range read. The PRIDE v3 API was also down.
+- **Supplementary Table 2 (`ja5c18904_si_002.xls`, 2.3 MB protein table):** its abundance-column headers may name the channels. It was not opened, because that needs a file download and the shell has no network.
+
+Recoverable without the map: HCT116 (DMEM, authenticated), Easy-nLC with a 75 um x 50 cm PepMap column and a 90 min gradient, HCD 38% NCE, MS1 60k at m/z 350-1550, MS2 50k with 1.0 m/z isolation, PD 3.1 with 10 ppm / 0.06 Da and 3 missed cleavages, carbamidomethyl + TMTpro fixed, Percolator 1% FDR. The enzyme and reduction/alkylation reagents are not stated (on-bead digestion was done at the A*STAR SingMass facility). Assigning DMSO/probe identities to TMTpro channels would be a guess, so no SDRF is emitted.
+
+**Evidence checked:** the ProteomeCentral PROXI record (file list, no protocol); PubMed 41432362; the PMC12833861 full text, including the Data Availability statement, which cites PXD065824 (the link is verified); the SI PDF `ja5c18904_si_001.pdf` (TOC, pp. 3-7, 16, 45-46); the PRIDE FTP folder listing and `checksum.txt` (read 2026-11-27, after earlier timeouts); the PRIDE v3 API (unreachable); Europe PMC REST (connection failure). Scratch: `/home/claude/singapore2/scratch/PXD065824/`.
+
+**To unblock:** read the StudyDefinition / input-file sample annotations in `20240321_lumos_SG_NUSjiaoxia_7F.msf` (SQLite, by HTTP-range from a shell with network), or the abundance-column headers of `ja5c18904_si_002.xls`. Either may name the TMTpro channels (e.g. `Abundance: F1: 126, Sample, DMSO, 1`). Failing those, the channel layout from the authors. Read the `.msf` Workflows node for the modification parameters at the same time. Once a map is found this becomes a 7 RAW x n-channel SDRF (cell-lines template).
+
+## Review status
+pending
